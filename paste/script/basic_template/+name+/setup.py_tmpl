@@ -1,0 +1,25 @@
+try:
+    from ez_setup import use_setuptools
+except ImportError:
+    pass
+else:
+    use_setuptools()
+from setuptools import setup, find_packages
+
+version = ${repr(version or "0.0")}
+
+setup(name=${repr(name)},
+      version=version,
+      description="${description|nothing}",
+      long_description="""\
+${long_description|nothing}""",
+      classifiers=[], # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
+      keywords=${repr(keywords)|empty},
+      author=${repr(author)|empty},
+      author_email=${repr(author_email)|empty},
+      url=${repr(url)|empty},
+      license=${repr(license)|empty},
+      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      zip_safe=${repr(bool(zip_safe))|False},
+      )
+      
