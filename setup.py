@@ -28,6 +28,7 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     entry_points={
     'paste.paster_command': """
     help=paste.script.help:HelpCommand
+    create=paste.script.create_distro:CreateDistroCommand
     """,
     }
     )
