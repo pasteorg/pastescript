@@ -24,4 +24,10 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     namespace_packages=['paste'],
     packages=find_packages(exclude='tests'),
     zip_safe=True,
+    scripts=['scripts/paster'],
+    entry_points={
+    'paste.paster_command': """
+    help=paste.script.help:HelpCommand
+    """,
+    }
     )

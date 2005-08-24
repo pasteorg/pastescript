@@ -14,5 +14,5 @@ relative_paste = os.path.join(
 if os.path.exists(relative_paste):
     sys.path.insert(0, os.path.dirname(relative_paste))
 
-from paste import app_setup
-sys.exit(app_setup.run(sys.argv))
+from paste.script import command
+command.run()
