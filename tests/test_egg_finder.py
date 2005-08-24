@@ -11,3 +11,16 @@ def test_egg_info():
         os.path.dirname(os.path.dirname(__file__)),
         'PasteScript.egg-info')
     
+def test_resolve_plugins():
+    plugins = ['FakePlugin']
+    all = command.resolve_plugins(plugins)
+    assert all
+    assert len(all) == 2
+
+def test_find_commands():
+    all = command.resolve_plugins(['PasteScript', 'FakePlugin'])
+    commands = command.get_commands(all)
+    print commands
+    assert 'help' in commands
+    assert 'testcom' in commands
+    
