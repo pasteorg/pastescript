@@ -3,6 +3,13 @@ import sys
 import optparse
 import os
 
+class BadCommand(Exception):
+
+    def __init__(self, message, exit_code=2):
+        self.message = message
+        self.exit_code = exit_code
+        Exception.__init__(self, message)
+
 parser = optparse.OptionParser()
 parser.add_option(
     '--plugin',
@@ -12,15 +19,40 @@ parser.add_option(
 
 # @@: Add an option to run this in another Python interpreter
 
+system_plugins = ['PasteScript']
+
 def run():
     options, args = parser.parse_args()
-    plugins = options.plugins or []
-    plugins.append('PasteScript')
+    system_plugins.extend(options.plugins or [])
+    commands = get_commands()
+    if not args:
+        print 'Usage: %s COMMAND' % sys.argv[0]
+        args = ['help']
+    command_name = args[0]
+    if command_name not in commands:
+        command = NotFoundCommand
+    else:
+        command = commands[command_name].load()
+    invoke(command, command_name, options, args)
+
+def get_commands():
+    plugins = system_plugins[:]
     egg_info_dir = find_egg_info_dir(os.getcwd())
     if egg_info_dir:
-        plugins.append(os.path.basename(egg_info_dir))
+        plugins.append(os.path.splitext(os.path.basename(egg_info_dir))[0])
     plugins = resolve_plugins(plugins)
-    commands = get_commands(plugins)
+    commands = load_commands_from_plugins(plugins)
+    return commands
+
+def invoke(command, command_name, options, args):
+    sys.argv[0] = '%s %s' % (sys.argv[0], command_name)
+    try:
+        runner = command(command_name)
+        exit_code = runner.run(args)
+    except BadCommand, e:
+        print e.message
+        exit_code = e.exit_code
+    sys.exit(exit_code)
     
 def find_egg_info_dir(dir):
     while 1:
@@ -51,11 +83,9 @@ def get_distro(spec):
     return pkg_resources.working_set.find(
         pkg_resources.Requirement(spec))
 
-def get_commands(plugins):
+def load_commands_from_plugins(plugins):
     commands = {}
     for plugin in plugins:
-        print 'Looking in', [plugin, pkg_resources.get_entry_map(
-            plugin, group='paste.paster_command')]
         commands.update(pkg_resources.get_entry_map(
             plugin, group='paste.paster_command'))
     return commands
@@ -67,3 +97,38 @@ def parse_lines(data):
         if line and not line.startswith('#'):
             result.append(line)
     return result
+
+
+class Command(object):
+
+    def __init__(self, name):
+        self.name = name
+
+    short_description = None
+
+    ########################################
+    ## Utility methods
+    ########################################
+
+    def pad(self, s, length, dir='left'):
+        if len(s) >= length:
+            return s
+        if dir == 'left':
+            return s + ' '*(length-len(s))
+        else:
+            return ' '*(length-len(s)) + s
+
+class NotFoundCommand(Command):
+
+    def run(self, args):
+        print 'Command %s not known' % self.name
+        commands = get_commands().items()
+        commands.sort()
+        print 'Known commands:'
+        longest = max([len(n) for n, c in commands])
+        for name, command in commands:
+            print '  %s  %s' % (self.pad(name, length=longest),
+                                command.load().short_description)
+        return 2
+    
+        
