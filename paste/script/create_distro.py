@@ -86,5 +86,6 @@ class CreateDistroCommand(Command):
                 print "Running %s" % cmd
             os.system(cmd)
             if self.verbose:
-                print "You must run 'svn commit' to add files to repository"
+                print ("You must next run 'svn commit' to commit the "
+                       "files to repository")
         
