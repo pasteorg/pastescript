@@ -29,6 +29,13 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     'paste.paster_command': """
     help=paste.script.help:HelpCommand
     create=paste.script.create_distro:CreateDistroCommand
+    serve=paste.script.serve:ServeCommand
+    """,
+    'paste.server_runner': """
+    wsgiutils=paste.script.wsgiutils_server:run_server
+    """,
+    'paste.app_factory': """
+    test=paste.script.testapp:TestApplication
     """,
     }
     )
