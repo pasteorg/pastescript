@@ -33,6 +33,12 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     """,
     'paste.server_runner': """
     wsgiutils=paste.script.wsgiutils_server:run_server
+    flup_ajp_thread=paste.script.flup_server:run_ajp_thread
+    flup_ajp_fork=paste.script.flup_server:run_ajp_fork
+    flup_fcgi_thread=paste.script.flup_server:run_fcgi_thread
+    flup_fcgi_fork=paste.script.flup_server:run_fcgi_fork
+    flup_scgi_thread=paste.script.flup_server:run_scgi_thread
+    flup_scgi_fork=paste.script.flup_server:run_scgi_fork
     """,
     'paste.app_factory': """
     test=paste.script.testapp:TestApplication
