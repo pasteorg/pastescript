@@ -62,12 +62,18 @@ class CreateDistroCommand(Command):
         svn_repos = self.options.svn_repository
         if svn_repos:
             # @@: Use subprocess
-            cmd = 'svn mkdir -m "New project %s" "%s"' % (
-                dist_name, svn_repos)
+            svn_repos_path = os.path.join(svn_repos,dist_name)
+            cmd = '''svn mkdir %(svn_repos_path)s            \
+                               %(svn_repos_path)s/trunk      \
+                               %(svn_repos_path)s/tags       \
+                               %(svn_repos_path)s/branches   \
+                     -m "New project %(dist_name)s"''' % {'svn_repos_path': svn_repos_path, 
+                                                          'dist_name': dist_name}
             if self.verbose:
                 print "Running %s" % cmd
             os.system(cmd)
-            cmd = 'svn co "%s" "%s"' % (svn_repos, output_dir)
+            svn_repos_path_trunk = os.path.join(svn_repos_path,'trunk')
+            cmd = 'svn co "%s" "%s"' % (svn_repos_path_trunk, output_dir)
             if self.verbose:
                 print "Running %s" % cmd
             os.system(cmd)
