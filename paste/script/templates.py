@@ -25,3 +25,6 @@ class ZPT(Template):
 class WebKit(Template):
     _template_dir = 'templates/webkit'
     
+class PasteDeploy(Template):
+    _template_dir = 'templates/paste_deploy'
+    
