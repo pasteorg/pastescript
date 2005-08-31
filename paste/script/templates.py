@@ -7,7 +7,12 @@ class Template(object):
     # _template_dir (or template_dir())
     # summary
 
+    # Variables this template uses (mostly for documentation now)
+    # a list of instances of var()
     vars = []
+
+    # Eggs that should be added as plugins:
+    egg_plugins = []
 
     def __init__(self, name):
         self.name = name
@@ -33,6 +38,7 @@ class var(object):
         self.default = default
 
 class BasicPackage(Template):
+
     _template_dir = 'templates/basic_package'
     summary = "A basic setuptools-enabled package"
     vars = [
@@ -48,14 +54,21 @@ class BasicPackage(Template):
         ]
     
 class ZPT(Template):
+
     _template_dir = 'templates/zpt'
     summary = "A Zope Page Template project"
 
 class WebKit(Template):
+
     _template_dir = 'templates/webkit'
     summary = "A Paste WebKit web application"
+
+    egg_plugins = ['PasteWebKit']
     
 class PasteDeploy(Template):
+
     _template_dir = 'templates/paste_deploy'
     summary = "A web application deployed through paste.deploy"
+    
+    egg_plugins = ['PasteDeploy']
     
