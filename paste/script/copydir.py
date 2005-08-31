@@ -4,36 +4,38 @@ import cgi
 import urllib
 import re
 
-def copy_dir(source, dest, vars, verbosity, simulate):
+def copy_dir(source, dest, vars, verbosity, simulate, indent=0):
     names = os.listdir(source)
     names.sort()
+    pad = ' '*(indent*2)
     if not os.path.exists(dest):
         if verbosity >= 1:
-            print 'Creating %s/' % dest
+            print '%sCreating %s/' % (pad, dest)
         if not simulate:
             os.makedirs(dest)
     elif verbosity >= 2:
-        print 'Directory %s exists' % dest
+        print '%sDirectory %s exists' % (pad, dest)
     for name in names:
         full = os.path.join(source, name)
         if name.startswith('.'):
             if verbosity >= 2:
-                print 'Skipping hidden file %s' % full
+                print '%sSkipping hidden file %s' % (pad, full)
             continue
         dest_full = os.path.join(dest, _substitute_filename(name, vars))
         if dest_full.endswith('_tmpl'):
             dest_full = dest_full[:-5]
         if os.path.isdir(full):
             if verbosity:
-                print 'Recursing into %s' % os.path.basename(full)
-            copy_dir(full, dest_full, vars, verbosity, simulate)
+                print '%sRecursing into %s' % (pad, os.path.basename(full))
+            copy_dir(full, dest_full, vars, verbosity, simulate,
+                     indent=indent+1)
             continue
         f = open(full, 'rb')
         content = f.read()
         f.close()
         content = _substitute_content(content, vars, filename=full)
         if verbosity:
-            print 'Copying %s to %s' % (os.path.basename(full), dest_full)
+            print '%sCopying %s to %s' % (pad, os.path.basename(full), dest_full)
         if not simulate:
             f = open(dest_full, 'wb')
             f.write(content)

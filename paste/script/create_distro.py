@@ -76,7 +76,8 @@ class CreateDistroCommand(Command):
         copydir.copy_dir(template_dir, output_dir,
                          vars,
                          self.verbose,
-                         self.options.simulate)
+                         self.options.simulate,
+                         indent=1)
 
     def setup_svn_repository(self, output_dir, dist_name):
         # @@: Use subprocess

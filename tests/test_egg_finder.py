@@ -1,6 +1,5 @@
 import os
 from paste.script import pluginlib
-from paste.script import command
 
 def test_egg_info():
     egg_dir = os.path.join(os.path.dirname(__file__),
