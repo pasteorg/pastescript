@@ -25,7 +25,7 @@ def copy_dir(source, dest, vars, verbosity, simulate):
             dest_full = dest_full[:-5]
         if os.path.isdir(full):
             if verbosity:
-                print 'Recursing into %s' % full
+                print 'Recursing into %s' % os.path.basename(full)
             copy_dir(full, dest_full, vars, verbosity, simulate)
             continue
         f = open(full, 'rb')
@@ -33,7 +33,7 @@ def copy_dir(source, dest, vars, verbosity, simulate):
         f.close()
         content = _substitute_content(content, vars, filename=full)
         if verbosity:
-            print 'Copying %s to %s' % (full, dest_full)
+            print 'Copying %s to %s' % (os.path.basename(full), dest_full)
         if not simulate:
             f = open(dest_full, 'wb')
             f.write(content)

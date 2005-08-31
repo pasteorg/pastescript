@@ -33,10 +33,10 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     """,
     'paste.paster_create_template': """
     basic_package=paste.script.templates:BasicPackage
-    zpt=paste.scripts.templates:ZPT
-    webkit=paste.scripts.templates:WebKit
-    paste_deploy=paste.scripts.templates:PageDeploy
-    """
+    zpt=paste.script.templates:ZPT
+    webkit=paste.script.templates:WebKit
+    paste_deploy=paste.script.templates:PasteDeploy
+    """,
     'paste.server_runner': """
     wsgiutils=paste.script.wsgiutils_server:run_server
     flup_ajp_thread=paste.script.flup_server:run_ajp_thread

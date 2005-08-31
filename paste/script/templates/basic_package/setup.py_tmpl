@@ -6,7 +6,7 @@ else:
     use_setuptools()
 from setuptools import setup, find_packages
 
-version = ${repr(version or "0.0")}
+version = ${repr(version)|"0.0"}
 
 setup(name=${repr(name)},
       version=version,

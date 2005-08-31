@@ -137,6 +137,7 @@ class Command(object):
             self.options.verbose = max(self.options.verbose, 1)
         self.verbose = self.options.verbose
         self.interactive = self.options.interactive
+        self.simulate = getattr(self.options, 'simulate', False)
 
         # Validate:
         if self.min_args is not None and len(self.args) < self.min_args:
