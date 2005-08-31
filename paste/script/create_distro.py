@@ -4,6 +4,7 @@ import os
 import pkg_resources
 from command import Command, BadCommand
 import copydir
+import pluginlib
 
 class CreateDistroCommand(Command):
 
@@ -66,6 +67,21 @@ class CreateDistroCommand(Command):
             self.create_template(
                 template, output_dir, vars)
 
+        cmd = "cd %s ; %s setup.py egg_info" % (
+            output_dir, sys.executable)
+        if self.verbose:
+            print 'Running %s' % cmd
+        if not self.simulate:
+            os.system(cmd)
+
+        egg_info_dir = os.path.join(output_dir, '%s.egg-info' % dist_name)
+        for template in templates:
+            for spec in template.egg_plugins:
+                if self.verbose:
+                    print 'Adding %s to paster_plugins.txt' % spec
+                if not self.simulate:
+                    pluginlib.add_plugin(egg_info_dir, spec)
+        
         if self.options.svn_repository:
             self.add_svn_repository(output_dir)
 
