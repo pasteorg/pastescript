@@ -49,5 +49,6 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     'paste.app_factory': """
     test=paste.script.testapp:TestApplication
     """,
-    }
+    },
+    install_requires=['PasteDeploy', 'Paste'],
     )
