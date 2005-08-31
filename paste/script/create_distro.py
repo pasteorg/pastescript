@@ -52,7 +52,7 @@ class CreateDistroCommand(Command):
         templates = map(self.get_template, templates)
         dist_name = self.args[0]
         pkg_name = self._bad_chars_re.sub('', dist_name.lower())
-        vars = {'name': dist_name,
+        vars = {'project': dist_name,
                 'package': pkg_name,
                 }
         vars.update(self.parse_vars(self.args[1:]))

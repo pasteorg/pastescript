@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 version = ${repr(version)|"0.0"}
 
-setup(name=${repr(name)},
+setup(name=${repr(project)},
       version=version,
       description="${description|nothing}",
       long_description="""\

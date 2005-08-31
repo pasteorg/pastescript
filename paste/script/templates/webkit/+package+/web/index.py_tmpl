@@ -4,5 +4,5 @@ from ${package}.db import *
 class index(SitePage):
 
     def setup(self):
-        self.options.title = ${repr(name)}
+        self.options.title = ${repr(project)}
 
