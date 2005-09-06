@@ -24,7 +24,13 @@ parser.disable_interspersed_args()
 system_plugins = ['PasteScript']
 
 def run():
-    options, args = parser.parse_args()
+    if '_' in os.environ:
+        # This seems to signal a #! line
+        config = os.path.abspath(os.environ['_'])
+        args = parse_exe_file(config)
+    else:
+        args = sys.argv
+    options, args = parser.parse_args(args)
     system_plugins.extend(options.plugins or [])
     commands = get_commands()
     if not args:
@@ -36,6 +42,27 @@ def run():
     else:
         command = commands[command_name].load()
     invoke(command, command_name, options, args[1:])
+
+def parse_exe_file(config):
+    import ConfigParser
+    import shlex
+    p = ConfigParser.RawConfigParser()
+    p.read([config])
+    command_name = 'exe'
+    options = []
+    if p.has_option('exe', 'command'):
+        command_name = p.get('exe', 'command')
+    if p.has_option('exe', 'options'):
+        options = shlex.split(p.get('exe', 'options'))
+    if p.has_option('exe', 'sys.path'):
+        paths = shlex.split(p.get('exe', 'sys.path'))
+        paths = [os.path.abspath(os.path.join(os.path.dirname(config), p))
+                 for p in paths]
+        for path in paths:
+            pkg_resources.working_set.add_entry(path)
+            sys.path.insert(0, path)
+    args = [command_name, config] + options
+    return args
 
 def get_commands():
     plugins = system_plugins[:]
@@ -73,6 +100,7 @@ class Command(object):
     required_args = ()
     description = None
     usage = ''
+    hidden = False
 
     BadCommand = BadCommand
 
@@ -215,6 +243,9 @@ class Command(object):
 class NotFoundCommand(Command):
 
     def run(self, args):
+        #for name, value in os.environ.items():
+        #    print '%s: %s' % (name, value)
+        #print sys.argv
         print 'Command %s not known' % self.command_name
         commands = get_commands().items()
         commands.sort()

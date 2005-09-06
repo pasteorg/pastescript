@@ -30,6 +30,7 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     help=paste.script.help:HelpCommand
     create=paste.script.create_distro:CreateDistroCommand
     serve=paste.script.serve:ServeCommand
+    exe=paste.script.exe:ExeCommand
     """,
     'paste.paster_create_template': """
     basic_package=paste.script.templates:BasicPackage
