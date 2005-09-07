@@ -49,7 +49,7 @@ class BasicPackage(Template):
         var('author', 'Author name'),
         var('author_email', 'Author email'),
         var('url', 'URL of homepage'),
-        var('license', 'License name'),
+        var('license_name', 'License name'),
         var('zip_safe', 'True/False: if the package can be distributed as a .zip file', default=False),
         ]
     

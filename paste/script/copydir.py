@@ -99,6 +99,7 @@ class TypeMapper(dict):
         for op in options[:-1]:
             try:
                 value = eval_with_catch(op, dict(self))
+                break
             except (NameError, KeyError):
                 pass
         else:

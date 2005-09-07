@@ -18,7 +18,7 @@ ${long_description|nothing}""",
       author=${repr(author)|empty},
       author_email=${repr(author_email)|empty},
       url=${repr(url)|empty},
-      license=${repr(license)|empty},
+      license=${repr(license_name)|empty},
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       zip_safe=${repr(bool(zip_safe))|False},
       )
