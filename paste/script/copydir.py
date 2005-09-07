@@ -21,7 +21,7 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0):
             if verbosity >= 2:
                 print '%sSkipping hidden file %s' % (pad, full)
             continue
-        dest_full = os.path.join(dest, _substitute_filename(name, vars))
+        dest_full = os.path.join(dest, substitute_filename(name, vars))
         if dest_full.endswith('_tmpl'):
             dest_full = dest_full[:-5]
         if os.path.isdir(full):
@@ -33,7 +33,7 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0):
         f = open(full, 'rb')
         content = f.read()
         f.close()
-        content = _substitute_content(content, vars, filename=full)
+        content = substitute_content(content, vars, filename=full)
         if verbosity:
             print '%sCopying %s to %s' % (pad, os.path.basename(full), dest_full)
         if not simulate:
@@ -41,12 +41,12 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0):
             f.write(content)
             f.close()
 
-def _substitute_filename(fn, vars):
+def substitute_filename(fn, vars):
     for var, value in vars.items():
         fn = fn.replace('+%s+' % var, str(value))
     return fn
 
-def _substitute_content(content, vars, filename='<string>'):
+def substitute_content(content, vars, filename='<string>'):
     v = standard_vars.copy()
     v.update(vars)
     tmpl = LaxTemplate(content)
