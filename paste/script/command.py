@@ -24,12 +24,12 @@ parser.disable_interspersed_args()
 system_plugins = ['PasteScript']
 
 def run():
-    if '_' in os.environ:
+    if '_' in os.environ and 0:
         # This seems to signal a #! line
         config = os.path.abspath(os.environ['_'])
         args = parse_exe_file(config)
     else:
-        args = sys.argv
+        args = sys.argv[1:]
     options, args = parser.parse_args(args)
     system_plugins.extend(options.plugins or [])
     commands = get_commands()
