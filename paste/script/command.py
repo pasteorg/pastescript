@@ -3,6 +3,10 @@ import sys
 import optparse
 import os
 import pluginlib
+try:
+    import subprocess
+except ImportError:
+    pass
 
 class BadCommand(Exception):
 
@@ -239,6 +243,102 @@ class Command(object):
         return parser
 
     standard_parser = classmethod(standard_parser)
+
+    def shorten(self, fn, *paths):
+        """
+        Return a shorted form of the filename (relative to the current
+        directory), typically for displaying in messages.  If
+        ``*paths`` are present, then use os.path.join to create the
+        full filename before shortening.
+        """
+        if paths:
+            fn = os.path.join(fn, *paths)
+        if fn.startswith(os.getcwd()):
+            return fn[len(os.getcwd()):].lstrip(os.path.sep)
+        else:
+            return fn
+
+    def ensure_dir(self, dir, svn_add=True):
+        """
+        Ensure that the directory exists, creating it if necessary.
+        Respects verbosity and simulation.
+
+        Adds directory to subversion if ``.svn/`` directory exists in
+        parent, and directory was created.
+        """
+        if not os.path.exists(dir):
+            self.ensure_dir(os.path.dirname(dir))
+            if self.verbose:
+                print 'Creating %s' % self.shorten(dir)
+            if not self.simulate:
+                os.mkdir(dir)
+            if (svn_add and
+                os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
+                self.run_command('svn', 'add', dir)
+
+    def run_command(self, cmd, *args):
+        """
+        Runs the command, respecting verbosity and simulation.
+        Returns stdout, or None if simulating.
+        """
+        proc = subprocess.Popen([cmd] + list(args),
+                                stderr=subprocess.PIPE,
+                                stdout=subprocess.PIPE)
+        if self.verbose:
+            print 'Running %s %s' % (cmd, ' '.join(args))
+        if self.simulate:
+            return None
+        stdout, stderr = proc.communicate()
+        if proc.returncode:
+            if not self.verbose:
+                print 'Running %s %s' % (cmd, ' '.join(args))
+            print 'Error (exit code: %s)' % proc.returncode
+            if stderr:
+                print stderr
+            raise OSError("Error executing command %s" % cmd)
+        if self.verbose > 2:
+            if stderr:
+                print 'Command error output:'
+                print stderr
+            if stdout:
+                print 'Command output:'
+                print stdout
+        return stdout
+
+    def write_file(self, filename, content, source=None,
+                   binary=True, svn_add=True):
+        if os.path.exists(filename):
+            if binary:
+                f = open(filename, 'rb')
+            else:
+                f = open(filename, 'r')
+            old_content = f.read()
+            f.close()
+            if content == old_content:
+                if self.verbose:
+                    print 'File %s exists with same content' % (
+                        self.shorten(filename))
+                return
+            if (not self.simulate and self.options.interactive):
+                if not self.ask('Overwrite file %s?' % filename):
+                    return
+        if self.verbose > 1 and source:
+            print 'Writing %s from %s' % (self.shorten(filename),
+                                          self.shorten(source))
+        elif self.verbose:
+            print 'Writing %s' % self.shorten(filename)
+        if not self.simulate:
+            already_existed = os.path.exists(filename)
+            if binary:
+                f = open(filename, 'wb')
+            else:
+                f = open(filename, 'w')
+            f.write(content)
+            f.close()
+            if (not already_existed
+                and svn_add
+                and os.path.exists(os.path.join(os.path.dirname(filename), '.svn'))):
+                self.run_command('svn', 'add', filename)
 
 class NotFoundCommand(Command):
 
