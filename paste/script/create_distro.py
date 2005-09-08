@@ -89,11 +89,13 @@ class CreateDistroCommand(Command):
         if self.verbose:
             print 'Creating template %s' % template.name
         template_dir = template.template_dir()
+        template.pre(self, output_dir, vars)
         copydir.copy_dir(template_dir, output_dir,
                          vars,
                          self.verbose,
                          self.options.simulate,
                          indent=1)
+        template.post(self, output_dir, vars)
 
     def setup_svn_repository(self, output_dir, dist_name):
         # @@: Use subprocess
