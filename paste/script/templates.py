@@ -53,11 +53,6 @@ class BasicPackage(Template):
         var('zip_safe', 'True/False: if the package can be distributed as a .zip file', default=False),
         ]
     
-class ZPT(Template):
-
-    _template_dir = 'templates/zpt'
-    summary = "A Zope Page Template project"
-    
 class PasteDeploy(Template):
 
     _template_dir = 'templates/paste_deploy'
