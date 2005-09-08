@@ -1,15 +1,16 @@
 import os
+from datetime import datetime
 from Component import CPage
 from Component.notify import NotifyComponent
-from ZPTKit import ZPTComponent
+from ZPTKit.zptcomponent import ZPTComponent
 
-from paste import CONFIG
+from paste.deploy import CONFIG
 from paste.url import URL
 from ${package}.db import *
-import string
-from mx import DateTime
 
 from iscape import clientconfig
+
+__all__ = ['SitePage', 'CONFIG']
 
 class SitePage(CPage):
 
@@ -25,24 +26,28 @@ class SitePage(CPage):
         CPage.awake(self, trans)
         env = self.request().environ()
 
-        self.user_role_permitted = CONFIG['user_role_permitted']
+        self.user_role_permitted = CONFIG.get('user_role_permitted', [])
         if callable(self.user_role_permitted):
             self.user_role_permitted = self.user_role_permitted()
-
+        
+        config_root = CONFIG.get('config_root', None)
+        if config_root:
+            # @@: This shouldn't be hardcoded like this:
+            config_root = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), 'docs')
+        
         self.tool = clientconfig.setup_options(
             env, self.options,
+            config_root=config_root,
             client_name=CONFIG['client_name'],
             app_name=CONFIG['app_name'],
-            static_url=CONFIG['static_url'])
+            static_url=CONFIG.get('static_url', 'static'))
         self.appurl = URL(self.request().environ()['%s.base_href' %
                                                    CONFIG['app_name']])
 
-        self.copyright = CONFIG['copyright']
+        self.copyright = CONFIG.get('copyright', datetime.now)
         if callable(self.copyright):
             self.copyright = self.copyright()
-
-        self.config = self.request().environ()['paste.config']
-        self.config['error_email'] = ${repr(author_email)|empty}
 
         self.setup()
 
