@@ -35,7 +35,6 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     'paste.paster_create_template': """
     basic_package=paste.script.templates:BasicPackage
     zpt=paste.script.templates:ZPT
-    webkit=paste.script.templates:WebKit
     paste_deploy=paste.script.templates:PasteDeploy
     """,
     'paste.server_runner': """

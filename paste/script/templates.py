@@ -57,13 +57,6 @@ class ZPT(Template):
 
     _template_dir = 'templates/zpt'
     summary = "A Zope Page Template project"
-
-class WebKit(Template):
-
-    _template_dir = 'templates/webkit'
-    summary = "A Paste WebKit web application"
-
-    egg_plugins = ['PasteWebKit']
     
 class PasteDeploy(Template):
 
