@@ -34,7 +34,6 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     """,
     'paste.paster_create_template': """
     basic_package=paste.script.templates:BasicPackage
-    paste_deploy=paste.script.templates:PasteDeploy
     """,
     'paste.server_runner': """
     wsgiutils=paste.script.wsgiutils_server:run_server

@@ -53,10 +53,3 @@ class BasicPackage(Template):
         var('zip_safe', 'True/False: if the package can be distributed as a .zip file', default=False),
         ]
     
-class PasteDeploy(Template):
-
-    _template_dir = 'templates/paste_deploy'
-    summary = "A web application deployed through paste.deploy"
-    
-    egg_plugins = ['PasteDeploy']
-    
