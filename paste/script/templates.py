@@ -43,13 +43,16 @@ class Template(object):
         pass
 
     def insert_into_file(self, filename, marker_name, text,
-                         command=None):
+                         indent=False, command=None):
         """
         Inserts ``text`` into the file, right after the given marker.
         Markers look like: ``-*- <marker_name>[:]? -*-``, and the text
         will go on the immediately following line.
 
         Raises ``ValueError`` if the marker is not found.
+
+        If ``indent`` is true, then the text will be indented at the
+        same level as the marker.
 
         If ``command`` is given, then notification messages will be
         given, and simulate obeyed.
@@ -65,6 +68,10 @@ class Template(object):
         for i in range(len(lines)):
             if regex.search(lines[i]):
                 # Found it!
+                if indent:
+                    text = text.lstrip()
+                    match = re.search(r'^[ \t]*', lines[i])
+                    text = match.group(0) + text
                 lines[i+1:i+1] = [text]
                 break
         else:
