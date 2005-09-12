@@ -21,5 +21,8 @@ ${long_description|nothing}""",
       license=${repr(license_name)|empty},
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       zip_safe=${repr(bool(zip_safe))|False},
+      package_data={
+          # -*- package_data: -*-
+      },
       )
       
