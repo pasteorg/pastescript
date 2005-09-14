@@ -282,6 +282,7 @@ class Command(object):
         Adds directory to subversion if ``.svn/`` directory exists in
         parent, and directory was created.
         """
+        dir = dir.rstrip(os.sep)
         if not os.path.exists(dir):
             self.ensure_dir(os.path.dirname(dir))
             if self.verbose:
