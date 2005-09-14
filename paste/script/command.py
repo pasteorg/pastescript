@@ -25,7 +25,7 @@ parser.disable_interspersed_args()
 
 # @@: Add an option to run this in another Python interpreter
 
-system_plugins = ['PasteScript']
+system_plugins = []
 
 def run():
     if '_' in os.environ and 0:
@@ -75,6 +75,7 @@ def get_commands():
         plugins.append(os.path.splitext(os.path.basename(egg_info_dir))[0])
     plugins = pluginlib.resolve_plugins(plugins)
     commands = pluginlib.load_commands_from_plugins(plugins)
+    commands.update(pluginlib.load_global_commands())
     return commands
 
 def invoke(command, command_name, options, args):

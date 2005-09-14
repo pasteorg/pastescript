@@ -25,17 +25,17 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     packages=find_packages(exclude='tests'),
     zip_safe=True,
     scripts=['scripts/paster'],
-    entry_points={
-    'paste.paster_command': """
+    entry_points="""
+    [paste.global_paster_command]
     help=paste.script.help:HelpCommand
     create=paste.script.create_distro:CreateDistroCommand
     serve=paste.script.serve:ServeCommand
     exe=paste.script.exe:ExeCommand
-    """,
-    'paste.paster_create_template': """
+
+    [paste.paster_create_template]
     basic_package=paste.script.templates:BasicPackage
-    """,
-    'paste.server_runner': """
+
+    [paste.server_runner]
     wsgiutils=paste.script.wsgiutils_server:run_server
     flup_ajp_thread=paste.script.flup_server:run_ajp_thread
     flup_ajp_fork=paste.script.flup_server:run_ajp_fork
@@ -43,10 +43,9 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     flup_fcgi_fork=paste.script.flup_server:run_fcgi_fork
     flup_scgi_thread=paste.script.flup_server:run_scgi_thread
     flup_scgi_fork=paste.script.flup_server:run_scgi_fork
-    """,
-    'paste.app_factory': """
+
+    [paste.app_factory]
     test=paste.script.testapp:TestApplication
     """,
-    },
     install_requires=['PasteDeploy', 'Paste'],
     )
