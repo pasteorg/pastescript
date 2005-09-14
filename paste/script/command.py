@@ -340,6 +340,17 @@ class Command(object):
                 and os.path.exists(os.path.join(os.path.dirname(filename), '.svn'))):
                 self.run_command('svn', 'add', filename)
 
+    def parse_vars(self, args):
+        result = {}
+        for arg in args:
+            if '=' not in arg:
+                raise BadCommand(
+                    'Variable assignment %r invalid (no "=")'
+                    % arg)
+            name, value = arg.split('=', 1)
+            result[name] = value
+        return result
+
 class NotFoundCommand(Command):
 
     def run(self, args):

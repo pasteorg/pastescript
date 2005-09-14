@@ -146,17 +146,6 @@ svn mkdir %(svn_repos_path)s          \\
             'paste.paster_create_template'))
         return self._entry_points
 
-    def parse_vars(self, args):
-        result = {}
-        for arg in args:
-            if '=' not in arg:
-                raise BadCommand(
-                    'Variable assignment %r invalid (no "=")'
-                    % arg)
-            name, value = arg.split('=', 1)
-            result[name] = value
-        return result
-
     def display_vars(self, vars):
         vars = vars.items()
         vars.sort()
