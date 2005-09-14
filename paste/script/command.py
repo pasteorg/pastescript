@@ -105,6 +105,8 @@ class Command(object):
     description = None
     usage = ''
     hidden = False
+    default_verbosity = 0
+    return_code = 0
 
     BadCommand = BadCommand
 
@@ -119,12 +121,16 @@ class Command(object):
         # Setup defaults:
         if not hasattr(self.options, 'verbose'):
             self.options.verbose = 0
+        if not hasattr(self.options, 'quiet'):
+            self.options.quiet = 0
         if not hasattr(self.options, 'interactive'):
             self.options.interactive = 0
         if (getattr(self.options, 'simulate', False)
             and not self.options.verbose):
             self.options.verbose = max(self.options.verbose, 1)
-        self.verbose = self.options.verbose
+        self.verbose = self.default_verbosity
+        self.verbose += self.options.verbose
+        self.verbose -= self.options.quiet
         self.interactive = self.options.interactive
         self.simulate = getattr(self.options, 'simulate', False)
 
@@ -141,7 +147,11 @@ class Command(object):
             if not getattr(self.options, var_name, None):
                 raise BadCommand(
                     'You must provide the option %s' % option_name)
-        self.command()
+        result = self.command()
+        if result is None:
+            return self.return_code
+        else:
+            return result
 
     def parse_args(self, args):
         if self.usage:
@@ -213,7 +223,8 @@ class Command(object):
 
     def standard_parser(cls, verbose=True,
                         interactive=False,
-                        simulate=False):
+                        simulate=False,
+                        quiet=False):
         """
         Typically used like::
 
@@ -228,6 +239,11 @@ class Command(object):
             parser.add_option('-v', '--verbose',
                               action='count',
                               dest='verbose',
+                              default=0)
+        if quiet:
+            parser.add_option('-q', '--quiet',
+                              action='count',
+                              dest='quiet',
                               default=0)
         if interactive:
             parser.add_option('-i', '--interactive',
