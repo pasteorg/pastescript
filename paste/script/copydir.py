@@ -3,8 +3,10 @@ import string
 import cgi
 import urllib
 import re
+Cheetah = None
 
-def copy_dir(source, dest, vars, verbosity, simulate, indent=0):
+def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
+             use_cheetah=False, sub_vars=True):
     names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
@@ -21,19 +23,25 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0):
             if verbosity >= 2:
                 print '%sSkipping hidden file %s' % (pad, full)
             continue
-        dest_full = os.path.join(dest, substitute_filename(name, vars))
+        if sub_vars:
+            dest_full = os.path.join(dest, substitute_filename(name, vars))
+        sub_file = False
         if dest_full.endswith('_tmpl'):
             dest_full = dest_full[:-5]
+            sub_file = sub_vars
         if os.path.isdir(full):
             if verbosity:
                 print '%sRecursing into %s' % (pad, os.path.basename(full))
             copy_dir(full, dest_full, vars, verbosity, simulate,
-                     indent=indent+1)
+                     indent=indent+1, use_cheetah=use_cheetah,
+                     sub_vars=sub_vars)
             continue
         f = open(full, 'rb')
         content = f.read()
         f.close()
-        content = substitute_content(content, vars, filename=full)
+        if sub_file:
+            content = substitute_content(content, vars, filename=full,
+                                         use_cheetah=use_cheetah)
         if verbosity:
             print '%sCopying %s to %s' % (pad, os.path.basename(full), dest_full)
         if not simulate:
@@ -46,15 +54,23 @@ def substitute_filename(fn, vars):
         fn = fn.replace('+%s+' % var, str(value))
     return fn
 
-def substitute_content(content, vars, filename='<string>'):
-    v = standard_vars.copy()
-    v.update(vars)
-    tmpl = LaxTemplate(content)
-    try:
-        return tmpl.substitute(TypeMapper(v))
-    except Exception, e:
-        _add_except(e, ' in file %s' % filename)
-        raise
+def substitute_content(content, vars, filename='<string>',
+                       use_cheetah=False):
+    global Cheetah
+    if not use_cheetah:
+        v = standard_vars.copy()
+        v.update(vars)
+        tmpl = LaxTemplate(content)
+        try:
+            return tmpl.substitute(TypeMapper(v))
+        except Exception, e:
+            _add_except(e, ' in file %s' % filename)
+            raise
+    if Cheetah is None:
+        import Cheetah
+    tmpl = Cheetah.Template(source=content, file=filename,
+                            searchList=[vars])
+    return str(tmpl)
 
 def html_quote(s):
     if s is None:

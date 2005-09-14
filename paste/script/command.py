@@ -7,6 +7,7 @@ try:
     import subprocess
 except ImportError:
     pass
+difflib = None
 
 class BadCommand(Exception):
 
@@ -120,14 +121,13 @@ class Command(object):
         self.parse_args(args)
         
         # Setup defaults:
-        if not hasattr(self.options, 'verbose'):
-            self.options.verbose = 0
-        if not hasattr(self.options, 'quiet'):
-            self.options.quiet = 0
-        if not hasattr(self.options, 'interactive'):
-            self.options.interactive = 0
-        if (getattr(self.options, 'simulate', False)
-            and not self.options.verbose):
+        for name, default in [('verbose', 0),
+                              ('quiet', 0),
+                              ('interactive', False),
+                              ('overwrite', False)]:
+            if not hasattr(self.options, name):
+                setattr(self.options, name, default)
+        if getattr(self.options, 'simulate', False):
             self.options.verbose = max(self.options.verbose, 1)
         self.verbose = self.default_verbosity
         self.verbose += self.options.verbose
@@ -225,7 +225,8 @@ class Command(object):
     def standard_parser(cls, verbose=True,
                         interactive=False,
                         simulate=False,
-                        quiet=False):
+                        quiet=False,
+                        overwrite=False):
         """
         Typically used like::
 
@@ -256,7 +257,11 @@ class Command(object):
                               action='store_true',
                               dest='simulate',
                               default=False)
-                              
+        if overwrite:
+            parser.add_option('-f', '--overwrite',
+                              dest="overwrite",
+                              action="store_true",
+                              help="Overwrite files (warnings will be emitted for non-matching files otherwise)")
         return parser
 
     standard_parser = classmethod(standard_parser)
@@ -293,6 +298,44 @@ class Command(object):
             if (svn_add and
                 os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
                 self.run_command('svn', 'add', dir)
+
+    def ensure_file(self, filename, content, svn_add=True):
+        global difflib
+        self.ensure_dir(os.path.dirname(filename), svn_add=svn_add)
+        if not os.path.exists(filename):
+            if self.verbose:
+                print 'Creating %s' % filename
+            if not self.simulate:
+                f = open(filename, 'wb')
+                f.write(content)
+                f.close()
+            if svn_add and os.path.exists(os.path.join(os.path.dirname(filename), '.svn')):
+                self.run_command('svn', 'add', filename)
+            return
+        f = open(filename, 'rb')
+        old_content = f.read()
+        f.close()
+        if content == old_content:
+            if self.verbose > 1:
+                print 'File %s matches expected content' % filename
+            return
+        if not self.options.overwrite:
+            print 'Warning: file %s does not match expected content' % filename
+            if difflib is None:
+                import difflib
+            diff = difflib.context_diff(
+                content.splitlines(),
+                old_content.splitlines(),
+                'expected ' + filename,
+                filename)
+            print '\n'.join(diff)
+            return
+        if self.verbose:
+            print 'Overwriting %s with new content' % filename
+        if not self.simulate:
+            f = open(filename, 'wb')
+            f.write(content)
+            f.close()
 
     def run_command(self, cmd, *args):
         """
