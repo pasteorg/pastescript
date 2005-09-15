@@ -2,6 +2,7 @@ import pkg_resources
 import sys
 import optparse
 import os
+import re
 import pluginlib
 try:
     import subprocess
@@ -335,6 +336,46 @@ class Command(object):
         if not self.simulate:
             f = open(filename, 'wb')
             f.write(content)
+            f.close()
+
+    def insert_into_file(self, filename, marker_name, text,
+                         indent=False):
+        """
+        Inserts ``text`` into the file, right after the given marker.
+        Markers look like: ``-*- <marker_name>[:]? -*-``, and the text
+        will go on the immediately following line.
+
+        Raises ``ValueError`` if the marker is not found.
+
+        If ``indent`` is true, then the text will be indented at the
+        same level as the marker.
+        """
+        if not text.endswith('\n'):
+            raise ValueError(
+                "The text must end with a newline: %r" % text)
+        f = open(filename)
+        lines = f.readlines()
+        f.close()
+        regex = re.compile(r'-\*-\s+%s:?\s+-\*-' % re.escape(marker_name),
+                           re.I)
+        for i in range(len(lines)):
+            if regex.search(lines[i]):
+                # Found it!
+                if indent:
+                    text = text.lstrip()
+                    match = re.search(r'^[ \t]*', lines[i])
+                    text = match.group(0) + text
+                lines[i+1:i+1] = [text]
+                break
+        else:
+            raise ValueError(
+                "Marker '-*- %s -*-' not found in %s"
+                % (marker_name, filename))
+        if self.verbose:
+            print 'Updating %s' % self.shorten(filename)
+        if not self.simulate:
+            f = open(filename, 'w')
+            f.write(''.join(lines))
             f.close()
 
     def run_command(self, cmd, *args):

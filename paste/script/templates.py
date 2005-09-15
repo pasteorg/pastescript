@@ -1,6 +1,5 @@
 import sys
 import os
-import re
 
 class Template(object):
 
@@ -41,49 +40,6 @@ class Template(object):
         Called after template is applied.
         """
         pass
-
-    def insert_into_file(self, filename, marker_name, text,
-                         indent=False, command=None):
-        """
-        Inserts ``text`` into the file, right after the given marker.
-        Markers look like: ``-*- <marker_name>[:]? -*-``, and the text
-        will go on the immediately following line.
-
-        Raises ``ValueError`` if the marker is not found.
-
-        If ``indent`` is true, then the text will be indented at the
-        same level as the marker.
-
-        If ``command`` is given, then notification messages will be
-        given, and simulate obeyed.
-        """
-        if not text.endswith('\n'):
-            raise ValueError(
-                "The text must end with a newline: %r" % text)
-        f = open(filename)
-        lines = f.readlines()
-        f.close()
-        regex = re.compile(r'-\*-\s+%s:?\s+-\*-' % re.escape(marker_name),
-                           re.I)
-        for i in range(len(lines)):
-            if regex.search(lines[i]):
-                # Found it!
-                if indent:
-                    text = text.lstrip()
-                    match = re.search(r'^[ \t]*', lines[i])
-                    text = match.group(0) + text
-                lines[i+1:i+1] = [text]
-                break
-        else:
-            raise ValueError(
-                "Marker '-*- %s -*-' not found in %s"
-                % (marker_name, filename))
-        if command and command.verbose:
-            print 'Updating %s' % command.shorten(filename)
-        if command and not command.simulate:
-            f = open(filename, 'w')
-            f.write(''.join(lines))
-            f.close()
 
 class var(object):
 
