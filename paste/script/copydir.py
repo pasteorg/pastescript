@@ -67,9 +67,9 @@ def substitute_content(content, vars, filename='<string>',
             _add_except(e, ' in file %s' % filename)
             raise
     if Cheetah is None:
-        import Cheetah
-    tmpl = Cheetah.Template(source=content, file=filename,
-                            searchList=[vars])
+        import Cheetah.Template
+    tmpl = Cheetah.Template.Template(source=content, file=filename,
+                                     searchList=[vars])
     return str(tmpl)
 
 def html_quote(s):
