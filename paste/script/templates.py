@@ -14,6 +14,9 @@ class Template(object):
     # Eggs that should be added as plugins:
     egg_plugins = []
 
+    # Templates that must be applied first:
+    required_templates = []
+
     def __init__(self, name):
         self.name = name
     

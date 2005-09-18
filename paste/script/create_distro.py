@@ -19,11 +19,6 @@ class CreateDistroCommand(Command):
                       metavar='DIR',
                       default='.',
                       help="Write put the directory into DIR")
-    parser.add_option('--template-dir',
-                      dest='template_dir',
-                      metavar='DIR',
-                      action='append',
-                      help="Read template for output from DIR")
     parser.add_option('--svn-repository',
                       dest='svn_repository',
                       metavar='REPOS',
@@ -46,10 +41,18 @@ class CreateDistroCommand(Command):
             return
         if not self.args:
             raise BadCommand('You must provide a PACKAGE_NAME')
-        templates = self.options.templates or []
-        if 'basic_package' not in templates:
-            templates.insert(0, 'basic_package')
-        templates = map(self.get_template, templates)
+        asked_tmpls = self.options.templates or ['basic_package']
+        templates = []
+        for tmpl_name in asked_tmpls:
+            self.extend_templates(templates, tmpl_name)
+        if self.verbose:
+            print 'Selected and implied templates:'
+            max_tmpl_name = max([len(tmpl_name) for tmpl_name, tmpl in templates])
+            for tmpl_name, tmpl in templates:
+                print '  %s%s  %s' % (
+                    tmpl_name, ' '*(max_tmpl_name-len(tmpl_name)),
+                    tmpl.summary)
+        templates = [tmpl for name, tmpl in templates]
         dist_name = self.args[0]
         pkg_name = self._bad_chars_re.sub('', dist_name.lower())
         vars = {'project': dist_name,
@@ -67,12 +70,8 @@ class CreateDistroCommand(Command):
             self.create_template(
                 template, output_dir, vars)
 
-        cmd = "cd %s ; %s setup.py egg_info" % (
-            output_dir, sys.executable)
-        if self.verbose:
-            print 'Running %s' % cmd
-        if not self.simulate:
-            os.system(cmd)
+        self.run_command(sys.executable, 'setup.py', 'egg_info',
+                         cwd=output_dir)
 
         egg_info_dir = os.path.join(output_dir, '%s.egg-info' % dist_name)
         for template in templates:
@@ -130,15 +129,34 @@ svn mkdir %(svn_repos_path)s          \\
         if self.verbose:
             print ("You must next run 'svn commit' to commit the "
                    "files to repository")
-        
 
-
-    def get_template(self, template_name):
-        for entry in self.all_entry_points():
-            if entry.name == template_name:
-                return entry.load()(entry.name)
-        raise LookupError(
-            'Template by name %r not found' % template_name)
+    def extend_templates(self, templates, tmpl_name):
+        if '#' in tmpl_name:
+            dist_name, tmpl_name = tmpl_name.split('#', 1)
+        else:
+            dist_name, tmpl_name = None, tmpl_name
+        if dist_name is None:
+            for entry in self.all_entry_points():
+                if entry.name == tmpl_name:
+                    tmpl = entry.load()(entry.name)
+                    dist_name = entry.dist.project_name
+                    break
+            else:
+                raise LookupError(
+                    'Template by name %r not found' % tmpl_name)
+        else:
+            dist = pkg_resources.get_distribution(dist_name)
+            entry = dist.get_entry_info(
+                'paste.paster_create_template', tmpl_name)
+            tmpl = entry.load()(entry.name)
+        full_name = '%s#%s' % (dist_name, tmpl_name)
+        for item_full_name, tmpl in templates:
+            if item_full_name == full_name:
+                # Already loaded
+                return
+        for req_name in tmpl.required_templates:
+            self.extend_templates(templates, req_name)
+        templates.append((full_name, tmpl))
 
     def all_entry_points(self):
         if not hasattr(self, '_entry_points'):
