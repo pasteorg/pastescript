@@ -378,12 +378,15 @@ class Command(object):
             f.write(''.join(lines))
             f.close()
 
-    def run_command(self, cmd, *args):
+    def run_command(self, cmd, *args, **kw):
         """
         Runs the command, respecting verbosity and simulation.
         Returns stdout, or None if simulating.
         """
+        cwd = popdefault(kw, 'cwd', os.getcwd())
+        assert not kw, ("Arguments not expected: %s" % kw)
         proc = subprocess.Popen([cmd] + list(args),
+                                cwd=cwd,
                                 stderr=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
         if self.verbose:
@@ -462,6 +465,11 @@ class NotFoundCommand(Command):
         print 'Command %s not known' % self.command_name
         commands = get_commands().items()
         commands.sort()
+        if not commands:
+            print 'No commands registered.'
+            print 'Have you installed Paste Script?'
+            print '(try running python setup.py develop)'
+            return 2
         print 'Known commands:'
         longest = max([len(n) for n, c in commands])
         for name, command in commands:
@@ -470,3 +478,10 @@ class NotFoundCommand(Command):
         return 2
     
         
+def popdefault(dict, name, default=None):
+    if name not in dict:
+        return default
+    else:
+        v = dict[name]
+        del dict[name]
+        return v
