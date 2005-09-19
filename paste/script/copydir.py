@@ -6,7 +6,7 @@ import re
 Cheetah = None
 
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
-             use_cheetah=False, sub_vars=True):
+             use_cheetah=False, sub_vars=True, interactive=False):
     names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
@@ -34,7 +34,7 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                 print '%sRecursing into %s' % (pad, os.path.basename(full))
             copy_dir(full, dest_full, vars, verbosity, simulate,
                      indent=indent+1, use_cheetah=use_cheetah,
-                     sub_vars=sub_vars)
+                     sub_vars=sub_vars, interactive=interactive)
             continue
         f = open(full, 'rb')
         content = f.read()
@@ -42,12 +42,83 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         if sub_file:
             content = substitute_content(content, vars, filename=full,
                                          use_cheetah=use_cheetah)
+        if os.path.exists(dest_full):
+            f = open(dest_full, 'rb')
+            old_content = f.read()
+            f.close()
+            if old_content == content:
+                if verbosity:
+                    print '%s%s already exists (same content)' % (pad, dest_full)
+                continue
+            if interactive:
+                if not query_interactive(
+                    full, dest_full, content, old_content,
+                    simulate=simulate):
+                    continue
         if verbosity:
             print '%sCopying %s to %s' % (pad, os.path.basename(full), dest_full)
         if not simulate:
             f = open(dest_full, 'wb')
             f.write(content)
             f.close()
+
+def query_interactive(src_fn, dest_fn, src_content, dest_content,
+                      simulate):
+    from difflib import unified_diff, context_diff
+    u_diff = list(unified_diff(
+        dest_content.splitlines(),
+        src_content.splitlines(),
+        dest_fn, src_fn))
+    c_diff = list(context_diff(
+        dest_content.splitlines(),
+        src_content.splitlines(),
+        dest_fn, src_fn))
+    added = len([l for l in u_diff if l.startswith('+')
+                   and not l.startswith('+++')])
+    removed = len([l for l in u_diff if l.startswith('-')
+                   and not l.startswith('---')])
+    if added > removed:
+        msg = '; %i lines added' % (added-removed)
+    elif removed > added:
+        msg = '; %i lines removed' % (removed-added)
+    else:
+        msg = ''
+    print 'Replace %i bytes with %i bytes (%i/%i lines changed%s)' % (
+        len(dest_content), len(src_content),
+        removed, len(dest_content.splitlines()), msg)
+    prompt = 'Overwrite %s [Y/n/d/b/?] ' % dest_fn
+    while 1:
+        response = raw_input(prompt).strip().lower()
+        if not response or response[0] == 'y':
+            return True
+        elif response[0] == 'n':
+            return False
+        elif response == 'dc':
+            print '\n'.join(c_diff)
+        elif response[0] == 'd':
+            print '\n'.join(u_diff)
+        elif response[0] == 'b':
+            import shutil
+            new_dest_fn = dest_fn + '.bak'
+            n = 0
+            while os.path.exists(new_dest_fn):
+                n += 1
+                new_dest_fn = dest_fn + '.bak' + str(n)
+            print 'Backing up %s to %s' % (dest_fn, new_dest_fn)
+            if not simulate:
+                shutil.copyfile(dest_fn, new_dest_fn)
+            return True
+        else:
+            print query_usage
+
+query_usage = """\
+Responses:
+  Y(es):    Overwrite the file with the new content.
+  N(o):     Do not overwrite the file.
+  D(iff):   Show a unified diff of the proposed changes (dc=context diff)
+  B(ackup): Save the current file contents to a .bak file
+            (and overwrite)
+"""
 
 def substitute_filename(fn, vars):
     for var, value in vars.items():

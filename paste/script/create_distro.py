@@ -13,7 +13,7 @@ class CreateDistroCommand(Command):
     short_description = summary
 
     parser = Command.standard_parser(
-        simulate=True)
+        simulate=True, interactive=True)
     parser.add_option('-o', '--output-dir',
                       dest='output_dir',
                       metavar='DIR',
@@ -91,8 +91,9 @@ class CreateDistroCommand(Command):
         template.pre(self, output_dir, vars)
         copydir.copy_dir(template_dir, output_dir,
                          vars,
-                         self.verbose,
-                         self.options.simulate,
+                         verbosity=self.verbose,
+                         simulate=self.options.simulate,
+                         interactive=self.options.interactive,
                          indent=1)
         template.post(self, output_dir, vars)
 
