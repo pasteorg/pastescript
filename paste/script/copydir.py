@@ -4,9 +4,11 @@ import cgi
 import urllib
 import re
 Cheetah = None
+import subprocess
 
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
-             use_cheetah=False, sub_vars=True, interactive=False):
+             use_cheetah=False, sub_vars=True, interactive=False,
+             svn_add=True):
     names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
@@ -14,7 +16,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         if verbosity >= 1:
             print '%sCreating %s/' % (pad, dest)
         if not simulate:
-            os.makedirs(dest)
+            svn_makedirs(dest, svn_add=svn_add, verbosity=verbosity,
+                         pad=pad)
     elif verbosity >= 2:
         print '%sDirectory %s exists' % (pad, dest)
     for name in names:
@@ -34,7 +37,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                 print '%sRecursing into %s' % (pad, os.path.basename(full))
             copy_dir(full, dest_full, vars, verbosity, simulate,
                      indent=indent+1, use_cheetah=use_cheetah,
-                     sub_vars=sub_vars, interactive=interactive)
+                     sub_vars=sub_vars, interactive=interactive,
+                     svn_add=svn_add)
             continue
         f = open(full, 'rb')
         content = f.read()
@@ -42,7 +46,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         if sub_file:
             content = substitute_content(content, vars, filename=full,
                                          use_cheetah=use_cheetah)
-        if os.path.exists(dest_full):
+        already_exists = os.path.exists(dest_full)
+        if already_exists:
             f = open(dest_full, 'rb')
             old_content = f.read()
             f.close()
@@ -61,6 +66,23 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             f = open(dest_full, 'wb')
             f.write(content)
             f.close()
+        if svn_add and not already_exists:
+            if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(dest_full)), '.svn')):
+                if verbosity > 1:
+                    print '%s.svn/ does not exist; cannot add file' % pad
+            else:
+                cmd = ['svn', 'add', dest_full]
+                if verbosity > 1:
+                    print '%sRunning: %s' % (pad, ' '.join(cmd))
+                if not simulate:
+                    # @@: Should
+                    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                    stdout, stderr = proc.communicate()
+                    if verbosity > 1 and stdout:
+                        print 'Script output:'
+                        print stdout
+        elif svn_add and already_exists and verbosity > 1:
+            print '%sFile already exists (not doing svn add)' % pad
 
 def query_interactive(src_fn, dest_fn, src_content, dest_content,
                       simulate):
@@ -119,6 +141,26 @@ Responses:
   B(ackup): Save the current file contents to a .bak file
             (and overwrite)
 """
+
+def svn_makedirs(dir, svn_add, verbosity, pad):
+    parent = os.path.dirname(os.path.abspath(dir))
+    if not os.path.exists(parent):
+        svn_makedirs(parent, svn_add, verbosity, pad)
+    os.mkdir(dir)
+    if not svn_add:
+        return
+    if not os.path.exists(os.path.join(parent, '.svn')):
+        if verbosity > 1:
+            print '%s.svn/ does not exist; cannot add directory' % pad
+        return
+    cmd = ['svn', 'add', dir]
+    if verbosity > 1:
+        print '%sRunning: %s' % (pad, ' '.join(cmd))
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    if verbosity > 1 and stdout:
+        print 'Script output:'
+        print stdout
 
 def substitute_filename(fn, vars):
     for var, value in vars.items():
