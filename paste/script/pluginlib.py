@@ -68,7 +68,12 @@ def resolve_plugins(plugin_list):
     found = []
     while plugin_list:
         plugin = plugin_list.pop()
-        pkg_resources.require(plugin)
+        try:
+            pkg_resources.require(plugin)
+        except pkg_resources.DistributionNotFound, e:
+            e.args = ('Not Found: %s (did you run python setup.py develop?)'
+                     % plugin),
+            raise
         found.append(plugin)
         dist = get_distro(plugin)
         if dist.has_metadata('paster_plugins.txt'):
