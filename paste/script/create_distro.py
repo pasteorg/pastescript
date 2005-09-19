@@ -5,6 +5,7 @@ import pkg_resources
 from command import Command, BadCommand
 import copydir
 import pluginlib
+import fnmatch
 
 class CreateDistroCommand(Command):
 
@@ -14,6 +15,11 @@ class CreateDistroCommand(Command):
 
     parser = Command.standard_parser(
         simulate=True, interactive=True)
+    parser.add_option('-t', '--template',
+                      dest='templates',
+                      metavar='TEMPLATE',
+                      action='append',
+                      help="Add a template to the create process")
     parser.add_option('-o', '--output-dir',
                       dest='output_dir',
                       metavar='DIR',
@@ -27,11 +33,10 @@ class CreateDistroCommand(Command):
                       dest='list_templates',
                       action='store_true',
                       help="List all templates available")
-    parser.add_option('-t', '--template',
-                      dest='templates',
-                      metavar='TEMPLATE',
-                      action='append',
-                      help="Add a template to the create process")
+    parser.add_option('--inspect-files',
+                      dest='inspect_files',
+                      action='store_true',
+                      help="Show where the files in the given (already created) directory came from")
 
     _bad_chars_re = re.compile('[^a-zA-Z0-9]')
 
@@ -53,7 +58,8 @@ class CreateDistroCommand(Command):
                     tmpl_name, ' '*(max_tmpl_name-len(tmpl_name)),
                     tmpl.summary)
         templates = [tmpl for name, tmpl in templates]
-        dist_name = self.args[0]
+        dist_name = self.args[0].lstrip(os.path.sep)
+        
         pkg_name = self._bad_chars_re.sub('', dist_name.lower())
         vars = {'project': dist_name,
                 'package': pkg_name,
@@ -63,6 +69,11 @@ class CreateDistroCommand(Command):
             self.display_vars(vars)
 
         output_dir = os.path.join(self.options.output_dir, dist_name)
+        if self.options.inspect_files:
+            self.inspect_files(
+                output_dir, templates, vars)
+            return
+        
         if self.options.svn_repository:
             self.setup_svn_repository(output_dir, dist_name)
 
@@ -151,14 +162,14 @@ svn mkdir %(svn_repos_path)s          \\
                 'paste.paster_create_template', tmpl_name)
             tmpl = entry.load()(entry.name)
         full_name = '%s#%s' % (dist_name, tmpl_name)
-        for item_full_name, tmpl in templates:
+        for item_full_name, item_tmpl in templates:
             if item_full_name == full_name:
                 # Already loaded
                 return
         for req_name in tmpl.required_templates:
             self.extend_templates(templates, req_name)
         templates.append((full_name, tmpl))
-
+        
     def all_entry_points(self):
         if not hasattr(self, '_entry_points'):
             self._entry_points = list(pkg_resources.iter_entry_points(
@@ -188,3 +199,90 @@ svn mkdir %(svn_repos_path)s          \\
                 ' '*(max_name-len(template.name)),
                 template.summary)
         
+    def inspect_files(self, output_dir, templates, vars):
+        file_sources = {}
+        for template in templates:
+            self._find_files(template, vars, file_sources)
+        self._show_files(output_dir, file_sources)
+        self._show_leftovers(output_dir, file_sources)
+
+    def _find_files(self, template, vars, file_sources):
+        tmpl_dir = template.template_dir()
+        self._find_template_files(
+            template, tmpl_dir, vars, file_sources)
+
+    def _find_template_files(self, template, tmpl_dir, vars,
+                             file_sources, join=''):
+        full_dir = os.path.join(tmpl_dir, join)
+        for name in os.listdir(full_dir):
+            if name.startswith('.'):
+                continue
+            if os.path.isdir(os.path.join(full_dir, name)):
+                self._find_template_files(
+                    template, tmpl_dir, vars, file_sources,
+                    join=os.path.join(join, name))
+                continue
+            partial = os.path.join(join, name)
+            for name, value in vars.items():
+                partial = partial.replace('+%s+' % name, value)
+            if partial.endswith('_tmpl'):
+                partial = partial[:-5]
+            file_sources.setdefault(partial, []).append(template)
+
+    _ignore_filenames = ['.*', '*.pyc', '*.bak*']
+    _ignore_dirs = ['CVS', '_darcs', '.svn']
+
+    def _show_files(self, output_dir, file_sources, join='', indent=0):
+        pad = ' '*(2*indent)
+        full_dir = os.path.join(output_dir, join)
+        names = os.listdir(full_dir)
+        dirs = [n for n in names
+                if os.path.isdir(os.path.join(full_dir, n))]
+        fns = [n for n in names
+               if not os.path.isdir(os.path.join(full_dir, n))]
+        dirs.sort()
+        names.sort()
+        for name in names:
+            skip_this = False
+            for ext in self._ignore_filenames:
+                if fnmatch.fnmatch(name, ext):
+                    if self.verbose > 1:
+                        print '%sIgnoring %s' % (pad, name)
+                    skip_this = True
+                    break
+            if skip_this:
+                continue
+            partial = os.path.join(join, name)
+            if partial not in file_sources:
+                if self.verbose > 1:
+                    print '%s%s (not from template)' % (pad, name)
+                continue
+            templates = file_sources.pop(partial)
+            print '%s%s from:' % (pad, name)
+            for template in templates:
+                print '%s  %s' % (pad, template.name)
+        for dir in dirs:
+            if dir in self._ignore_dirs:
+                continue
+            print '%sRecursing into %s/' % (pad, dir)
+            self._show_files(
+                output_dir, file_sources,
+                join=os.path.join(join, dir),
+                indent=indent+1)
+
+    def _show_leftovers(self, output_dir, file_sources):
+        if not file_sources:
+            return
+        print 
+        print 'These files were supposed to be generated by templates'
+        print 'but were not found:'
+        file_sources = file_sources.items()
+        file_sources.sort()
+        for partial, templates in file_sources:
+            print '  %s from:' % partial
+            for template in templates:
+                print '    %s' % template.name
+
+    
+                
+                
