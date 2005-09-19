@@ -371,7 +371,7 @@ class Command(object):
             errstr = (
                 "Marker '-*- %s -*-' not found in %s"
                 % (marker_name, filename))
-            if self.simulate:
+            if 1 or self.simulate: # @@: being permissive right now
                 print 'Warning: %s' % errstr
             else:
                 raise ValueError(errstr)
