@@ -84,8 +84,12 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         elif svn_add and already_exists and verbosity > 1:
             print '%sFile already exists (not doing svn add)' % pad
 
+# Overridden on user's request:
+all_answer = None
+
 def query_interactive(src_fn, dest_fn, src_content, dest_content,
                       simulate):
+    global all_answer
     from difflib import unified_diff, context_diff
     u_diff = list(unified_diff(
         dest_content.splitlines(),
@@ -110,7 +114,16 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
         removed, len(dest_content.splitlines()), msg)
     prompt = 'Overwrite %s [Y/n/d/b/?] ' % dest_fn
     while 1:
-        response = raw_input(prompt).strip().lower()
+        if all_answer is None:
+            response = raw_input(prompt).strip().lower()
+        else:
+            response = all_answer
+        if response.startswith('all '):
+            rest = response[4:].strip()
+            if not rest or rest[0] not in ('y', 'n', 'b'):
+                print query_usage
+                continue
+            response = all_answer = rest[0]
         if not response or response[0] == 'y':
             return True
         elif response[0] == 'n':
@@ -140,6 +153,7 @@ Responses:
   D(iff):   Show a unified diff of the proposed changes (dc=context diff)
   B(ackup): Save the current file contents to a .bak file
             (and overwrite)
+  Use "all Y/N/B" to use Y/N/B for answer to all future questions
 """
 
 def svn_makedirs(dir, svn_add, verbosity, pad):
