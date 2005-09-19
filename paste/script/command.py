@@ -368,9 +368,13 @@ class Command(object):
                 lines[i+1:i+1] = [text]
                 break
         else:
-            raise ValueError(
+            errstr = (
                 "Marker '-*- %s -*-' not found in %s"
                 % (marker_name, filename))
+            if self.simulate:
+                print 'Warning: %s' % errstr
+            else:
+                raise ValueError(errstr)
         if self.verbose:
             print 'Updating %s' % self.shorten(filename)
         if not self.simulate:
