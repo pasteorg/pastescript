@@ -3,7 +3,7 @@ import re
 import os
 import signal
 import sys
-from command import Command
+from command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
 import threading
 
