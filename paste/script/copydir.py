@@ -26,6 +26,14 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             if verbosity >= 2:
                 print '%sSkipping hidden file %s' % (pad, full)
             continue
+        if name.endswith('~') or name.endswith('.bak'):
+            if verbosity >= 2:
+                print '%sSkipping backup file %s' % (pad, full)
+            continue
+        if name.endswith('.pyc'):
+            if verbosity >= 2:
+                print '%sSkipping .pyc file %s' % (pad, full)
+            continue
         if sub_vars:
             dest_full = os.path.join(dest, substitute_filename(name, vars))
         sub_file = False
