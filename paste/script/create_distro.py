@@ -14,7 +14,7 @@ class CreateDistroCommand(Command):
     short_description = summary
 
     parser = Command.standard_parser(
-        simulate=True, interactive=True)
+        simulate=True, interactive=True, quiet=True)
     parser.add_option('-t', '--template',
                       dest='templates',
                       metavar='TEMPLATE',
@@ -39,6 +39,8 @@ class CreateDistroCommand(Command):
                       help="Show where the files in the given (already created) directory came from")
 
     _bad_chars_re = re.compile('[^a-zA-Z0-9]')
+
+    default_verbosity = 1
 
     def command(self):
         if self.options.list_templates:
