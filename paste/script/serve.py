@@ -86,10 +86,6 @@ class ServeCommand(Command):
         else:
             server_spec = app_spec
         base = os.getcwd()
-        server = loadserver(server_spec, name=server_name,
-                            relative_to=base)
-        app = loadapp(app_spec, name=app_name,
-                      relative_to=base)
 
         if self.options.daemon:
             self.daemonize()
@@ -100,6 +96,12 @@ class ServeCommand(Command):
         if self.options.log_file:
             stdout_log = LazyWriter(self.options.log_file)
             sys.stdout = stdout_log
+            sys.stderr = stdout_log
+
+        server = loadserver(server_spec, name=server_name,
+                            relative_to=base)
+        app = loadapp(app_spec, name=app_name,
+                      relative_to=base)
 
         if self.verbose > 0:
             print 'Starting server in PID %i.' % os.getpid()
