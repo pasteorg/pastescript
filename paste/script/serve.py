@@ -1,17 +1,20 @@
 # @@: This should be moved to paste.deploy
 import re
 import os
+import signal
+import sys
 from command import Command
 from paste.deploy import loadapp, loadserver
+import threading
 
 class ServeCommand(Command):
 
     max_args = 1
-    min_args = 1
+    min_args = 0
     usage = 'CONFIG_FILE'
     summary = "Serve the described application"
 
-    parser = Command.standard_parser()
+    parser = Command.standard_parser(quiet=True)
     parser.add_option('-n', '--app-name',
                       dest='app_name',
                       metavar='NAME',
@@ -24,10 +27,33 @@ class ServeCommand(Command):
                       dest='server_name',
                       metavar='SECTION_NAME',
                       help="Use the named server as defined in the configuration file (default: main)")
+    parser.add_option('--daemon',
+                      dest="daemon",
+                      action="store_true",
+                      help="Run in daemon (background) mode")
+    parser.add_option('--pid-file',
+                      dest='pid_file',
+                      metavar='FILENAME',
+                      help="Save PID to file (default to paster.pid if running in daemon mode)")
+    parser.add_option('--log-file',
+                      dest='log_file',
+                      metavar='LOG_FILE',
+                      help="Save output to the given log file (redirects stdout)")
+
+    parser.add_option('--stop-daemon',
+                      dest='stop_daemon',
+                      action='store_true',
+                      help='Stop a daemonized server (given a PID file, or default paster.pid file)')
 
     _scheme_re = re.compile(r'^[a-zA-Z0-9_-]+:')
 
+    default_verbosity = 1
+
     def command(self):
+        if self.options.stop_daemon:
+            return self.stop_daemon()
+        if not self.args:
+            raise BadCommand('You must give a config file')
         app_spec = self.args[0]
         app_name = self.options.app_name
         if not self._scheme_re.search(app_spec):
@@ -44,6 +70,80 @@ class ServeCommand(Command):
                             relative_to=base)
         app = loadapp(app_spec, name=app_name,
                       relative_to=base)
-        server(app)
-        
+
+        if self.options.daemon:
+            self.daemonize()
+
+        if self.options.pid_file:
+            self.record_pid(self.options.pid_file)
+
+        if self.options.log_file:
+            stdout_log = LazyWriter(self.options.log_file)
+            sys.stdout = stdout_log
+
+        if self.verbose > 0:
+            print 'Starting server in PID %i.' % os.getpid()
+        try:
+            server(app)
+        except (SystemExit, KeyboardInterrupt), e:
+            if self.verbose > 1:
+                raise
+            if str(e):
+                msg = ' '+str(e)
+            else:
+                msg = ''
+            print 'Exiting%s (-v to see traceback)' % msg
+
+    def daemonize(self):
+        if self.verbose > 0:
+            print 'Entering daemon mode'
+        pid = os.fork()
+        if pid:
+            sys.exit()
+        if not self.options.pid_file:
+            self.options.pid_file = 'paster.pid'
+        if not self.options.log_file:
+            self.options.log_file = 'paster.log'
+
+    def record_pid(self, pid_file):
+        pid = os.getpid()
+        if self.verbose > 1:
+            print 'Writing PID %s to %s' % (pid, pid_file)
+        f = open(pid_file, 'w')
+        f.write(str(pid))
+        f.close()
+
+    def stop_daemon(self):
+        pid_file = self.options.pid_file or 'paster.pid'
+        if not os.path.exists(pid_file):
+            print 'No PID file exists in %s' % pid_file
+            return 1
+        f = open(pid_file)
+        pid = int(f.read().strip())
+        f.close()
+        os.kill(pid, signal.SIGTERM)
+        if self.verbose > 0:
+            print 'Process %i killed' % pid
             
+class LazyWriter(object):
+
+    def __init__(self, filename):
+        self.filename = filename
+        self.fileobj = None
+        self.lock = threading.Lock()
+        
+    def open(self):
+        if self.fileobj is None:
+            self.lock.acquire()
+            try:
+                if self.fileobj is None:
+                    self.fileobj = open(self.filename, 'a')
+            finally:
+                self.lock.release()
+        return self.fileobj
+
+    def write(self, text):
+        fileobj = self.open()
+        fileobj.write(text)
+        fileobj.flush()
+        
