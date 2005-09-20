@@ -2,7 +2,7 @@
 
 from paste.deploy.converters import asbool
 
-conn_string(host, port, **params):
+def conn_string(host, port, **params):
     s = 'tcp:%s' % port
     if host:
         s += ':interface=%s' % host
