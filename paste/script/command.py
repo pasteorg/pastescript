@@ -81,8 +81,6 @@ def get_commands():
     return commands
 
 def invoke(command, command_name, options, args):
-    sys.old_argv0 = sys.argv[0]
-    sys.argv[0] = '%s %s' % (sys.argv[0], command_name)
     try:
         runner = command(command_name)
         exit_code = runner.run(args)
