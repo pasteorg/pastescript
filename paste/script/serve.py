@@ -39,6 +39,14 @@ class ServeCommand(Command):
                       dest='log_file',
                       metavar='LOG_FILE',
                       help="Save output to the given log file (redirects stdout)")
+    parser.add_option('--reload',
+                      dest='reload',
+                      action='store_true',
+                      help="Use auto-restart file monitor")
+    parser.add_option('--reload-interval',
+                      dest='reload_interval',
+                      default=1,
+                      help="Seconds between checking files (low number can cause significant CPU usage)")
 
     parser.add_option('--stop-daemon',
                       dest='stop_daemon',
@@ -49,9 +57,21 @@ class ServeCommand(Command):
 
     default_verbosity = 1
 
+    _reloader_environ_key = 'PYTHON_RELOADER_SHOULD_RUN'
+
     def command(self):
         if self.options.stop_daemon:
             return self.stop_daemon()
+
+        if self.options.reload:
+            if os.environ.get(self._reloader_environ_key):
+                from paste import reloader
+                if self.verbose > 1:
+                    print 'Running reloading file monitor'
+                reloader.install(int(self.options.reload_interval), False)
+            else:
+                return self.restart_with_reloader()
+                
         if not self.args:
             raise BadCommand('You must give a config file')
         app_spec = self.args[0]
@@ -124,6 +144,20 @@ class ServeCommand(Command):
         os.kill(pid, signal.SIGTERM)
         if self.verbose > 0:
             print 'Process %i killed' % pid
+
+    def restart_with_reloader(self):
+        if self.verbose > 0:
+            print 'Starting subprocess with file monitor'
+        while 1:
+            args = [sys.executable] + sys.argv
+            new_environ = os.environ.copy()
+            new_environ[self._reloader_environ_key] = 'true'
+            exit_code = os.spawnve(os.P_WAIT, sys.executable,
+                                   args, new_environ)
+            if exit_code != 3:
+                return exit_code
+            if self.verbose > 0:
+                print '-'*20, 'Restarting', '-'*20
             
 class LazyWriter(object):
 
