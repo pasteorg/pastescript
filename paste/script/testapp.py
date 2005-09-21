@@ -1,5 +1,4 @@
 import cgi
-import re
 
 page_template = '''
 <html>

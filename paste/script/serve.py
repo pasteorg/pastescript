@@ -182,6 +182,7 @@ class ServeCommand(Command):
     def change_user_group(self, user, group):
         if not user and not group:
             return
+        import pwd, grp
         uid = gid = None
         if group:
             try:
@@ -199,7 +200,6 @@ class ServeCommand(Command):
             uid = int(user)
             user = pwd.getpwuid(uid).pw_name
         except ValueError:
-            import pwd
             try:
                 entry = pwd.getpwnam(user)
             except KeyError:

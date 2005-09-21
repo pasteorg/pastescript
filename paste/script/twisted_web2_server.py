@@ -33,7 +33,7 @@ def run_twisted(wsgi_app, global_conf,
     twisted.web2.log.DefaultCommonAccessLoggingObserver().start()
     site = twisted.web2.server.Site(res)
     # @@: I don't get this:
-    application = service.Application("paster")
+    application = twisted.application.service.Application("paster")
     if asbool(use_http):
         s = twisted.application.strports.service(
             conn_string(host, port),
@@ -42,7 +42,7 @@ def run_twisted(wsgi_app, global_conf,
     if asbool(use_https):
         s = twisted.application.strports.service(
             conn_string(https_host, https_port,
-                        privateKey=https_private_key)
+                        privateKey=https_private_key),
             twisted.web2.http.HTTPFactory(site))
         s.setServiceParent(application)
     if asbool(use_scgi):
