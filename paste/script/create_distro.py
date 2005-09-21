@@ -83,8 +83,11 @@ class CreateDistroCommand(Command):
             self.create_template(
                 template, output_dir, vars)
 
-        self.run_command(sys.executable, 'setup.py', 'egg_info',
-                         cwd=output_dir)
+        if os.path.exists(os.path.join(output_dir, 'setup.py')):
+            self.run_command(sys.executable, 'setup.py', 'egg_info',
+                             cwd=output_dir)
+        elif self.verbose > 1:
+            print 'No setup.py (cannot run egg_info)'
 
         egg_info_dir = os.path.join(output_dir, '%s.egg-info' % dist_name)
         for template in templates:
