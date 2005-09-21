@@ -6,6 +6,7 @@ import sys
 from command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
 import threading
+import atexit
 
 class ServeCommand(Command):
 
@@ -48,10 +49,22 @@ class ServeCommand(Command):
                       default=1,
                       help="Seconds between checking files (low number can cause significant CPU usage)")
 
+    if hasattr(os, 'setuid'):
+        # I don't think these are availble on Windows
+        parser.add_option('--user',
+                          dest='set_user',
+                          metavar="USERNAME",
+                          help="Set the user (usually only possible when run as root)")
+        parser.add_option('--group',
+                          dest='set_group',
+                          metavar="GROUP",
+                          help="Set the group (usually only possible when run as root)")
+
     parser.add_option('--stop-daemon',
                       dest='stop_daemon',
                       action='store_true',
                       help='Stop a daemonized server (given a PID file, or default paster.pid file)')
+
 
     _scheme_re = re.compile(r'^[a-zA-Z0-9_-]+:')
 
@@ -62,6 +75,10 @@ class ServeCommand(Command):
     def command(self):
         if self.options.stop_daemon:
             return self.stop_daemon()
+
+        # @@: Is this the right stage to set the user at?
+        self.change_user_group(
+            self.options.set_user, self.options.set_group)
 
         if self.options.reload:
             if os.environ.get(self._reloader_environ_key):
@@ -134,6 +151,7 @@ class ServeCommand(Command):
         f = open(pid_file, 'w')
         f.write(str(pid))
         f.close()
+        atexit.register(_remove_pid_file, pid_file, self.verbose)
 
     def stop_daemon(self):
         pid_file = self.options.pid_file or 'paster.pid'
@@ -160,6 +178,43 @@ class ServeCommand(Command):
                 return exit_code
             if self.verbose > 0:
                 print '-'*20, 'Restarting', '-'*20
+
+    def change_user_group(self, user, group):
+        if not user and not group:
+            return
+        uid = gid = None
+        if group:
+            try:
+                gid = int(group)
+                group = grp.getgrgid(gid).gr_name
+            except ValueError:
+                import grp
+                try:
+                    entry = grp.getgrnam(group)
+                except KeyError:
+                    raise BadCommand(
+                        "Bad group: %r; no such group exists" % group)
+                gid = entry.gr_gid
+        try:
+            uid = int(user)
+            user = pwd.getpwuid(uid).pw_name
+        except ValueError:
+            import pwd
+            try:
+                entry = pwd.getpwnam(user)
+            except KeyError:
+                raise BadCommand(
+                    "Bad username: %r; no such user exists" % user)
+            if not gid:
+                gid = entry.pw_gid
+            uid = entry.pw_uid
+        if self.verbose > 0:
+            print 'Changing user to %s:%s (%s:%s)' % (
+                user, group or '(unknown)', uid, gid)
+        if gid:
+            os.setgid(gid)
+        if uid:
+            os.setuid(uid)
             
 class LazyWriter(object):
 
@@ -182,4 +237,16 @@ class LazyWriter(object):
         fileobj = self.open()
         fileobj.write(text)
         fileobj.flush()
+
+    def flush(self):
+        self.open().flush()
+        
+def _remove_pid_file(filename, verbosity):
+    if verbosity > 0:
+        print "Removing PID file %s" % filename
+    try:
+        os.unlink(filename)
+    except OSError, e:
+        # Record, but don't give traceback
+        print "Cannot remove PID file: %s" % e
         
