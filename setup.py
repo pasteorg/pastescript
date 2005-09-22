@@ -47,7 +47,7 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     extras_require={
       'Templating': ['Cheetah'],
       'Config': ['PasteDeploy'],
-      'WSGI-Utils': ['WSGI-Utils'],
+      'WSGIUtils': ['WSGIUtils'],
       'Flup': ['Flup'],
       # the Paste feature means the complete set of features;
       # (other features are truly optional)
@@ -64,7 +64,7 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     basic_package=paste.script.templates:BasicPackage
 
     [paste.server_runner]
-    wsgiutils=paste.script.wsgiutils_server:run_server [WSGI-Utils]
+    wsgiutils=paste.script.wsgiutils_server:run_server [WSGIUtils]
     flup_ajp_thread=paste.script.flup_server:run_ajp_thread [Flup]
     flup_ajp_fork=paste.script.flup_server:run_ajp_fork [Flup]
     flup_fcgi_thread=paste.script.flup_server:run_fcgi_thread [Flup]
