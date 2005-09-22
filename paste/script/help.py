@@ -1,4 +1,5 @@
 from command import Command, get_commands
+from command import parser as base_parser
 import sys
 
 class HelpCommand(Command):
@@ -24,10 +25,11 @@ class HelpCommand(Command):
 
         command = commands[name].load()
         runner = command(name)
-        sys.argv[0] = sys.old_argv0
         runner.run(['-h'])
         
     def generic_help(self):
+        base_parser.print_help()
+        print
         commands = get_commands().items()
         commands.sort()
         longest = max([len(n) for n, c in commands])

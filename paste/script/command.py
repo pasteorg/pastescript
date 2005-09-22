@@ -17,12 +17,21 @@ class BadCommand(Exception):
         self.exit_code = exit_code
         Exception.__init__(self, message)
 
-parser = optparse.OptionParser()
+pkg_resources.require('IScape')
+dist = pkg_resources.working_set.find(pkg_resources.Requirement('IScape'))
+
+parser = optparse.OptionParser(add_help_option=False,
+                               version=dist.version)
 parser.add_option(
     '--plugin',
     action='append',
     dest='plugins',
     help="Add a plugin to the list of commands (plugins are Egg specs)")
+parser.add_option(
+    '-h', '--help',
+    action='store_true',
+    dest='do_help',
+    help="Show this help message")
 parser.disable_interspersed_args()
 
 # @@: Add an option to run this in another Python interpreter
@@ -37,8 +46,11 @@ def run():
     else:
         args = sys.argv[1:]
     options, args = parser.parse_args(args)
+    options.base_parser = parser
     system_plugins.extend(options.plugins or [])
     commands = get_commands()
+    if options.do_help:
+        args = ['help'] + args
     if not args:
         print 'Usage: %s COMMAND' % sys.argv[0]
         args = ['help']
