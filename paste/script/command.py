@@ -113,7 +113,9 @@ class Command(object):
     min_args_error = 'You must provide at least %(min_args)s arguments'
     required_args = None
 
-    aliases = ()
+    # Grouped in help messages by this:
+    group_name = ''
+
     required_args = ()
     description = None
     usage = ''

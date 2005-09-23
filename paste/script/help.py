@@ -30,14 +30,24 @@ class HelpCommand(Command):
     def generic_help(self):
         base_parser.print_help()
         print
-        commands = get_commands().items()
-        commands.sort()
-        longest = max([len(n) for n, c in commands])
-        print 'Commands:'
-        for name, command in commands:
+        commands_grouped = {}
+        commands = get_commands()
+        longest = max([len(n) for n in commands.keys()])
+        for name, command in commands.items():
             command = command.load()
-            print '  %s  %s' % (self.pad(name, length=longest),
-                                command.summary)
-            if command.description:
-                print '    %s' % command.description
+            commands_grouped.setdefault(
+                command.group_name, []).append((name, command))
+        commands_grouped = commands_grouped.items()
+        commands_grouped.sort()
+        print 'Commands:'
+        for group, commands in commands_grouped:
+            if group:
+                print group + ':'
+            commands.sort()
+            for name, command in commands:
+                print '  %s  %s' % (self.pad(name, length=longest),
+                                    command.summary)
+                if command.description:
+                    print '    %s' % command.description
+            print
         
