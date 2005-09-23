@@ -98,7 +98,7 @@ class CreateDistroCommand(Command):
                     pluginlib.add_plugin(egg_info_dir, spec)
         
         if self.options.svn_repository:
-            self.add_svn_repository(output_dir)
+            self.add_svn_repository(vars, output_dir)
 
     def create_template(self, template, output_dir, vars):
         if self.verbose:
@@ -136,13 +136,22 @@ svn mkdir %(svn_repos_path)s          \\
         if not self.simulate:
             os.system(cmd)
 
-    def add_svn_repository(self, output_dir):
+    ignore_egg_info_files = [
+        'top_level.txt',
+        'entry_points.txt',
+        'requires.txt',
+        'PKG-INFO',
+        'namespace_packages.txt']
+
+    def add_svn_repository(self, vars, output_dir):
         svn_repos = self.options.svn_repository
-        cmd = 'svn add %s/*' % output_dir
-        if self.verbose:
-            print "Running %s" % cmd
-        if not self.simulate:
-            os.system(cmd)
+        egg_info_dir = os.path.join(output_dir,
+                                    vars['project']+'.egg-info')
+        self.run_command('svn', 'add', os.path.join(
+            egg_info_dir, 'paster_plugins.txt'))
+        self.run_command('svn', 'ps', 'svn:ignore',
+                         '\n'.join(self.ignore_egg_info_files),
+                         egg_info_dir)
         if self.verbose:
             print ("You must next run 'svn commit' to commit the "
                    "files to repository")
