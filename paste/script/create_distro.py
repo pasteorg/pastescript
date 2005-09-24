@@ -202,7 +202,12 @@ svn mkdir %(svn_repos_path)s          \\
     def list_templates(self):
         templates = []
         for entry in self.all_entry_points():
-            templates.append(entry.load()(entry.name))
+            try:
+                templates.append(entry.load()(entry.name))
+            except Exception, e:
+                # We will not be stopped!
+                print 'Warning: could not load entry point %s (%s)' % (
+                    entry.name, e)
         max_name = max([len(t.name) for t in templates])
         templates.sort(lambda a, b: cmp(a.name, b.name))
         print 'Available templates:'
