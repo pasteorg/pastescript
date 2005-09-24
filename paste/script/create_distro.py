@@ -206,8 +206,8 @@ svn mkdir %(svn_repos_path)s          \\
                 templates.append(entry.load()(entry.name))
             except Exception, e:
                 # We will not be stopped!
-                print 'Warning: could not load entry point %s (%s)' % (
-                    entry.name, e)
+                print 'Warning: could not load entry point %s (%s: %s)' % (
+                    entry.name, e.__class__.__name__, e)
         max_name = max([len(t.name) for t in templates])
         templates.sort(lambda a, b: cmp(a.name, b.name))
         print 'Available templates:'
