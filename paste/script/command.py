@@ -87,6 +87,10 @@ def get_commands():
     egg_info_dir = pluginlib.find_egg_info_dir(os.getcwd())
     if egg_info_dir:
         plugins.append(os.path.splitext(os.path.basename(egg_info_dir))[0])
+        base_dir = os.path.dirname(egg_info_dir)
+        if base_dir not in sys.path:
+            sys.path.insert(0, base_dir)
+            pkg_resources.working_set.add_entry(base_dir)
     plugins = pluginlib.resolve_plugins(plugins)
     commands = pluginlib.load_commands_from_plugins(plugins)
     commands.update(pluginlib.load_global_commands())
