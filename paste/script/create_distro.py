@@ -302,31 +302,19 @@ svn mkdir %(svn_repos_path)s          \\
 
     def list_variables(self, templates):
         for tmpl_name, tmpl in templates:
-            vars = tmpl.read_vars()
-            if not vars:
+            if not tmpl.read_vars():
                 if self.verbose > 1:
                     self._show_template_vars(
                         tmpl_name, tmpl, 'No variables found')
                 continue
-            self._show_template_vars(tmpl_name, tmpl, vars)
+            self._show_template_vars(tmpl_name, tmpl)
 
-    def _show_template_vars(self, tmpl_name, tmpl, vars):
+    def _show_template_vars(self, tmpl_name, tmpl, message=None):
         title = '%s (from %s)' % (tmpl.name, tmpl_name)
         print title
         print '-'*len(title)
-        if isinstance(vars, (str, unicode)):
-            print '  %s' % vars
+        if message is not None:
+            print '  %s' % message
             print
             return
-        max_name = max([len(v.name) for v in vars])
-        for var in vars:
-            if var.description:
-                print '  %s%s  %s' % (
-                    var.name,
-                    ' '*(max_name-len(var.name)),
-                    var.description)
-            else:
-                print '  %s' % var.name
-            if var.default is not templates.NoDefault:
-                print '      default: %r' % var.default
-        print
+        tmpl.print_vars(indent=2)

@@ -27,6 +27,7 @@ class Template(object):
 
     def __init__(self, name):
         self.name = name
+        self._read_vars = None
     
     def module_dir(self):
         """
@@ -70,22 +71,26 @@ class Template(object):
         return converted_vars
         
     def read_vars(self, command=None):
+        if self._read_vars is not None:
+            return self._read_vars
         assert (not self.read_vars_from_templates
                 or self.use_cheetah), (
             "You can only read variables from templates if using Cheetah")
-        if self.read_vars_from_templates:
-            vars = self.vars[:]
-            var_names = [var.name for var in self.vars]
-            read_vars = find_args_in_dir(
-                self.template_dir(),
-                verbose=command and command.verbose > 1).items()
-            read_vars.sort()
-            for var_name, var in read_vars:
-                if var_name not in var_names:
-                    vars.append(var)
-            return vars
-        else:
+        if not self.read_vars_from_templates:
+            self._read_vars = self.vars
             return self.vars
+        
+        vars = self.vars[:]
+        var_names = [var.name for var in self.vars]
+        read_vars = find_args_in_dir(
+            self.template_dir(),
+            verbose=command and command.verbose > 1).items()
+        read_vars.sort()
+        for var_name, var in read_vars:
+            if var_name not in var_names:
+                vars.append(var)
+        self._read_vars = vars
+        return vars
 
     def write_files(self, command, output_dir, vars):
         template_dir = self.template_dir()
@@ -97,6 +102,10 @@ class Template(object):
                          indent=1,
                          use_cheetah=self.use_cheetah)
 
+    def print_vars(self, indent=0):
+        vars = self.read_vars()
+        var.print_vars(vars)
+        
     def pre(self, command, output_dir, vars):
         """
         Called before template is applied.
@@ -126,6 +135,23 @@ class var(object):
         else:
             return self.name
 
+    def print_vars(cls, vars, indent=0):
+        max_name = max([len(v.name) for v in vars])
+        for var in vars:
+            if var.description:
+                print '%s%s%s  %s' % (
+                    ' '*indent,
+                    var.name,
+                    ' '*(max_name-len(var.name)),
+                    var.description)
+            else:
+                print '  %s' % var.name
+            if var.default is not NoDefault:
+                print '      default: %r' % var.default
+        print
+
+    print_vars = classmethod(print_vars)
+
 class BasicPackage(Template):
 
     _template_dir = 'templates/basic_package'
@@ -145,13 +171,15 @@ class BasicPackage(Template):
 _skip_variables = ['VFN', 'currentTime', 'self', 'VFFSL', 'dummyTrans',
                    'getmtime', 'trans']
 
-def find_args_in_template(filename):
-    import Cheetah.Template
-    t = Cheetah.Template.Template(file=filename)
-    if not hasattr(t, 'body'):
+def find_args_in_template(template):
+    if isinstance(template, (str, unicode)):
+        # Treat as filename:
+        import Cheetah.Template
+        template = Cheetah.Template.Template(file=template)
+    if not hasattr(template, 'body'):
         # Don't know...
         return None
-    method = t.body
+    method = template.body
     args, varargs, varkw, defaults = inspect.getargspec(method)
     defaults=list(defaults)
     vars = []
