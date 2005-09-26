@@ -419,10 +419,18 @@ class Command(object):
         """
         cwd = popdefault(kw, 'cwd', os.getcwd())
         assert not kw, ("Arguments not expected: %s" % kw)
-        proc = subprocess.Popen([cmd] + list(args),
-                                cwd=cwd,
-                                stderr=subprocess.PIPE,
-                                stdout=subprocess.PIPE)
+        try:
+            proc = subprocess.Popen([cmd] + list(args),
+                                    cwd=cwd,
+                                    stderr=subprocess.PIPE,
+                                    stdout=subprocess.PIPE)
+        except OSError, e:
+            if e.errno != 2:
+                # File not found
+                raise
+            raise OSError(
+                "The expected executable %s was not found (%s)"
+                % (cmd, e))
         if self.verbose:
             print 'Running %s %s' % (cmd, ' '.join(args))
         if self.simulate:
