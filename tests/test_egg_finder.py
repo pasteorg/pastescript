@@ -21,6 +21,5 @@ def test_find_commands():
     all = pluginlib.resolve_plugins(['PasteScript', 'FakePlugin'])
     commands = pluginlib.load_commands_from_plugins(all)
     print commands
-    assert 'help' in commands
     assert 'testcom' in commands
     
