@@ -1,8 +1,8 @@
 import sys
 import os
-import Cheetah.Template
 import inspect
 import copydir
+import command
 
 class Template(object):
 
@@ -41,7 +41,7 @@ class Template(object):
         return os.path.join(self.module_dir(), self._template_dir)
 
     def run(self, command, output_dir, vars):
-        self.check_vars(vars)
+        vars = self.check_vars(vars)
         self.pre(command, output_dir, vars)
         self.write_files(command, output_dir, vars)
         self.post(command, output_dir, vars)
@@ -50,18 +50,35 @@ class Template(object):
         expect_vars = self.read_vars()
         if not expect_vars:
             # Assume that variables aren't defined
-            return
+            return vars
+        converted_vars = {}
+        unused_vars = vars.copy()
+        errors = []
+        for var in expect_vars:
+            if var.name not in unused_vars:
+                if var.default is NoDefault:
+                    errors.append('Required variable missing: %s'
+                                  % var.full_description())
+                else:
+                    converted_vars[var.name] = var.default
+            else:
+                converted_vars[var.name] = unused_vars.pop(var.name)
+        if errors:
+            raise command.BadCommand(
+                'Errors in variables:\n%s' % '\n'.join(errors))
+        converted_vars.update(unused_vars)
+        return converted_vars
         
-    def read_vars(self):
+    def read_vars(self, command=None):
         assert (not self.read_vars_from_templates
-                or not self.use_cheetah), (
+                or self.use_cheetah), (
             "You can only read variables from templates if using Cheetah")
         if self.read_vars_from_templates:
             vars = self.vars[:]
             var_names = [var.name for var in self.vars]
             read_vars = find_args_in_dir(
                 self.template_dir(),
-                verbose=command.verbose > 1).items()
+                verbose=command and command.verbose > 1).items()
             read_vars.sort()
             for var_name, var in read_vars:
                 if var_name not in var_names:
@@ -71,7 +88,7 @@ class Template(object):
             return self.vars
 
     def write_files(self, command, output_dir, vars):
-        template_dir = template.template_dir()
+        template_dir = self.template_dir()
         copydir.copy_dir(template_dir, output_dir,
                          vars,
                          verbosity=command.verbose,
@@ -103,6 +120,12 @@ class var(object):
         self.description = description
         self.default = default
 
+    def full_description(self):
+        if self.description:
+            return '%s (%s)' % (self.name, self.description)
+        else:
+            return self.name
+
 class BasicPackage(Template):
 
     _template_dir = 'templates/basic_package'
@@ -123,6 +146,7 @@ _skip_variables = ['VFN', 'currentTime', 'self', 'VFFSL', 'dummyTrans',
                    'getmtime', 'trans']
 
 def find_args_in_template(filename):
+    import Cheetah.Template
     t = Cheetah.Template.Template(file=filename)
     if not hasattr(t, 'body'):
         # Don't know...

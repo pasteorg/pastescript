@@ -45,7 +45,8 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     zip_safe=False,
     scripts=['scripts/paster'],
     extras_require={
-      'Templating': ['Cheetah'],
+      'Templating': [],
+      'Cheetah': ['Cheetah'],
       'Config': ['PasteDeploy'],
       'WSGIUtils': ['WSGIUtils'],
       'Flup': ['Flup'],

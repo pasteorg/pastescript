@@ -5,6 +5,7 @@ import pkg_resources
 from command import Command, BadCommand
 import pluginlib
 import fnmatch
+import templates
 
 class CreateDistroCommand(Command):
 
@@ -32,6 +33,10 @@ class CreateDistroCommand(Command):
                       dest='list_templates',
                       action='store_true',
                       help="List all templates available")
+    parser.add_option('--list-variables',
+                      dest="list_variables",
+                      action="store_true",
+                      help="List all variables expected by the given template (does not create a package)")
     parser.add_option('--inspect-files',
                       dest='inspect_files',
                       action='store_true',
@@ -43,14 +48,13 @@ class CreateDistroCommand(Command):
 
     def command(self):
         if self.options.list_templates:
-            self.list_templates()
-            return
-        if not self.args:
-            raise BadCommand('You must provide a PACKAGE_NAME')
+            return self.list_templates()
         asked_tmpls = self.options.templates or ['basic_package']
         templates = []
         for tmpl_name in asked_tmpls:
             self.extend_templates(templates, tmpl_name)
+        if self.options.list_variables:
+            return self.list_variables(templates)
         if self.verbose:
             print 'Selected and implied templates:'
             max_tmpl_name = max([len(tmpl_name) for tmpl_name, tmpl in templates])
@@ -58,6 +62,9 @@ class CreateDistroCommand(Command):
                 print '  %s%s  %s' % (
                     tmpl_name, ' '*(max_tmpl_name-len(tmpl_name)),
                     tmpl.summary)
+            print
+        if not self.args:
+            raise BadCommand('You must provide a PACKAGE_NAME')
         templates = [tmpl for name, tmpl in templates]
         dist_name = self.args[0].lstrip(os.path.sep)
         
@@ -293,6 +300,33 @@ svn mkdir %(svn_repos_path)s          \\
             for template in templates:
                 print '    %s' % template.name
 
-    
-                
-                
+    def list_variables(self, templates):
+        for tmpl_name, tmpl in templates:
+            vars = tmpl.read_vars()
+            if not vars:
+                if self.verbose > 1:
+                    self._show_template_vars(
+                        tmpl_name, tmpl, 'No variables found')
+                continue
+            self._show_template_vars(tmpl_name, tmpl, vars)
+
+    def _show_template_vars(self, tmpl_name, tmpl, vars):
+        title = '%s (from %s)' % (tmpl.name, tmpl_name)
+        print title
+        print '-'*len(title)
+        if isinstance(vars, (str, unicode)):
+            print '  %s' % vars
+            print
+            return
+        max_name = max([len(v.name) for v in vars])
+        for var in vars:
+            if var.description:
+                print '  %s%s  %s' % (
+                    var.name,
+                    ' '*(max_name-len(var.name)),
+                    var.description)
+            else:
+                print '  %s' % var.name
+            if var.default is not templates.NoDefault:
+                print '      default: %r' % var.default
+        print
