@@ -3,7 +3,6 @@ import sys
 import os
 import pkg_resources
 from command import Command, BadCommand
-import copydir
 import pluginlib
 import fnmatch
 
@@ -103,15 +102,7 @@ class CreateDistroCommand(Command):
     def create_template(self, template, output_dir, vars):
         if self.verbose:
             print 'Creating template %s' % template.name
-        template_dir = template.template_dir()
-        template.pre(self, output_dir, vars)
-        copydir.copy_dir(template_dir, output_dir,
-                         vars,
-                         verbosity=self.verbose,
-                         simulate=self.options.simulate,
-                         interactive=self.options.interactive,
-                         indent=1)
-        template.post(self, output_dir, vars)
+        template.run(self, output_dir, vars)
 
     def setup_svn_repository(self, output_dir, dist_name):
         # @@: Use subprocess
