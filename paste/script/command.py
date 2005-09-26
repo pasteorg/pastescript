@@ -124,7 +124,11 @@ class Command(object):
     description = None
     usage = ''
     hidden = False
+    # This is the default verbosity level; --quiet subtracts,
+    # --verbose adds:
     default_verbosity = 0
+    # This is the default interactive state:
+    default_interactive = 0
     return_code = 0
 
     BadCommand = BadCommand
@@ -146,10 +150,14 @@ class Command(object):
                 setattr(self.options, name, default)
         if getattr(self.options, 'simulate', False):
             self.options.verbose = max(self.options.verbose, 1)
+        self.interactive = self.default_interactive
+        if getattr(self.options, 'interactive', False):
+            self.interactive += self.options.interactive
+        if getattr(self.options, 'no_interactive', False):
+            self.interactive = False
         self.verbose = self.default_verbosity
         self.verbose += self.options.verbose
         self.verbose -= self.options.quiet
-        self.interactive = self.options.interactive
         self.simulate = getattr(self.options, 'simulate', False)
 
         # Validate:
@@ -241,6 +249,7 @@ class Command(object):
 
     def standard_parser(cls, verbose=True,
                         interactive=False,
+                        no_interactive=False,
                         simulate=False,
                         quiet=False,
                         overwrite=False):
@@ -263,6 +272,11 @@ class Command(object):
             parser.add_option('-q', '--quiet',
                               action='count',
                               dest='quiet',
+                              default=0)
+        if no_interactive:
+            parser.add_option('--no-interactive',
+                              action="count",
+                              dest="no_interactive",
                               default=0)
         if interactive:
             parser.add_option('-i', '--interactive',
