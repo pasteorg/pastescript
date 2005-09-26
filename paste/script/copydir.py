@@ -203,7 +203,7 @@ def substitute_content(content, vars, filename='<string>',
             raise
     if Cheetah is None:
         import Cheetah.Template
-    tmpl = Cheetah.Template.Template(source=content, file=filename,
+    tmpl = Cheetah.Template.Template(source=content,
                                      searchList=[vars])
     return str(tmpl)
 
