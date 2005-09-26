@@ -5,6 +5,7 @@ import urllib
 import re
 Cheetah = None
 import subprocess
+import inspect
 
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
              use_cheetah=False, sub_vars=True, interactive=False,
@@ -205,7 +206,23 @@ def substitute_content(content, vars, filename='<string>',
         import Cheetah.Template
     tmpl = Cheetah.Template.Template(source=content,
                                      searchList=[vars])
-    return str(tmpl)
+    return careful_sub(tmpl, vars)
+
+def careful_sub(cheetah_template, vars):
+    """
+    Substitutes the template with the variables, using the
+    .body() method if it exists.  It assumes that the variables
+    were also passed in via the searchList.
+    """
+    if not hasattr(cheetah_template, 'body'):
+        return str(cheetah_template)
+    body = cheetah_template.body
+    args, varargs, varkw, defaults = inspect.getargspec(body)
+    call_vars = {}
+    for arg in args:
+        if arg in vars:
+            call_vars[arg] = vars[arg]
+    return body(**call_vars)
 
 def html_quote(s):
     if s is None:

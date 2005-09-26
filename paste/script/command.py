@@ -418,11 +418,16 @@ class Command(object):
         Returns stdout, or None if simulating.
         """
         cwd = popdefault(kw, 'cwd', os.getcwd())
+        capture_stderr = popdefault(kw, 'capture_stderr', False)
         assert not kw, ("Arguments not expected: %s" % kw)
+        if capture_stderr:
+            stderr_pipe = subprocess.STDOUT
+        else:
+            stderr_pipe = subprocess.PIPE
         try:
             proc = subprocess.Popen([cmd] + list(args),
                                     cwd=cwd,
-                                    stderr=subprocess.PIPE,
+                                    stderr=stderr_pipe,
                                     stdout=subprocess.PIPE)
         except OSError, e:
             if e.errno != 2:
