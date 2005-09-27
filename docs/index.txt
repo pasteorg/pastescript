@@ -10,6 +10,119 @@ Paste Script
 Introduction
 ------------
 
-This hasn't been filled out yet.  Please see the `Developer
-Documentation <developer.html>`_.
+If you are developer, see the `Developer Documentation
+<developer.html>`_; this will tell you how to add commands and
+templates to ``paster``.
+
+``paster serve``
+----------------
+
+The one useful command you may want to know about for ``paster`` is
+``paste serve``.  This serves an application described in a `Paste
+Deploy <http://pythonpaste.org/deploy>`_ configuration file.
+
+Configuration
+-------------
+
+A quickstart (and example), if not complete explanation::
+
+    [app:main]
+    use = egg:PasteEnabledPackage
+    option1 = foo
+    option2 = bar
+
+    [server:main]
+    use = egg:PasteScript#wsgiutils
+    host = 127.0.0.1
+    port = 80
+
+``egg:PasteEnabledPackage`` refers to some package that has been
+prepared for use with paste.deploy, and options given to that
+package.  If you are starting out with some framework, you'll have to
+reference some documentation for that framework to paste-deploy-ify
+your application (or read the paste.deploy documentation).
+
+In the same file is a server description.
+``egg:PasteScript#wsgiutils`` is a server (named ``wsgiutils``)
+provided by this package, based on `WSGIUtils
+<http://www.owlfish.com/software/wsgiutils/>`_.  And we pass various
+options particular to that server.
+
+Other packages can provide servers, but currently Paste Script
+includes glue for these:
+
+``wsgiutils``:
+
+    A `SimpleHTTPServer
+    <http://python.org/doc/current/lib/module-SimpleHTTPServer.html>`_
+    based threaded HTTP server, using `WSGIUtils
+    <http://www.owlfish.com/software/wsgiutils/>`_.
+
+``flup_(scgi|fcgi|ajp)_(thread|fork)``:
+
+    This set of servers supports `SCGI
+    <http://www.mems-exchange.org/software/scgi/>`_, `FastCGI
+    <http://www.fastcgi.com/>`_ and `AJP
+    <http://jakarta.apache.org/tomcat/connectors-doc/common/ajpv13a.html>`_
+    protocols, for connection an external web server (like Apache) to
+    your application.  Both threaded and forking versions are
+    available.  This is based on `flup
+    <http://www.saddi.com/software/flup/>`_.
+
+There is the start of support for `twisted.web2 <>`_ in
+``paste.script.twisted_web2_server``; patches welcome.
+
+Running the Server
+------------------
+
+``paster serve --help`` gives useful output::
+
+  usage: /usr/local/bin/paster serve [options] CONFIG_FILE
+  Serve the described application
+
+  options:
+    -h, --help            show this help message and exit
+    -v, --verbose
+    -q, --quiet
+    -n NAME, --app-name=NAME
+			  Load the named application (default main)
+    -s SERVER_TYPE, --server=SERVER_TYPE
+			  Use the named server.
+    --server-name=SECTION_NAME
+			  Use the named server as defined in the configuration
+			  file (default: main)
+    --daemon              Run in daemon (background) mode
+    --pid-file=FILENAME   Save PID to file (default to paster.pid if running in
+			  daemon mode)
+    --log-file=LOG_FILE   Save output to the given log file (redirects stdout)
+    --reload              Use auto-restart file monitor
+    --reload-interval=RELOAD_INTERVAL
+			  Seconds between checking files (low number can cause
+			  significant CPU usage)
+    --user=USERNAME       Set the user (usually only possible when run as root)
+    --group=GROUP         Set the group (usually only possible when run as root)
+    --stop-daemon         Stop a daemonized server (given a PID file, or default
+			  paster.pid file)
+
+Basically you give it a configuration file.  If you don't do anything
+else, it'll serve the ``[app:main]`` application with the
+``[server:main]`` server.  You can pass in ``--server-name=foo`` to
+serve the ``[server:foo]`` section (or even
+``--server-name=config:foo.ini`` to use a separate configuration
+file).
+
+Similarly you can use ``--app-name=foo`` to serve ``[app:foo]``.
+
+``--daemon`` will run the server in the backgroup, ``--user`` and
+``--group`` will set the user, as you might want to do from a start
+script (run as root).  If you don't give a ``--pid-file`` it will
+write the pid to ``paster.pid`` (in the current directory).
+
+``--stop-daemon`` will stop the daemon in ``paster.pid`` or whatever
+``--pid-file`` you give.  ``--log-file`` will redirect stdout and
+stderr to that file.
+
+``--reload`` will start the reload monitor, and restart the server
+whenever a file is edited.  This can be a little expensive, but is
+very useful during development.
 
