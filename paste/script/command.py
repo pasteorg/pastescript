@@ -388,6 +388,14 @@ class Command(object):
         if not text.endswith('\n'):
             raise ValueError(
                 "The text must end with a newline: %r" % text)
+        if not os.path.exists(filename) and self.simulate:
+            # If we are doing a simulation, it's expected that some
+            # files won't exist...
+            if self.verbose:
+                print 'Would (if not simulating) insert text into %s' % (
+                    self.shorten(file))
+            return
+                
         f = open(filename)
         lines = f.readlines()
         f.close()
