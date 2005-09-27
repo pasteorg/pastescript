@@ -1,0 +1,15 @@
+Paste Script
+============
+
+:author: Ian Bicking <ianb@colorstudy.com>
+:revision: $Rev$
+:date: $LastChangedDate$
+
+.. contents::
+
+Introduction
+------------
+
+This hasn't been filled out yet.  Please see the `Developer
+Documentation <developer.html>`_.
+

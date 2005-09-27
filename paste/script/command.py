@@ -331,6 +331,11 @@ class Command(object):
                 self.run_command('svn', 'add', dir)
 
     def ensure_file(self, filename, content, svn_add=True):
+        """
+        Ensure a file named ``filename`` exists with the given
+        content.  If ``-interactive`` has been enabled, this will ask
+        the user what to do if a file exists with different content.
+        """
         global difflib
         self.ensure_dir(os.path.dirname(filename), svn_add=svn_add)
         if not os.path.exists(filename):
@@ -465,6 +470,10 @@ class Command(object):
 
     def write_file(self, filename, content, source=None,
                    binary=True, svn_add=True):
+        """
+        Like ``ensure_file``, but without the interactivity.  Mostly
+        deprecated.  (I think I forgot it existed)
+        """
         if os.path.exists(filename):
             if binary:
                 f = open(filename, 'rb')
@@ -499,6 +508,10 @@ class Command(object):
                 self.run_command('svn', 'add', filename)
 
     def parse_vars(self, args):
+        """
+        Given variables like ``['a=b', 'c=d']`` turns it into ``{'a':
+        'b', 'c': 'd'}``
+        """
         result = {}
         for arg in args:
             if '=' not in arg:
