@@ -391,6 +391,12 @@ class Command(object):
         for i in range(len(lines)):
             if regex.search(lines[i]):
                 # Found it!
+                if lines[i:] and lines[i+1].strip() == text.strip():
+                    # Already have it!
+                    print 'Warning: line already found in %s (not inserting' % filename
+                    print '  %s' % line
+                    return
+                
                 if indent:
                     text = text.lstrip()
                     match = re.search(r'^[ \t]*', lines[i])
