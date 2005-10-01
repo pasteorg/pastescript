@@ -69,7 +69,8 @@ includes glue for these:
     available.  This is based on `flup
     <http://www.saddi.com/software/flup/>`_.
 
-There is the start of support for `twisted.web2 <>`_ in
+There is the start of support for `twisted.web2
+<http://twistedmatrix.com/projects/web2/>`_ in
 ``paste.script.twisted_web2_server``; patches welcome.
 
 Running the Server
