@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.1'
+version = '0.4'
 
 setup(
     name="PasteScript",
@@ -33,7 +33,7 @@ See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/tru
     keywords='web wsgi setuptools framework command-line setup',
     author="Ian Bicking",
     author_email="ianb@colorstudy.com",
-    url="http://pythonpaste.org/script/script.html",
+    url="http://pythonpaste.org/script/",
     namespace_packages=['paste'],
     packages=find_packages(exclude='tests'),
     package_data={
