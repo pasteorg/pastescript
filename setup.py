@@ -18,8 +18,6 @@ It includes some built-in features;
 
 * Serving up web applications, with configuration based on
   `paste.deploy <http://pythonpaste.org/deploy/paste-deploy.html>`_.
-    
-See also the `Subversion repository <http://svn.pythonpaste.org/Paste/Script/trunk#egg=Paste-Script-%sdev>`_
 """ % version,
     classifiers=[
       "Development Status :: 4 - Beta",
