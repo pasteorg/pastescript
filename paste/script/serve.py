@@ -76,6 +76,9 @@ class ServeCommand(Command):
         if self.options.stop_daemon:
             return self.stop_daemon()
 
+        if not hasattr(self.options, 'set_user'):
+            # Windows case:
+            self.options.set_user = self.options.set_group = None
         # @@: Is this the right stage to set the user at?
         self.change_user_group(
             self.options.set_user, self.options.set_group)
