@@ -249,7 +249,19 @@ def _remove_pid_file(filename, verbosity):
         print "Removing PID file %s" % filename
     try:
         os.unlink(filename)
+        return
     except OSError, e:
         # Record, but don't give traceback
         print "Cannot remove PID file: %s" % e
+    # well, at least lets not leave the invalid PID around...
+    try:
+        f = open(filename, 'w')
+        f.write('')
+        f.close()
+    except OSError, e:
+        print 'Stale PID left in file: %s (%e)' % (filename, e)
+    else:
+        print 'Stale PID removed'
+        
+            
         
