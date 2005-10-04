@@ -329,6 +329,9 @@ class Command(object):
             if (svn_add and
                 os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
                 self.run_command('svn', 'add', dir)
+        else:
+            if self.verbose > 1:
+                print "Directory already exists: %s" % self.shorten(dir)
 
     def ensure_file(self, filename, content, svn_add=True):
         """
