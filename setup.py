@@ -18,7 +18,7 @@ It includes some built-in features;
 
 * Serving up web applications, with configuration based on
   `paste.deploy <http://pythonpaste.org/deploy/paste-deploy.html>`_.
-""" % version,
+""",
     classifiers=[
       "Development Status :: 4 - Beta",
       "Intended Audience :: Developers",
