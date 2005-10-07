@@ -254,6 +254,8 @@ class Command(object):
                         quiet=False,
                         overwrite=False):
         """
+        Create a standard ``OptionParser`` instance.
+        
         Typically used like::
 
             class MyCommand(Command):
