@@ -1,0 +1,13 @@
+News: Paste Script
+==================
+
+0.3.1
+-----
+
+* Fixed small bug with running ``paster serve`` on Windows.  (Small to
+  fix, kept script from running on Windows entirely).
+
+0.3
+---
+
+Initial release.

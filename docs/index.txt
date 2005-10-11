@@ -12,7 +12,8 @@ Introduction
 
 If you are developer, see the `Developer Documentation
 <developer.html>`_; this will tell you how to add commands and
-templates to ``paster``.
+templates to ``paster``.  For a list of updates see the `news file
+<news.html>`_.
 
 ``paster serve``
 ----------------
