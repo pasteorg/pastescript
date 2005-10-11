@@ -18,7 +18,7 @@ templates to ``paster``.
 ----------------
 
 The one useful command you may want to know about for ``paster`` is
-``paste serve``.  This serves an application described in a `Paste
+``paster serve``.  This serves an application described in a `Paste
 Deploy <http://pythonpaste.org/deploy>`_ configuration file.
 
 Configuration
