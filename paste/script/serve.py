@@ -162,7 +162,11 @@ class ServeCommand(Command):
             print 'No PID file exists in %s' % pid_file
             return 1
         f = open(pid_file)
-        pid = int(f.read().strip())
+        pid = f.read().strip()
+        if not pid:
+            print 'PID file is empty (%s) nothing to kill' % pid_file
+            return 1
+        pid = int(pid)
         f.close()
         os.kill(pid, signal.SIGTERM)
         if self.verbose > 0:
