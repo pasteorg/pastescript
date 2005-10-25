@@ -443,6 +443,7 @@ class Command(object):
         """
         cwd = popdefault(kw, 'cwd', os.getcwd())
         capture_stderr = popdefault(kw, 'capture_stderr', False)
+        expect_returncode = popdefault(kw, 'expect_returncode', False)
         assert not kw, ("Arguments not expected: %s" % kw)
         if capture_stderr:
             stderr_pipe = subprocess.STDOUT
@@ -465,7 +466,7 @@ class Command(object):
         if self.simulate:
             return None
         stdout, stderr = proc.communicate()
-        if proc.returncode:
+        if proc.returncode and not expect_returncode:
             if not self.verbose:
                 print 'Running %s %s' % (cmd, ' '.join(args))
             print 'Error (exit code: %s)' % proc.returncode
