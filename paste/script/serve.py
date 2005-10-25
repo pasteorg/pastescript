@@ -241,6 +241,11 @@ class LazyWriter(object):
         fileobj.write(text)
         fileobj.flush()
 
+    def writelines(self, text):
+        fileobj = self.open()
+        fileobj.writelines(text)
+        fileobj.flush()
+
     def flush(self):
         self.open().flush()
         
