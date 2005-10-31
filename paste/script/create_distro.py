@@ -146,8 +146,10 @@ svn mkdir %(svn_repos_path)s          \\
         egg_info_dir = os.path.join(output_dir,
                                     vars['project']+'.egg-info')
         self.run_command('svn', 'add', '-N', egg_info_dir)
-        self.run_command('svn', 'add', os.path.join(
-            egg_info_dir, 'paster_plugins.txt'))
+        paster_plugins_file = os.path.join(
+            egg_info_dir, 'paster_plugins.txt')
+        if os.path.exists(paster_plugins_file):
+            self.run_command('svn', 'add', paster_plugins_file)
         self.run_command('svn', 'ps', 'svn:ignore',
                          '\n'.join(self.ignore_egg_info_files),
                          egg_info_dir)
