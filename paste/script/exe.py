@@ -8,13 +8,38 @@ import command
 class ExeCommand(command.Command):
 
     parser = command.Command.standard_parser(verbose=False)
-    summary = 'Run #! executable files'
+    summary = "Run #! executable files"
+    description = """\
+Use this at the top of files like:
+
+  #!/usr/bin/env /path/to/paster exe subcommand <command options>
+
+The rest of the file will be used as a config file for the given
+command, if it wants a config file.
+
+You can also include an [exe] section in the file, which looks
+like:
+
+  [exe]
+  command = serve
+  log_file = /path/to/log
+  add = /path/to/other/config.ini
+
+Which translates to:
+
+  paster serve --log-file=/path/to/log /path/to/other/config.ini
+"""
+    
     hidden = True
 
     _exe_section_re = re.compile(r'^\s*\[\s*exe\s*\]\s*$')
     _section_re = re.compile(r'^\s*\[')
 
     def run(self, argv):
+        if argv and argv[0] in ('-h', '--help'):
+            print self.description
+            return
+        
         if os.environ.get('REQUEST_METHOD'):
             # We're probably in a CGI environment
             sys.stdout = sys.stderr
