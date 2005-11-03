@@ -35,6 +35,8 @@ class HelpCommand(Command):
         longest = max([len(n) for n in commands.keys()])
         for name, command in commands.items():
             command = command.load()
+            if getattr(command, 'hidden', False):
+                continue
             commands_grouped.setdefault(
                 command.group_name, []).append((name, command))
         commands_grouped = commands_grouped.items()
