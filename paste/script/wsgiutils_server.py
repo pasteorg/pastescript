@@ -1,4 +1,4 @@
-from paste.script import ensure_port_cleanup
+from paste.script.serve import ensure_port_cleanup
 
 def run_server(wsgi_app, global_conf, host='localhost',
                port=8080):
