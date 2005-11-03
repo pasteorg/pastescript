@@ -47,7 +47,23 @@ Which translates to:
             # Maybe import cgitb or something?
             
         print "content-type: text/html\n"
-        filename = argv[-1]
+        if '_' not in os.environ:
+            print "Warning: this command is intended to be run with a #! like:"
+            print "  #!/usr/bin/env paster exe"
+            print "It only works with /usr/bin/env, and only as a #! line."
+            # Should I actually shlex.split the args?
+            filename = argv[-1]
+            args = argv[:-1]
+            extra_args = []
+        else:
+            filename = os.environ['_']
+            extra_args = argv[:]
+            args = []
+            while extra_args:
+                if extra_args[0] == filename:
+                    extra_args.pop(0)
+                    break
+                args.append(extra_args.pop(0))
         f = open(filename)
         lines = f.readlines()
         f.close()
@@ -60,7 +76,7 @@ Which translates to:
             lines.pop(0)
             lineno += 1
         pre_options = []
-        options = argv[:-1]
+        options = args
         for line in lines:
             lineno += 1
             line = line.strip()
@@ -83,6 +99,7 @@ Which translates to:
             else:
                 options.extend(['--' + name.replace('_', '-'), value])
         os.environ['PASTE_CONFIG_FILE'] = filename
+        options.extend(extra_args)
         command.run(options)
 
     def command(self):
