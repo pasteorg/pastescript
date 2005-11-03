@@ -6,6 +6,7 @@
 #   From lib/site.py
 import re
 import os
+import errno
 import signal
 import sys
 import time
@@ -18,11 +19,15 @@ MAXFD = 1024
 
 class ServeCommand(Command):
 
-    max_args = 1
+    max_args = 2
     min_args = 0
-    usage = 'CONFIG_FILE'
+    usage = 'CONFIG_FILE [start|stop|restart|status]'
     takes_config_file = 1
-    summary = "Serve the described application"
+    summary = """Serve the described application
+
+If start/stop/restart is given, then --daemon is implied, and it will
+start (normal operation), stop (--stop-daemon), or do both.
+"""
 
     parser = Command.standard_parser(quiet=True)
     parser.add_option('-n', '--app-name',
@@ -57,6 +62,10 @@ class ServeCommand(Command):
                       dest='reload_interval',
                       default=1,
                       help="Seconds between checking files (low number can cause significant CPU usage)")
+    parser.add_option('--status',
+                      action='store_true',
+                      dest='show_status',
+                      help="Show the status of the (presumably daemonized) server")
 
     if hasattr(os, 'setuid'):
         # I don't think these are availble on Windows
@@ -104,6 +113,29 @@ class ServeCommand(Command):
         if not self.args:
             raise BadCommand('You must give a config file')
         app_spec = self.args[0]
+        if len(self.args) > 1:
+            cmd = self.args[1]
+        else:
+            cmd = None
+
+        if cmd not in (None, 'start', 'stop', 'restart', 'status'):
+            raise BadCommand(
+                'Error: must give start|stop|restart (not %s)' % cmd)
+
+        if cmd == 'status' or self.options.show_status:
+            return self.show_status()
+
+        if cmd == 'restart' or cmd == 'stop':
+            result = self.stop_daemon()
+            if result:
+                if cmd == 'restart':
+                    print "Could not stop daemon; aborting"
+                else:
+                    print "Could not stop daemon"
+                return result
+            if cmd == 'stop':
+                return result
+
         app_name = self.options.app_name
         if not self._scheme_re.search(app_spec):
             app_spec = 'config:' + app_spec
@@ -227,6 +259,23 @@ class ServeCommand(Command):
             return 3
         if os.path.exists(pid_file):
             os.unlink(pid_file)
+        return 0
+
+    def show_status(self):
+        pid_file = self.options.pid_file or 'paster.pid'
+        if not os.path.exists(pid_file):
+            print 'No PID file %s' % pid_file
+            return 1
+        pid = read_pidfile(pid_file)
+        if not pid:
+            print 'No PID in file %s' % pid_file
+            return 1
+        pid = live_pidfile(pid_file)
+        if not pid:
+            print 'PID %s in %s is not running' % (pid, pid_file)
+            return 1
+        print 'Server running in PID %s' % pid
+        return 0
 
     def restart_with_reloader(self):
         if self.verbose > 0:
@@ -349,7 +398,7 @@ def _remove_pid_file(written_pid, filename, verbosity):
     content = f.read().strip()
     f.close()
     try:
-        pid_in_file == int(content)
+        pid_in_file = int(content)
     except ValueError:
         pass
     else:
@@ -376,7 +425,7 @@ def _remove_pid_file(written_pid, filename, verbosity):
         print 'Stale PID removed'
         
             
-def ensure_port_cleanup(ports, maxtries=30, sleeptime=2):
+def ensure_port_cleanup(bound_addresses, maxtries=30, sleeptime=2):
     """
     This makes sure any open ports are closed, by connecting to them until they
     give connection refused.  Servers should call like::
@@ -384,22 +433,23 @@ def ensure_port_cleanup(ports, maxtries=30, sleeptime=2):
         import paste.script
         ensure_port_cleanup([80, 443])
     """
-    atexit.register(_cleanup_ports, ports, maxtries=maxtries, sleeptime=sleeptime)
+    atexit.register(_cleanup_ports, bound_addresses, maxtries=maxtries, sleeptime=sleeptime)
 
-def _cleanup_ports(host, port, maxtries=30, sleeptime=2):
+def _cleanup_ports(bound_addresses, maxtries=30, sleeptime=2):
     # Wait for the server to bind to the port.
     import socket
     import errno
-    for attempt in range(maxtries):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            sock.connect((host, port))
-        except socket.error, e:
-            if not e.args[0] == errno.ECONNREFUSED:
-                raise
-            time.sleep(sleeptime)
+    for bound_address in bound_addresses:
+        for attempt in range(maxtries):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                sock.connect(bound_address)
+            except socket.error, e:
+                if not e.args[0] == errno.ECONNREFUSED:
+                    raise
+                break
+            else:
+                time.sleep(sleeptime)
         else:
-            break
-    else:
-        raise SystemExit('Timeout waiting for port.')
-    sock.close()
+            raise SystemExit('Timeout waiting for port.')
+        sock.close()
