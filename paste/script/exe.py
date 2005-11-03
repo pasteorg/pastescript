@@ -46,7 +46,6 @@ Which translates to:
             os.environ['PASTE_DEFAULT_QUIET'] = 'true'
             # Maybe import cgitb or something?
             
-        print "content-type: text/html\n"
         if '_' not in os.environ:
             print "Warning: this command is intended to be run with a #! like:"
             print "  #!/usr/bin/env paster exe"
@@ -97,16 +96,7 @@ Which translates to:
             elif name == 'plugin':
                 options[:0] = ['--plugin', value]
             else:
-                options.extend(['--' + name.replace('_', '-'), value])
+                options.append('--%s=%s' % (name.replace('_', '-'), value))
         os.environ['PASTE_CONFIG_FILE'] = filename
         options.extend(extra_args)
         command.run(options)
-
-    def command(self):
-        filename = self.args
-        print "Not very complete, is it?"
-        print 'Args', self.args
-        print 'Options', self.options
-        import sys
-        print "Path", sys.path
-        
