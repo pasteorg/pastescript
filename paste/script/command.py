@@ -1,6 +1,7 @@
 import pkg_resources
 import sys
 import optparse
+import bool_optparse
 import os
 import re
 import pluginlib
@@ -283,7 +284,7 @@ class Command(object):
         Subclasses may redefine ``standard_parser``, so use the
         nearest superclass's class method.
         """
-        parser = optparse.OptionParser()
+        parser = bool_optparse.BoolOptionParser()
         if verbose:
             parser.add_option('-v', '--verbose',
                               action='count',
