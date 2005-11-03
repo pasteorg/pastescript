@@ -21,12 +21,14 @@ pkg_resources.require('PasteScript')
 dist = pkg_resources.working_set.find(pkg_resources.Requirement('PasteScript'))
 
 parser = optparse.OptionParser(add_help_option=False,
-                               version=dist.version)
+                               version='%s from %s' % (dist, dist.location),
+                               usage='%prog [paster_options] COMMAND [command_options]')
+
 parser.add_option(
     '--plugin',
     action='append',
     dest='plugins',
-    help="Add a plugin to the list of commands (plugins are Egg specs)")
+    help="Add a plugin to the list of commands (plugins are Egg specs; will also require() the Egg)")
 parser.add_option(
     '-h', '--help',
     action='store_true',
@@ -38,12 +40,8 @@ parser.disable_interspersed_args()
 
 system_plugins = []
 
-def run():
-    if '_' in os.environ and 0:
-        # This seems to signal a #! line
-        config = os.path.abspath(os.environ['_'])
-        args = parse_exe_file(config)
-    else:
+def run(args=None):
+    if args is None:
         args = sys.argv[1:]
     options, args = parser.parse_args(args)
     options.base_parser = parser
@@ -116,6 +114,10 @@ class Command(object):
     min_args = None
     min_args_error = 'You must provide at least %(min_args)s arguments'
     required_args = None
+    # If this command takes a configuration file, set this to 1 or -1
+    # Then if invoked through #! the config file will be put into the positional
+    # arguments -- at the beginning with 1, at the end with -1
+    takes_config_file = None
 
     # Grouped in help messages by this:
     group_name = ''
@@ -159,6 +161,23 @@ class Command(object):
         self.verbose += self.options.verbose
         self.verbose -= self.options.quiet
         self.simulate = getattr(self.options, 'simulate', False)
+
+        # For #! situations:
+        if (os.environ.get('PASTE_CONFIG_FILE')
+            and self.takes_config_file is not None):
+            take = self.takes_config_file
+            filename = os.environ.get('PASTE_CONFIG_FILE')
+            if take == 1:
+                self.args.insert(0, filename)
+            elif take == -1:
+                self.args.append(filename)
+            else:
+                assert 0, (
+                    "Value takes_config_file must be None, 1, or -1 (not %r)"
+                    % take)
+
+        if (os.environ.get('PASTE_DEFAULT_QUIET')):
+            self.verbose = 0
 
         # Validate:
         if self.min_args is not None and len(self.args) < self.min_args:
