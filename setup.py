@@ -70,6 +70,7 @@ It includes some built-in features;
     flup_fcgi_fork=paste.script.flup_server:run_fcgi_fork [Flup]
     flup_scgi_thread=paste.script.flup_server:run_scgi_thread [Flup]
     flup_scgi_fork=paste.script.flup_server:run_scgi_fork [Flup]
+    cgi=paste.script.cgi_server:paste_run_cgi
 
     [paste.app_factory]
     test=paste.script.testapp:TestApplication
