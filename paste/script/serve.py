@@ -445,7 +445,7 @@ def _cleanup_ports(bound_addresses, maxtries=30, sleeptime=2):
             try:
                 sock.connect(bound_address)
             except socket.error, e:
-                if not e.args[0] == errno.ECONNREFUSED:
+                if e.args[0] != errno.ECONNREFUSED:
                     raise
                 break
             else:

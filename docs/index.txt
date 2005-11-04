@@ -128,3 +128,34 @@ stderr to that file.
 whenever a file is edited.  This can be a little expensive, but is
 very useful during development.
 
+#! Scripts
+----------
+
+On Posix (Linux, Unix, etc) systems you can turn your configuration
+files into executable scripts.
+
+First make the file executable (``chmod +x config_file.ini``).  The
+you should add a line like this to the top of the file::
+
+    #!/usr/bin/env paster exe serve
+
+The ``exe`` tells ``paster`` it is being used with ``#!``, and then
+that it should run the ``serve`` command.  You can include extra
+command-line options here, or you can add an ``[exe]`` section, like::
+
+    [exe]
+    daemon = true
+    user = nobody
+    group = nobody
+
+Each of these is turned into a command-line option as well (use
+``true`` and ``false`` for options that don't take an argument).
+
+If you use ``daemon = true`` then you'll be able to use the script as
+an rc script, so you can do::
+
+    $ ./config_file.ini start
+    $ ./config_file.ini restart
+
+and so forth.
+
