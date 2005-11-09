@@ -12,6 +12,11 @@ page_template = '''
 %(environ)s
 </table>
 
+<p>
+Note: to see an error report, append <code>?error=true</code>
+to the URL
+</p>
+
 </body>
 </html>
 '''
@@ -36,6 +41,8 @@ class TestApplication(object):
         self.global_conf = global_conf
 
     def __call__(self, environ, start_response):
+        if environ.get('QUERY_STRING', '').find('error=') >= 0:
+            assert 0, "Here is your error report, ordered and delivered"
         keys = environ.keys()
         keys.sort()
         rows = []
