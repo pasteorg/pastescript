@@ -41,7 +41,7 @@ def run_fcgi_thread(wsgi_app, global_conf,
         assert host is not None and port is not None
         sock = (host, port)
     ensure_port_cleanup([sock])
-    s = flup.server.ajp.WSGIServer(
+    s = flup.server.fcgi.WSGIServer(
         wsgi_app,
         bindAddress=sock,
         multiplexed=asbool(multiplexed))
@@ -59,7 +59,7 @@ def run_fcgi_fork(wsgi_app, global_conf,
         assert host is not None and port is not None
         sock = (host, port)
     ensure_port_cleanup(sock)
-    s = flup.server.ajp_fork.WSGIServer(
+    s = flup.server.fcgi_fork.WSGIServer(
         wsgi_app,
         bindAddress=sock,
         multiplexed=asbool(multiplexed))
