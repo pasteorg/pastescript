@@ -5,7 +5,6 @@ import pkg_resources
 from command import Command, BadCommand
 import pluginlib
 import fnmatch
-import templates
 
 class CreateDistroCommand(Command):
 

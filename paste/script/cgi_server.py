@@ -1,6 +1,5 @@
 import os
 import sys
-from paste.deploy.converters import aslist, asbool
 
 def paste_run_cgi(wsgi_app, global_conf):
     run_with_cgi(wsgi_app)

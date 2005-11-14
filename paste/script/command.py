@@ -438,7 +438,7 @@ class Command(object):
                 if lines[i:] and lines[i+1].strip() == text.strip():
                     # Already have it!
                     print 'Warning: line already found in %s (not inserting' % filename
-                    print '  %s' % line
+                    print '  %s' % lines[i]
                     return
                 
                 if indent:

@@ -5,6 +5,7 @@ options (like ``--verbose``) to also take arguments (like
 """
 
 import optparse
+_ = optparse._
 
 class BoolOptionParser(optparse.OptionParser):
 

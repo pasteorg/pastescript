@@ -1,6 +1,5 @@
 from command import Command, get_commands
 from command import parser as base_parser
-import sys
 
 class HelpCommand(Command):
 
