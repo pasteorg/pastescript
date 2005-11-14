@@ -5,7 +5,10 @@ options (like ``--verbose``) to also take arguments (like
 """
 
 import optparse
-_ = optparse._
+try:
+    _ = optparse._
+except AttributeError:
+    from gettext import gettext as _
 
 class BoolOptionParser(optparse.OptionParser):
 
