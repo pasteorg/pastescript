@@ -1,10 +1,17 @@
 import os
-import string
+import sys
+if sys.version_info < (2, 4):
+    from paste.script.util import string24 as string
+else:
+    import string
 import cgi
 import urllib
 import re
 Cheetah = None
-import subprocess
+try:
+    import subprocess
+except ImportError:
+    from paste.script.util import subprocess24 as subprocess
 import inspect
 
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,

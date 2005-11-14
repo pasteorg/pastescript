@@ -8,7 +8,7 @@ import pluginlib
 try:
     import subprocess
 except ImportError:
-    pass
+    from paste.script.util import subprocess24 as subprocess
 difflib = None
 
 class BadCommand(Exception):
