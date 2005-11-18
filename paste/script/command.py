@@ -348,6 +348,13 @@ class Command(object):
         parent, and directory was created.
         """
         dir = dir.rstrip(os.sep)
+        if not dir:
+            # we either reached the parent-most directory, or we got
+            # a relative directory
+            # @@: Should we make sure we resolve relative directories
+            # first?  Though presumably the current directory always
+            # exists.
+            return
         if not os.path.exists(dir):
             self.ensure_dir(os.path.dirname(dir))
             if self.verbose:
