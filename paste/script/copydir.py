@@ -42,6 +42,10 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             if verbosity >= 2:
                 print '%sSkipping .pyc file %s' % (pad, full)
             continue
+        if name in ('CVS', '_darcs'):
+            if verbosity >= 2:
+                print '%sSkipping version control directory %s' % (pad, full)
+            continue
         if sub_vars:
             dest_full = os.path.join(dest, substitute_filename(name, vars))
         sub_file = False
