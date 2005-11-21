@@ -1,6 +1,11 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* Added ``points`` command, for entry-point related queries.
+
 0.3.1
 -----
 
