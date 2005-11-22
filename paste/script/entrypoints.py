@@ -4,11 +4,13 @@ import pkg_resources
 from command import Command, BadCommand
 import fnmatch
 import re
+import traceback
+from cStringIO import StringIO
 
 class EntryPointCommand(Command):
 
     usage = "ENTRY_POINT"
-    summary = "Show information about an entry point"
+    summary = "Show information about an entry point (or multiple; wildcards allowed)"
     max_args = 1
 
     parser = Command.standard_parser(verbose=False)
@@ -42,21 +44,33 @@ class EntryPointCommand(Command):
                 print self.wrap(desc)
                 print
             by_dist = {}
-            for ep in pkg_resources.iter_entry_points(group):
-                by_dist.setdefault(ep.dist, []).append(ep)
-            dists = by_dist.items()
-            dists.sort(lambda a, b: cmp(str(a), str(b)))
-            for dist, eps in dists:
+            self.print_entry_points_by_group(group)
+
+    def print_entry_points_by_group(self, group):
+        env = pkg_resources.Environment()
+        project_names = list(env)
+        project_names.sort()
+        for project_name in project_names:
+            dists = list(env[project_name])
+            assert dists
+            dist = dists[0]
+            entries = dist.get_entry_map(group).values()
+            if not entries:
+                continue
+            if len(dists) > 1:
+                print '%s (+ %i older versions)' % (
+                    dist, len(dists)-1)
+            else:
                 print '%s' % dist
-                eps.sort(lambda a, b: cmp(a.name, b.name))
-                longest_name = max([len(ep.name) for ep in eps])
-                for ep in eps:
-                    print '  %s%s = %s' % (
-                        ep.name, ' '*(longest_name-len(ep.name)),
-                        ep.module_name)
-                    desc = self.get_entry_point_description(ep, group)
-                    if desc and desc.description:
-                        print self.wrap(desc.description, indent=4)
+            entries.sort(lambda a, b: cmp(a.name, b.name))
+            longest_name = max([len(entry.name) for entry in entries])
+            for entry in entries:
+                print '  %s%s = %s' % (
+                    entry.name, ' '*(longest_name-len(entry.name)),
+                    entry.module_name)
+                desc = self.get_entry_point_description(entry, group)
+                if desc and desc.description:
+                    print self.wrap(desc.description, indent=4)
 
     def wrap(self, text, indent=0):
         text = textwrap.dedent(text)
@@ -84,16 +98,17 @@ class EntryPointCommand(Command):
                 print self.wrap(desc.description, indent=2)
 
     def get_groups_by_pattern(self, pattern):
-        ws = pkg_resources.working_set
+        env = pkg_resources.Environment()
         eps = {}
-        for dist in ws:
-            for name in pkg_resources.get_entry_map(dist):
-                if pattern and not pattern.search(name):
-                    continue
-                if (not pattern
-                    and name.startswith('paste.description.')):
-                    continue
-                eps[name] = None
+        for project_name in env:
+            for dist in env[project_name]:
+                for name in pkg_resources.get_entry_map(dist):
+                    if pattern and not pattern.search(name):
+                        continue
+                    if (not pattern
+                        and name.startswith('paste.description.')):
+                        continue
+                    eps[name] = None
         eps = eps.keys()
         eps.sort()
         return eps
@@ -105,13 +120,22 @@ class EntryPointCommand(Command):
         return None
 
     def get_entry_point_description(self, ep, group):
+        try:
+            return self._safe_get_entry_point_description(ep, group)
+        except Exception, e:
+            out = StringIO()
+            traceback.print_exc(file=out)
+            return ErrorDescription(e, out.getvalue())
+
+    def _safe_get_entry_point_description(self, ep, group):
+        ep.dist.activate()
         meta_group = 'paste.description.'+group
         meta = ep.dist.get_entry_info(meta_group, ep.name)
         if not meta:
             generic = list(pkg_resources.iter_entry_points(
                 meta_group, 'generic'))
             if not generic:
-                return SuperGeneric(ep.load())
+                return super_generic(ep.load())
             # @@: Error if len(generic) > 1?
             print generic
             obj = generic[0].load()
@@ -145,3 +169,11 @@ def super_generic(obj):
     if not desc.description:
         return None
     return desc
+
+class ErrorDescription(object):
+
+    def __init__(self, exc, tb):
+        self.exc = exc
+        self.tb = '\n'.join(tb)
+        self.description = 'Error loading: %s' % exc
+        
