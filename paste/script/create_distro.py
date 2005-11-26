@@ -94,7 +94,8 @@ class CreateDistroCommand(Command):
         elif self.verbose > 1:
             print 'No setup.py (cannot run egg_info)'
 
-        egg_info_dir = os.path.join(output_dir, '%s.egg-info' % dist_name)
+        egg_info_dir = os.path.join(output_dir, '%s.egg-info' %
+                                    pkg_resources.safe_name(dist_name))
         for template in templates:
             for spec in template.egg_plugins:
                 if self.verbose:
@@ -143,7 +144,8 @@ svn mkdir %(svn_repos_path)s          \\
     def add_svn_repository(self, vars, output_dir):
         svn_repos = self.options.svn_repository
         egg_info_dir = os.path.join(output_dir,
-                                    vars['project']+'.egg-info')
+                                    pkg_resources.safe_name(vars['project'])
+                                    + '.egg-info')
         self.run_command('svn', 'add', '-N', egg_info_dir)
         paster_plugins_file = os.path.join(
             egg_info_dir, 'paster_plugins.txt')
