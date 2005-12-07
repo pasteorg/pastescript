@@ -43,11 +43,11 @@ system_plugins = []
 
 def run(args=None):
     if (not args and
-        len(sys.argv) == 2
+        len(sys.argv) >= 2
         and os.environ.get('_') and sys.argv[0] != os.environ['_']
         and os.environ['_'] == sys.argv[1]):
         # probably it's an exe execution
-        args = ['exe', os.environ['_']]
+        args = ['exe', os.environ['_']] + sys.argv[2:]
     if args is None:
         args = sys.argv[1:]
     options, args = parser.parse_args(args)
