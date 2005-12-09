@@ -217,23 +217,39 @@ def substitute_content(content, vars, filename='<string>',
         import Cheetah.Template
     tmpl = Cheetah.Template.Template(source=content,
                                      searchList=[vars])
-    return careful_sub(tmpl, vars)
+    return careful_sub(tmpl, vars, filename)
 
-def careful_sub(cheetah_template, vars):
+def careful_sub(cheetah_template, vars, filename):
     """
     Substitutes the template with the variables, using the
     .body() method if it exists.  It assumes that the variables
     were also passed in via the searchList.
     """
     if not hasattr(cheetah_template, 'body'):
-        return str(cheetah_template)
+        return sub_catcher(filename, vars, str, cheetah_template)
     body = cheetah_template.body
     args, varargs, varkw, defaults = inspect.getargspec(body)
     call_vars = {}
     for arg in args:
         if arg in vars:
             call_vars[arg] = vars[arg]
-    return body(**call_vars)
+    return sub_catcher(filename, vars, body, **call_vars)
+
+def sub_catcher(filename, vars, func, *args, **kw):
+    """
+    Run a substitution, returning the value.  If an error occurs, show
+    the filename.  If the error is a NameError, show the variables.
+    """
+    try:
+        return func(*args, **kw)
+    except Exception, e:
+        print 'Error in file %s:' % filename
+        if isinstance(e, NameError):
+            items = vars.items()
+            items.sort()
+            for name, value in items:
+                print '%s = %r' % (name, value)
+        raise
 
 def html_quote(s):
     if s is None:
