@@ -49,6 +49,6 @@ class HelpCommand(Command):
                 print '  %s  %s' % (self.pad(name, length=longest),
                                     command.summary)
                 if command.description:
-                    print '    %s' % command.description
+                    print self.indent_block(command.description, 4)
             print
         

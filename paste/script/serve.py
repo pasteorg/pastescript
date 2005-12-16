@@ -23,8 +23,8 @@ class ServeCommand(Command):
     min_args = 0
     usage = 'CONFIG_FILE [start|stop|restart|status]'
     takes_config_file = 1
-    summary = """Serve the described application
-
+    summary = "Serve the described application"
+    description = """\
 If start/stop/restart is given, then --daemon is implied, and it will
 start (normal operation), stop (--stop-daemon), or do both.
 """
@@ -427,13 +427,16 @@ def _remove_pid_file(written_pid, filename, verbosity):
             
 def ensure_port_cleanup(bound_addresses, maxtries=30, sleeptime=2):
     """
-    This makes sure any open ports are closed, by connecting to them until they
-    give connection refused.  Servers should call like::
+    This makes sure any open ports are closed.
+
+    Does this by connecting to them until they give connection
+    refused.  Servers should call like::
 
         import paste.script
         ensure_port_cleanup([80, 443])
     """
-    atexit.register(_cleanup_ports, bound_addresses, maxtries=maxtries, sleeptime=sleeptime)
+    atexit.register(_cleanup_ports, bound_addresses, maxtries=maxtries,
+                    sleeptime=sleeptime)
 
 def _cleanup_ports(bound_addresses, maxtries=30, sleeptime=2):
     # Wait for the server to bind to the port.

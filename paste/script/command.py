@@ -569,6 +569,19 @@ class Command(object):
             result[name] = value
         return result
 
+    def indent_block(self, text, indent=2, initial=None):
+        """
+        Indent the block of text (each line is indented).  If you give
+        ``initial``, then that is used in lieue of ``indent`` for the
+        first line.
+        """
+        if initial is None:
+            initial = indent
+        lines = text.splitlines()
+        first = (' '*initial) + lines[0]
+        rest = [(' '*indent)+l for l in lines[1:]]
+        return '\n'.join([first]+rest)
+
 class NotFoundCommand(Command):
 
     def run(self, args):
