@@ -18,8 +18,7 @@ class BadCommand(Exception):
         self.exit_code = exit_code
         Exception.__init__(self, message)
 
-pkg_resources.require('PasteScript')
-dist = pkg_resources.working_set.find(pkg_resources.Requirement('PasteScript'))
+dist = pkg_resources.get_distribution('PasteScript')
 
 parser = optparse.OptionParser(add_help_option=False,
                                version='%s from %s' % (dist, dist.location),
