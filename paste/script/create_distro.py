@@ -139,7 +139,8 @@ svn mkdir %(svn_repos_path)s          \\
         'entry_points.txt',
         'requires.txt',
         'PKG-INFO',
-        'namespace_packages.txt']
+        'namespace_packages.txt',
+        'SOURCES.txt']
 
     def add_svn_repository(self, vars, output_dir):
         svn_repos = self.options.svn_repository
