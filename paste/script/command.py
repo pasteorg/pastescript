@@ -520,6 +520,11 @@ class Command(object):
         Like ``ensure_file``, but without the interactivity.  Mostly
         deprecated.  (I think I forgot it existed)
         """
+        import warnings
+        warnings.warn(
+            "command.write_file has been replaced with "
+            "command.ensure_file",
+            DeprecationWarning, 2)
         if os.path.exists(filename):
             if binary:
                 f = open(filename, 'rb')
