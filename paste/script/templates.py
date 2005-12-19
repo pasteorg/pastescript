@@ -98,7 +98,8 @@ class Template(object):
                          vars,
                          verbosity=command.verbose,
                          simulate=command.options.simulate,
-                         interactive=command.options.interactive,
+                         interactive=command.interactive,
+                         overwrite=command.options.overwrite,
                          indent=1,
                          use_cheetah=self.use_cheetah)
 

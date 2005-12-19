@@ -13,7 +13,7 @@ class CreateDistroCommand(Command):
     short_description = summary
 
     parser = Command.standard_parser(
-        simulate=True, interactive=True, quiet=True)
+        simulate=True, no_interactive=True, quiet=True, overwrite=True)
     parser.add_option('-t', '--template',
                       dest='templates',
                       metavar='TEMPLATE',
@@ -44,6 +44,7 @@ class CreateDistroCommand(Command):
     _bad_chars_re = re.compile('[^a-zA-Z0-9]')
 
     default_verbosity = 1
+    default_interactive = 1
 
     def command(self):
         if self.options.list_templates:

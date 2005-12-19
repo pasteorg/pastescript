@@ -80,6 +80,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                     full, dest_full, content, old_content,
                     simulate=simulate):
                     continue
+            elif not overwrite:
+                continue
         if verbosity:
             print '%sCopying %s to %s' % (pad, os.path.basename(full), dest_full)
         if not simulate:
