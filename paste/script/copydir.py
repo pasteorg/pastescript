@@ -16,7 +16,7 @@ import inspect
 
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
              use_cheetah=False, sub_vars=True, interactive=False,
-             svn_add=True):
+             svn_add=True, overwrite=True):
     names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
