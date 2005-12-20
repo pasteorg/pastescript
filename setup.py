@@ -59,6 +59,8 @@ It includes some built-in features;
     serve=paste.script.serve:ServeCommand [Config]
     exe=paste.script.exe:ExeCommand
     points=paste.script.entrypoints:EntryPointCommand
+    prepare-app=paste.script.appinstall:PrepareCommand
+    setup-app=paste.script.appinstall:SetupCommand
 
     [paste.paster_create_template]
     basic_package=paste.script.templates:BasicPackage
@@ -76,8 +78,15 @@ It includes some built-in features;
     [paste.app_factory]
     test=paste.script.testapp:TestApplication
 
+    [paste.deployer]
+    test=paste.script.testapp:Deployer
+
     [paste.entry_point_description]
     paste.entry_point_description = paste.script.entrypoints:MetaEntryPointDescription
     """,
-    install_requires=['Paste', 'PasteDeploy'],
+    install_requires=[
+      'Paste',
+      'PasteDeploy',
+      'INITools',
+      ],
     )

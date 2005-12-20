@@ -1,4 +1,6 @@
 import cgi
+import os
+from paste.script.deployer import AppDeployer
 
 page_template = '''
 <html>
@@ -37,6 +39,12 @@ def make_literal(value):
 
 class TestApplication(object):
 
+    """
+    A test WSGI application, that prints out all the environmental
+    variables, and if you add ``?error=t`` to the URL it will
+    deliberately throw an exception.
+    """
+
     def __init__(self, global_conf):
         self.global_conf = global_conf
 
@@ -66,3 +74,19 @@ class TestApplication(object):
         start_response('200 OK', headers)
         return [page]
     
+class Deployer(AppDeployer):
+
+    config_tmpl = """\
+[app:main]
+use = %(requirement)s#%(ep_name)s
+"""
+
+    def deploy(self, cmd, vars):
+        paste_deploy_config_dir = cmd.policy_value('paste_deploy_config_dir')
+        vars.setdefault(
+            'app_deploy_config', os.path.join(paste_deploy_config_dir, vars['app_name'] + '.ini'))
+        config = self.config_tmpl % vars
+        cmd.ensure_file(
+            vars['app_deploy_config'], config)
+        
+        
