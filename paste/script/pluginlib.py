@@ -84,8 +84,7 @@ def resolve_plugins(plugin_list):
     return map(get_distro, found)
 
 def get_distro(spec):
-    return pkg_resources.working_set.find(
-        pkg_resources.Requirement(spec))
+    return pkg_resources.get_distribution(spec)
 
 def load_commands_from_plugins(plugins):
     commands = {}
