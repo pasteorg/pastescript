@@ -5,7 +5,7 @@ Provides the two commands for preparing an application:
 
 import os
 from cStringIO import StringIO
-from paste.script.command import Command, BadCommand
+from paste.script.command import Command, BadCommand, run as run_command
 import paste.script.templates
 from paste.script import copydir
 import pkg_resources
@@ -16,6 +16,8 @@ from paste.util import import_string
 from paste.deploy import appconfig
 
 class AbstractInstallCommand(Command):
+
+    default_interactive = 1
 
     #@classmethod
     def standard_parser(cls, sys_config=True, **kw):
@@ -111,7 +113,7 @@ class PrepareCommand(AbstractInstallCommand):
     usage = "PACKAGE_NAME [VAR=VALUE]"
 
     parser = AbstractInstallCommand.standard_parser(
-        simulate=True, quiet=True, interactive=True)
+        simulate=True, quiet=True, no_interactive=True)
     parser.add_option('--info',
                       action="store_true",
                       dest="show_info",
@@ -125,6 +127,14 @@ class PrepareCommand(AbstractInstallCommand):
                       dest='ep_group',
                       default='paste.app_factory',
                       help='The entry point group to install (i.e., the kind of application; default paste.app_factory')
+    parser.add_option('--edit',
+                      action='store_true',
+                      dest='edit',
+                      help='Edit the configuration file after generating it (using $EDITOR)')
+    parser.add_option('--setup',
+                      action='store_true',
+                      dest='run_setup',
+                      help='Run setup-app immediately after generating (and possibly editing) the configuration file')
 
     def command(self):
         self.load_sys_config()
@@ -156,10 +166,25 @@ class PrepareCommand(AbstractInstallCommand):
         self.vars.setdefault('app_name', self.project_name.lower())
         self.sys_config.update(self.vars)
         self.installer.write_config(self, self.config_file, self.vars)
+        if self.options.edit:
+            self.run_editor(self.config_file)
+        if self.options.run_setup:
+            self.run_setup(self.config_file)
 
     def show_info(self):
         text = self.installer.description(None)
         print text
+
+    def run_setup(self, filename):
+        run_command(['setup-app', filename])
+
+    def run_editor(self, filename):
+        if not os.environ.get('EDITOR'):
+            print 'Error: you must set $EDITOR if using --edit'
+            return
+        if self.verbose:
+            print '%s %s' % (os.environ['EDITOR'], filename)
+        os.system('$EDITOR %s' % filename)
         
 class SetupCommand(AbstractInstallCommand):
 
