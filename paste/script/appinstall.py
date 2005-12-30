@@ -12,6 +12,8 @@ import pkg_resources
 from Cheetah.Template import Template
 from ConfigParser import ConfigParser
 from simpleconfig import load_flat_config
+from paste.util import import_string
+from paste.deploy import appconfig
 
 class AbstractInstallCommand(Command):
 
@@ -28,10 +30,20 @@ class AbstractInstallCommand(Command):
             action='append',
             dest='easy_install_op',
             metavar='OP',
-            help='an option to add if invoking easy_install (like --easy-install=exclude-scripts)')
+            help='An option to add if invoking easy_install (like --easy-install=exclude-scripts)')
+        parser.add_option(
+            '--no-install',
+            action='store_true',
+            dest='no_install',
+            help="Don't try to install the package (it must already be installed)")
+        parser.add_option(
+            '-f', '--find-links',
+            action='append',
+            dest='easy_install_find_links',
+            metavar='URL',
+            help='Passed through to easy_install')
 
         return parser
-
 
     standard_parser = classmethod(standard_parser)
 
@@ -62,11 +74,16 @@ class AbstractInstallCommand(Command):
                 print ' ', dist, 'from', dist.location
             return dist
         except pkg_resources.DistributionNotFound:
+            if self.options.no_install:
+                print "Because --no-install was given, we won't try to install the package %s" % req
+                raise
             options = ['-v', '-m']
             for op in self.options.easy_install_op or []:
                 if not op.startswith('-'):
                     op = '--'+op
                 options.append(op)
+            for op in self.options.easy_install_find_links or []:
+                options.append('--find-links=%s' % op)
             if self.simulate:
                 raise BadCommand(
                     "Must install %s, but in simulation mode" % req)
@@ -168,7 +185,7 @@ class SetupCommand(AbstractInstallCommand):
         if not config_spec.startswith('config:'):
             config_spec = 'config:' + config_spec
         config_file = config_spec[len('config:'):]
-        conf = appconfig(config_file, relative_to=os.getcwd())
+        conf = appconfig(config_spec, relative_to=os.getcwd())
         ep_name = conf.context.entry_point_name
         ep_group = conf.context.protocol
         dist = conf.context.distribution
@@ -183,6 +200,15 @@ class Installer(object):
     Abstract base class for installers, and also a generic
     installer that will run off config files in the .egg-info
     directory of a distribution.
+
+    Packages that simply refer to this installer can provide a file
+    ``*.egg-info/paste_deploy_config.ini_tmpl`` that will be
+    interpreted by Cheetah.  They can also provide ``websetup``
+    modules with a ``setup_config(command, filename, section,
+    sys_config)`` function in it, that will be called.
+
+    In the future other functions or configuration files may be
+    called.
     """
 
     def __init__(self, dist, ep_group, ep_name):
@@ -191,11 +217,45 @@ class Installer(object):
         self.ep_name = ep_name
 
     def description(self, config):
-        return 'An app'
-
+        return 'An application'
+        
     def write_config(self, command, filename, sys_config):
-        command.ensure_file(filename, 'test')
+        command.ensure_file(filename, self.config_content(sys_config))
+
+    def config_content(self, sys_config):
+        meta_name = 'paste_deploy_config.ini_tmpl'
+        if not self.dist.has_metadata(meta_name):
+            if command.verbose:
+                print 'No %s found' % meta_name
+            return self.simple_config(sys_config)
+        tmpl = Template(self.dist.get_metadata(meta_name),
+                        searchList=[sys_config])
+        return copydir.careful_sub(
+            tmpl, sys_config, meta_name)
+
+    def simple_config(self, sys_config):
+        if self.ep_name != 'main':
+            ep_name = '#'+self.ep_name
+        else:
+            ep_name = ''
+        return ('[app:main]\n'
+                'use = egg:%s%s\n'
+                % (self.dist.project_name, ep_name))
 
     def setup_config(self, command, filename, section, sys_config):
-        pass
+        for line in self.dist.get_metadata_lines('top_level.txt'):
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            mod_name = line + '.websetup'
+            try:
+                mod = import_string.import_module(mod_name)
+            except ImportError:
+                if command.verbose > 1:
+                    print 'No %s module found for setup' % mod_name
+                continue
+            if command.verbose:
+                print 'Running setup_config() from %s' % mod_name
+            mod.setup_config(command, filename, section, sys_config)
+            
     
