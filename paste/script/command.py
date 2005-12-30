@@ -370,7 +370,7 @@ class Command(object):
     def ensure_file(self, filename, content, svn_add=True):
         """
         Ensure a file named ``filename`` exists with the given
-        content.  If ``-interactive`` has been enabled, this will ask
+        content.  If ``--interactive`` has been enabled, this will ask
         the user what to do if a file exists with different content.
         """
         global difflib
@@ -402,7 +402,20 @@ class Command(object):
                 'expected ' + filename,
                 filename)
             print '\n'.join(diff)
-            return
+            if self.interactive:
+                while 1:
+                    s = raw_input(
+                        'Overwrite file with new content? [y/N] ').strip().lower()
+                    if not s:
+                        s = 'n'
+                    if s.startswith('y'):
+                        break
+                    if s.startswith('n'):
+                        return
+                    print 'Unknown response; Y or N please'
+            else:
+                return
+                    
         if self.verbose:
             print 'Overwriting %s with new content' % filename
         if not self.simulate:
