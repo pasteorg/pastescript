@@ -20,7 +20,7 @@ It includes some built-in features;
   `paste.deploy <http://pythonpaste.org/deploy/paste-deploy.html>`_.
 
 The latest version is available in a `Subversion repository
-<http://svn.pythonpaste.org/Paste/Script/trunk#egg=PasteScript==dev>`_.
+<http://svn.pythonpaste.org/Paste/Script/trunk#egg=PasteScript-dev>`_.
 
 For the latest changes see the `news file
 <http://pythonpaste.org/script/news.html>`_.
