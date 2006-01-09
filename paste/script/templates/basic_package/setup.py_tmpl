@@ -3,10 +3,6 @@ import sys, os
 
 version = ${repr(version)|"0.0"}
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 
-                                ${repr(package)}, 'util'))
-import finddata
-
 setup(name=${repr(project)},
       version=version,
       description="${description|nothing}",
