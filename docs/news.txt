@@ -6,6 +6,33 @@ svn trunk
 
 * Added ``points`` command, for entry-point related queries.
 
+0.4
+---
+
+* paste.deploy config files that start with ``#!/usr/bin/env paster``
+  can make a script into an executable.
+
+* Improvements to ``paster serve`` command:
+
+  - Handle bad PID files better
+
+  - Daemonization is more reliable
+
+  - Allow ``start``, ``stop``, ``restart`` instead of just options
+
+* Improvements to ``paster create`` command:
+
+  - Invoked interactively by default (so that you are warned before
+    overwriting files)
+
+* Added new commands:
+
+  - ``points`` for viewing Egg entry point information
+
+  - ``prepare-app`` and ``setup-app`` for installing web applications
+
+* Fixed bug in how Egg distributions are loaded.
+
 0.3.1
 -----
 

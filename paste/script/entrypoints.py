@@ -10,7 +10,17 @@ from cStringIO import StringIO
 class EntryPointCommand(Command):
 
     usage = "ENTRY_POINT"
-    summary = "Show information about an entry point (or multiple; wildcards allowed)"
+    summary = "Show information about entry points"
+    
+    description = """\
+    Shows information about one or many entry points (you can use
+    wildcards for entry point names).  Entry points are used for Egg
+    plugins, and are named resources -- like an application, template
+    plugin, or other resource.  Entry points have a [group] which
+    defines what kind of object they describe, and inside groups each
+    entry point is named.
+    """
+    
     max_args = 1
 
     parser = Command.standard_parser(verbose=False)

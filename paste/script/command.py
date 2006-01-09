@@ -4,6 +4,7 @@ import optparse
 import bool_optparse
 import os
 import re
+import textwrap
 import pluginlib
 try:
     import subprocess
@@ -213,7 +214,9 @@ class Command(object):
             usage, self.summary)
         self.parser.prog = '%s %s' % (sys.argv[0], self.command_name)
         if self.description:
-            self.parser.description = self.description
+            desc = self.description
+            desc = textwrap.dedent(desc)
+            self.parser.description = desc
         self.options, self.args = self.parser.parse_args(args)
 
     ########################################

@@ -112,6 +112,17 @@ class PrepareCommand(AbstractInstallCommand):
     summary = "Install a package and create a fresh config file"
     usage = "PACKAGE_NAME [VAR=VALUE]"
 
+    description = """\
+    Note: this is an experimental command, and it will probably change
+    in several ways by the next release.
+
+    prepare-app is part of a two-phase installation process (the
+    second phase is setup-app).  prepare-app installs the package
+    (using easy_install) and asks it to create a bare configuration
+    file (possibly filling in defaults from the extra variables you
+    give).
+    """
+
     parser = AbstractInstallCommand.standard_parser(
         simulate=True, quiet=True, no_interactive=True)
     parser.add_option('--info',
@@ -193,6 +204,17 @@ class SetupCommand(AbstractInstallCommand):
     min_args = 1
     summary = "Setup an application, given a config file"
     usage = "CONFIG_FILE"
+
+    description = """\
+    Note: this is an experimental command, and it will probably change
+    in several ways by the next release.
+
+    Setup an application according to its configuration file.  This is
+    the second part of a two-phase web application installation
+    process (the first phase is prepare-app).  The setup process may
+    consist of things like creating directories and setting up
+    databases.
+    """
 
     parser = AbstractInstallCommand.standard_parser(
         simulate=True, quiet=True, interactive=True)

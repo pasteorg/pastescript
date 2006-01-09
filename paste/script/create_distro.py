@@ -12,6 +12,13 @@ class CreateDistroCommand(Command):
     summary = "Create the file layout for a Python distribution"
     short_description = summary
 
+    description = """\
+    Create a new project.  Projects are typically Python packages,
+    ready for distribution.  Projects are created from templates, and
+    represent different kinds of projects -- associated with a
+    particular framework for instance.
+    """
+
     parser = Command.standard_parser(
         simulate=True, no_interactive=True, quiet=True, overwrite=True)
     parser.add_option('-t', '--template',
@@ -23,11 +30,11 @@ class CreateDistroCommand(Command):
                       dest='output_dir',
                       metavar='DIR',
                       default='.',
-                      help="Write put the directory into DIR")
+                      help="Write put the directory into DIR (default current directory)")
     parser.add_option('--svn-repository',
                       dest='svn_repository',
                       metavar='REPOS',
-                      help="Create package at given repository location")
+                      help="Create package at given repository location (this will create the standard trunk/ tags/ branches/ hierarchy)")
     parser.add_option('--list-templates',
                       dest='list_templates',
                       action='store_true',
@@ -39,7 +46,7 @@ class CreateDistroCommand(Command):
     parser.add_option('--inspect-files',
                       dest='inspect_files',
                       action='store_true',
-                      help="Show where the files in the given (already created) directory came from")
+                      help="Show where the files in the given (already created) directory came from (useful when using multiple templates)")
 
     _bad_chars_re = re.compile('[^a-zA-Z0-9]')
 

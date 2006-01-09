@@ -25,9 +25,12 @@ class ServeCommand(Command):
     takes_config_file = 1
     summary = "Serve the described application"
     description = """\
-If start/stop/restart is given, then --daemon is implied, and it will
-start (normal operation), stop (--stop-daemon), or do both.
-"""
+    This command serves a web application that uses a paste.deploy
+    configuration file for the server and application.  
+    
+    If start/stop/restart is given, then --daemon is implied, and it will
+    start (normal operation), stop (--stop-daemon), or do both.
+    """
 
     parser = Command.standard_parser(quiet=True)
     parser.add_option('-n', '--app-name',
