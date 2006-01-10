@@ -1,13 +1,17 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+0.4.1
+-----
 
-* Added ``points`` command, for entry-point related queries.
+* Two small bugfixes, one related to the ``basic_package`` template
+  (it included a reference to ``finddata``, which it should not have),
+  and a fix to how the ``.egg-info`` directory is determined.
 
 0.4
 ---
+
+* Added ``points`` command, for entry-point related queries.
 
 * paste.deploy config files that start with ``#!/usr/bin/env paster``
   can make a script into an executable.
