@@ -1,6 +1,5 @@
 import cgi
 import os
-from paste.script.deployer import AppDeployer
 
 page_template = '''
 <html>
@@ -74,19 +73,3 @@ class TestApplication(object):
         start_response('200 OK', headers)
         return [page]
     
-class Deployer(AppDeployer):
-
-    config_tmpl = """\
-[app:main]
-use = %(requirement)s#%(ep_name)s
-"""
-
-    def deploy(self, cmd, vars):
-        paste_deploy_config_dir = cmd.policy_value('paste_deploy_config_dir')
-        vars.setdefault(
-            'app_deploy_config', os.path.join(paste_deploy_config_dir, vars['app_name'] + '.ini'))
-        config = self.config_tmpl % vars
-        cmd.ensure_file(
-            vars['app_deploy_config'], config)
-        
-        
