@@ -78,9 +78,8 @@ class FileOp(object):
             if os.path.exists(d):
                 possible.append((pkg, d))
         if not possible:
-            raise BadCommand(
-                "No %s dir found (looked in %s)"
-                % (dirname,', '.join(packages)))
+            self.ensure_dir(os.path.join(base, pkg, dirname))
+            return self.find_dir(dirname)
         if len(possible) > 1:
             raise BadCommand(
                 "Multiple %s dirs found (%s)" % (dirname, possible))
@@ -170,3 +169,17 @@ class FileOp(object):
             f = open(filename, 'wb')
             f.write(content)
             f.close()
+
+    def shorten(self, fn, *paths):
+        """
+        Return a shorted form of the filename (relative to the current
+        directory), typically for displaying in messages.  If
+        ``*paths`` are present, then use os.path.join to create the
+        full filename before shortening.
+        """
+        if paths:
+            fn = os.path.join(fn, *paths)
+        if fn.startswith(os.getcwd()):
+            return fn[len(os.getcwd()):].lstrip(os.path.sep)
+        else:
+            return fn
