@@ -5,7 +5,8 @@ from paste.script.command import BadCommand
 
 class FileOp(object):
     """
-    Enhance the ease of file copying/processing
+    Enhance the ease of file copying/processing from a package into a target
+    project
     """
     
     def __init__(self, simulate=False, 
@@ -16,13 +17,15 @@ class FileOp(object):
         """
         Initialize our File operation helper object
         
-        - source_dir should refer to the directory within the package
-          that contains the templates to be used for the other copy
-          operations. It is assumed that packages will keep all their
-          templates under a hierarchy starting here.
+        source_dir
+            Should refer to the directory within the package
+            that contains the templates to be used for the other copy
+            operations. It is assumed that packages will keep all their
+            templates under a hierarchy starting here.
           
-          This should be an absolute path passed in, for example:
-            FileOp(source_dir=os.path.dirname(__file__) + '/templates')
+            This should be an absolute path passed in, for example:
+          
+                FileOp(source_dir=os.path.dirname(__file__) + '/templates')
         """
         self.simulate=simulate
         self.verbose = verbose
@@ -30,18 +33,24 @@ class FileOp(object):
         self.template_vars = template_vars
         self.source_dir = source_dir
     
-    def copy_file(self, template, dest, filename):
+    def copy_file(self, template, dest, filename=None):
         """
         Copy a file from the source location to somewhere in the
         destination.
-        # THIS CAN LIKELY BE STREAMLINED...
         
-        template - The filename underneat self.source_dir to copy/process
-        dest - The destination directory in the project relative to where
-               this command is being run
-        filename - What to name the file when its copied
-            # SHOULD BE OPTIONAL
+        template
+            The filename underneath self.source_dir to copy/process
+        dest
+            The destination directory in the project relative to where
+            this command is being run
+        filename
+            What to name the file in the target project, use the same name
+            as the template if not provided
         """
+        if not filename:
+            filename = template.split('/')[0]
+            if filename.endswith('_tmpl'):
+                filename = filename[:-5]
         base_package, cdir = self.find_dir(dest)
         self.template_vars['base_package'] = base_package
         content = self.load_content(base_package, cdir, filename, template)
@@ -84,6 +93,35 @@ class FileOp(object):
             raise BadCommand(
                 "Multiple %s dirs found (%s)" % (dirname, possible))
         return possible[0]
+    
+    def parse_path_name_args(self, name):
+        """
+        Given the name, assume that the first argument is a path/filename
+        combination. Return the name and dir of this. If the name ends with
+        '.py' that will be erased.
+        
+        Examples:
+            comments             ->          comments, ''
+            admin/comments       ->          comments, 'admin'
+            h/ab/fred            ->          fred, 'h/ab'
+        """
+        if name.endswith('.py'):
+            # Erase extensions
+            name = name[:-3]
+        if '.' in name:
+            # Turn into directory name:
+            name = name.replace('.', os.path.sep)
+        if '/' != os.path.sep:
+            name = name.replace('/', os.path.sep)
+        parts = name.split(os.path.sep)
+        name = parts[-1]
+        if not parts[:-1]:
+            dir = ''
+        elif len(parts[:-1]) == 1:
+            dir = parts[0]
+        else:
+            dir = os.path.join(*parts[:-1])
+        return name, dir
     
     def ensure_dir(self, dir, svn_add=True):
         """
