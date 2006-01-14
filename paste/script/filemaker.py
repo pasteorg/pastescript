@@ -23,7 +23,7 @@ class FileOp(object):
             operations. It is assumed that packages will keep all their
             templates under a hierarchy starting here.
           
-            This should be an absolute path passed in, for example:
+            This should be an absolute path passed in, for example::
           
                 FileOp(source_dir=os.path.dirname(__file__) + '/templates')
         """
@@ -54,9 +54,25 @@ class FileOp(object):
         base_package, cdir = self.find_dir(dest)
         self.template_vars['base_package'] = base_package
         content = self.load_content(base_package, cdir, filename, template)
-        #raise Exception(cdir, destdir, '%s.py' % filename)
         dest = os.path.join(cdir, '%s.py' % filename)
         self.ensure_file(dest, content)
+    
+    def copy_dir(self, template_dir, dest, destname=None):
+        """
+        Copy a directory recursively, processing any files within it
+        that need to be processed (end in _tmpl).
+        
+        template_dir
+            Directory under self.source_dir to copy/process
+        dest
+            Destination directory into which this directory will be copied
+            to.
+        destname
+            Use this name instead of the original template_dir name for
+            creating the directory
+        """
+        # @@: This should actually be implemented
+        pass  
 
     def load_content(self, base_package, base, name, template):
         blank = os.path.join(base, name + '.py')
