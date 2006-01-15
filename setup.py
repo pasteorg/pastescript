@@ -94,5 +94,6 @@ For the latest changes see the `news file
       'Paste',
       'PasteDeploy',
       'INITools',
+      'Cheetah',
       ],
     )

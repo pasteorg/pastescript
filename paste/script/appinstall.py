@@ -329,6 +329,8 @@ class MakeConfigCommand(AbstractInstallCommand):
                 self.run_setup(self.config_file)
         else:
             filenames = self.installer.editable_config_files(self.config_file)
+            assert not isinstance(filenames, basestring), (
+                "editable_config_files returned a string, not a list")
             if not filenames and filenames is not None:
                 print 'No config files need editing'
             else:
@@ -470,7 +472,7 @@ class Installer(object):
         like simulation and interactive.  ``vars`` is a dictionary
         of user-provided variables.
         """
-        command.ensure_file(filename, self.config_content(vars))
+        command.ensure_file(filename, self.config_content(command, vars))
 
     def editable_config_files(self, filename):
         """
@@ -485,7 +487,7 @@ class Installer(object):
         else:
             return None
 
-    def config_content(self, vars):
+    def config_content(self, command, vars):
         """
         Called by ``self.write_config``, this returns the text content
         for the config file, given the provided variables.
