@@ -65,7 +65,7 @@ For the latest changes see the `news file
     serve=paste.script.serve:ServeCommand [Config]
     exe=paste.script.exe:ExeCommand
     points=paste.script.entrypoints:EntryPointCommand
-    prepare-app=paste.script.appinstall:PrepareCommand
+    make-config=paste.script.appinstall:MakeConfigCommand
     setup-app=paste.script.appinstall:SetupCommand
 
     [paste.paster_create_template]

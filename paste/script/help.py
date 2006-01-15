@@ -33,7 +33,11 @@ class HelpCommand(Command):
         commands = get_commands()
         longest = max([len(n) for n in commands.keys()])
         for name, command in commands.items():
-            command = command.load()
+            try:
+                command = command.load()
+            except Exception, e:
+                print 'Cannot load command %s: %s' % (name, e)
+                continue
             if getattr(command, 'hidden', False):
                 continue
             commands_grouped.setdefault(

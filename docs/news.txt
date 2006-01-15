@@ -1,6 +1,30 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* The ``prepare-app`` command has been renamed ``make-config``
+
+* Changed the way ``make-config`` and ``setup-app`` use ``sysconfig``
+  -- these are now modules that can define various functions
+
+* Allow for default config file names
+
+* Consider config generation that may produce a directory
+
+* Allow for multiple config files (specifically with --edit)
+
+* Give config file generation the variables ``app_install_uuid`` and
+  ``app_install_secret`` that they can use for their config files
+
+* Include Ka-Ping Yee's uuid module in ``paste.script.util.uuid``
+
+* ``paster help`` doesn't bail when commands can't be loaded
+
+* Be a little safer when ``--edit`` fails and ``--setup`` is provided
+  (don't automatically set up if the edit seems to have failed)
+
 0.4.1
 -----
 
