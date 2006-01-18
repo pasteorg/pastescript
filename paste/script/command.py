@@ -446,7 +446,7 @@ class Command(object):
             # files won't exist...
             if self.verbose:
                 print 'Would (if not simulating) insert text into %s' % (
-                    self.shorten(file))
+                    self.shorten(filename))
             return
                 
         f = open(filename)
