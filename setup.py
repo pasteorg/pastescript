@@ -68,6 +68,9 @@ For the latest changes see the `news file
     make-config=paste.script.appinstall:MakeConfigCommand
     setup-app=paste.script.appinstall:SetupCommand
 
+    [paste.paster_command]
+    grep = paste.script.grep:GrepCommand
+
     [paste.paster_create_template]
     basic_package=paste.script.templates:BasicPackage
 
