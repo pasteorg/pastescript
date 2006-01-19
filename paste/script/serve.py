@@ -109,7 +109,7 @@ class ServeCommand(Command):
                 from paste import reloader
                 if self.verbose > 1:
                     print 'Running reloading file monitor'
-                reloader.install(int(self.options.reload_interval), False)
+                reloader.install(int(self.options.reload_interval))
             else:
                 return self.restart_with_reloader()
                 
