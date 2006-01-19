@@ -109,6 +109,10 @@ class CreateDistroCommand(Command):
                     print 'Adding %s to paster_plugins.txt' % spec
                 if not self.simulate:
                     pluginlib.add_plugin(egg_info_dir, spec)
+        if not self.simulate:
+            # We'll include this by default, but you can remove
+            # it later if you want:
+            pluginlib.add_plugin(egg_info_dir, 'PasteScript')
         
         if self.options.svn_repository:
             self.add_svn_repository(vars, output_dir)
