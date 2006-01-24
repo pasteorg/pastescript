@@ -96,7 +96,6 @@ For the latest changes see the `news file
     install_requires=[
       'Paste',
       'PasteDeploy',
-      'INITools',
       'Cheetah',
       ],
     )

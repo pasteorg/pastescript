@@ -12,7 +12,6 @@ from paste.script import copydir
 import pkg_resources
 from Cheetah.Template import Template
 from ConfigParser import ConfigParser
-from simpleconfig import load_flat_config
 from paste.util import import_string
 from paste.deploy import appconfig
 from paste.script.util import uuid
