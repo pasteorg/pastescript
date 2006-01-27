@@ -58,7 +58,7 @@ def run_fcgi_fork(wsgi_app, global_conf,
     else:
         assert host is not None and port is not None
         sock = (host, port)
-    ensure_port_cleanup(sock)
+    ensure_port_cleanup([sock])
     s = flup.server.fcgi_fork.WSGIServer(
         wsgi_app,
         bindAddress=sock,
@@ -70,7 +70,7 @@ def run_scgi_thread(wsgi_app, global_conf,
                     allowedServers='127.0.0.1'):
     import flup.server.scgi
     addr = (host, int(port))
-    ensure_port_cleanup(addr)
+    ensure_port_cleanup([addr])
     s = flup.server.scgi.WSGIServer(
         wsgi_app,
         scriptName=scriptName,
@@ -84,7 +84,7 @@ def run_scgi_fork(wsgi_app, global_conf,
                   allowedServers='127.0.0.1'):
     import flup.server.scgi_fork
     addr = (host, int(port))
-    ensure_port_cleanup(addr)
+    ensure_port_cleanup([addr])
     s = flup.server.scgi_fork.WSGIServer(
         wsgi_app,
         scriptName=scriptName,
