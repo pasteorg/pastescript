@@ -82,8 +82,9 @@ Running the Server
   usage: /usr/local/bin/paster serve [options] CONFIG_FILE [start|stop|restart|status]
   Serve the described application
 
-  If start/stop/restart is given, then --daemon is implied, and it will start
-  (normal operation), stop (--stop-daemon), or do both.
+  If start/stop/restart is given, then it will start (normal
+  operation), stop (--stop-daemon), or do both.  You probably want
+  ``--daemon`` as well for stopping.
 
   Options:
     -h, --help            show this help message and exit
