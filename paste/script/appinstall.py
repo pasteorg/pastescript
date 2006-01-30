@@ -316,16 +316,20 @@ class MakeConfigCommand(AbstractInstallCommand):
             for name, value in print_vars:
                 print '  %s: %r' % (name, value)
         self.installer.write_config(self, self.config_file, self.vars)
-        edit_success = False
+        edit_success = True
         if self.options.edit:
             edit_success = self.run_editor()
+        setup_configs = self.installer.editable_config_files(self.config_file)
+        # @@: We'll just assume the first file in the list is the one
+        # that works with setup-app...
+        setup_config = setup_configs[0]
         if self.options.run_setup:
             if not edit_success:
                 print 'Config-file editing was not successful.'
                 if self.ask('Run setup-app anyway?', default=False):
-                    self.run_setup(self.config_file)
+                    self.run_setup(setup_config)
             else:
-                self.run_setup(self.config_file)
+                self.run_setup(setup_config)
         else:
             filenames = self.installer.editable_config_files(self.config_file)
             assert not isinstance(filenames, basestring), (
