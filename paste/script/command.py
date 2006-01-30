@@ -21,8 +21,11 @@ class BadCommand(Exception):
 
 dist = pkg_resources.get_distribution('PasteScript')
 
+python_version = sys.version.splitlines()[0].strip()
+
 parser = optparse.OptionParser(add_help_option=False,
-                               version='%s from %s' % (dist, dist.location),
+                               version='%s from %s (python %s)'
+                               % (dist, dist.location, python_version),
                                usage='%prog [paster_options] COMMAND [command_options]')
 
 parser.add_option(
