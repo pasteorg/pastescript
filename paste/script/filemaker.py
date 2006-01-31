@@ -2,6 +2,10 @@ import os
 import glob
 from paste.script import pluginlib, copydir
 from paste.script.command import BadCommand
+try:
+    import subprocess
+except ImportError:
+    from paste.script.util import subprocess24 as subprocess
 
 class FileOp(object):
     """
@@ -237,3 +241,58 @@ class FileOp(object):
             return fn[len(os.getcwd()):].lstrip(os.path.sep)
         else:
             return fn
+
+    def run_command(self, cmd, *args, **kw):
+        """
+        Runs the command, respecting verbosity and simulation.
+        Returns stdout, or None if simulating.
+        """
+        cwd = popdefault(kw, 'cwd', os.getcwd())
+        capture_stderr = popdefault(kw, 'capture_stderr', False)
+        expect_returncode = popdefault(kw, 'expect_returncode', False)
+        assert not kw, ("Arguments not expected: %s" % kw)
+        if capture_stderr:
+            stderr_pipe = subprocess.STDOUT
+        else:
+            stderr_pipe = subprocess.PIPE
+        try:
+            proc = subprocess.Popen([cmd] + list(args),
+                                    cwd=cwd,
+                                    stderr=stderr_pipe,
+                                    stdout=subprocess.PIPE)
+        except OSError, e:
+            if e.errno != 2:
+                # File not found
+                raise
+            raise OSError(
+                "The expected executable %s was not found (%s)"
+                % (cmd, e))
+        if self.verbose:
+            print 'Running %s %s' % (cmd, ' '.join(args))
+        if self.simulate:
+            return None
+        stdout, stderr = proc.communicate()
+        if proc.returncode and not expect_returncode:
+            if not self.verbose:
+                print 'Running %s %s' % (cmd, ' '.join(args))
+            print 'Error (exit code: %s)' % proc.returncode
+            if stderr:
+                print stderr
+            raise OSError("Error executing command %s" % cmd)
+        if self.verbose > 2:
+            if stderr:
+                print 'Command error output:'
+                print stderr
+            if stdout:
+                print 'Command output:'
+                print stdout
+        return stdout
+
+def popdefault(dict, name, default=None):
+    if name not in dict:
+        return default
+    else:
+        v = dict[name]
+        del dict[name]
+        return v
+
