@@ -1,8 +1,11 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+0.4.2
+-----
+
+* Fixed the Flup FastCGI interface.  (There seem to still be problems
+  with forking FastCGI.)
 
 * The ``prepare-app`` command has been renamed ``make-config``
 
@@ -11,7 +14,8 @@ svn trunk
 
 * Allow for default config file names
 
-* Consider config generation that may produce a directory
+* Consider config generation that may produce a directory (this case
+  is now generally workable)
 
 * Allow for multiple config files (specifically with --edit)
 
