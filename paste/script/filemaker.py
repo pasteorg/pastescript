@@ -50,6 +50,8 @@ class FileOp(object):
         filename
             What to name the file in the target project, use the same name
             as the template if not provided
+        add_py
+            Add a .py extension to all files copied
         """
         if not filename:
             filename = template.split('/')[0]
