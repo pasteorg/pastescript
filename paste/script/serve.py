@@ -104,15 +104,6 @@ class ServeCommand(Command):
         self.change_user_group(
             self.options.set_user, self.options.set_group)
 
-        if self.options.reload:
-            if os.environ.get(self._reloader_environ_key):
-                from paste import reloader
-                if self.verbose > 1:
-                    print 'Running reloading file monitor'
-                reloader.install(int(self.options.reload_interval))
-            else:
-                return self.restart_with_reloader()
-                
         if not self.args:
             raise BadCommand('You must give a config file')
         app_spec = self.args[0]
@@ -120,6 +111,16 @@ class ServeCommand(Command):
             cmd = self.args[1]
         else:
             cmd = None
+            
+        if self.options.reload:
+            if os.environ.get(self._reloader_environ_key):
+                from paste import reloader
+                if self.verbose > 1:
+                    print 'Running reloading file monitor'
+                reloader.install(int(self.options.reload_interval))
+                reloader.watch_file(self.args[0])
+            else:
+                return self.restart_with_reloader()
 
         if cmd not in (None, 'start', 'stop', 'restart', 'status'):
             raise BadCommand(
