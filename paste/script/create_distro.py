@@ -48,7 +48,7 @@ class CreateDistroCommand(Command):
                       action='store_true',
                       help="Show where the files in the given (already created) directory came from (useful when using multiple templates)")
 
-    _bad_chars_re = re.compile('[^a-zA-Z0-9]')
+    _bad_chars_re = re.compile('[^a-zA-Z0-9_]')
 
     default_verbosity = 1
     default_interactive = 1
