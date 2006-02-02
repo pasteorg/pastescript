@@ -37,7 +37,7 @@ class FileOp(object):
         self.template_vars = template_vars
         self.source_dir = source_dir
     
-    def copy_file(self, template, dest, filename=None):
+    def copy_file(self, template, dest, filename=None, add_py=True):
         """
         Copy a file from the source location to somewhere in the
         destination.
@@ -58,7 +58,10 @@ class FileOp(object):
         base_package, cdir = self.find_dir(dest)
         self.template_vars['base_package'] = base_package
         content = self.load_content(base_package, cdir, filename, template)
-        dest = os.path.join(cdir, '%s.py' % filename)
+        if add_py:
+            # @@: Why is it a default to add a .py extension? 
+            filename = '%s.py' % filename
+        dest = os.path.join(cdir, filename)
         self.ensure_file(dest, content)
     
     def copy_dir(self, template_dir, dest, destname=None):
