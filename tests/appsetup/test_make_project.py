@@ -30,6 +30,7 @@ def paster_create():
                       '--template=paste_deploy',
                       '--template=webkit',
                       '--template=zpt',
+                      '--no-interactive',
                       'ProjectName',
                       'version=0.1',
                       'author=Test Author',
@@ -48,7 +49,7 @@ def paster_create():
     setup.mustcontain('0.1')
     setup.mustcontain('projectname.wsgiapp:make_app')
     # ZPTKit should add this:
-    setup.mustcontain("package_data=finddata")
+    setup.mustcontain("include_package_data")
     assert '0.1' in setup
     sitepage = res.files_created['ProjectName/projectname/sitepage.py']
     testenv.run('python setup.py egg_info',

@@ -15,6 +15,7 @@ ${long_description|nothing}""",
       url=${repr(url)|empty},
       license=${repr(license_name)|empty},
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      include_package_data=True,
       zip_safe=${repr(bool(zip_safe))|False},
       install_requires=[
           # -*- Extra requirements: -*-

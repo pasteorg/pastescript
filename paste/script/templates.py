@@ -182,7 +182,7 @@ def find_args_in_template(template):
         return None
     method = template.body
     args, varargs, varkw, defaults = inspect.getargspec(method)
-    defaults=list(defaults)
+    defaults=list(defaults or [])
     vars = []
     while args:
         if len(args) == len(defaults):
