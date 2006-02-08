@@ -23,7 +23,9 @@ The latest version is available in a `Subversion repository
 <http://svn.pythonpaste.org/Paste/Script/trunk#egg=PasteScript-dev>`_.
 
 For the latest changes see the `news file
-<http://pythonpaste.org/script/news.html>`_.
+<http://pythonpaste.org/script/news.html>`_.  This package requires
+`Cheetah
+<http://cheeseshop.python.org/packages/source/C/Cheetah/Cheetah-1.0.tar.gz>`_
 """,
     classifiers=[
       "Development Status :: 4 - Beta",
