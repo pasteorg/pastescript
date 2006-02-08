@@ -88,6 +88,8 @@ class CreateDistroCommand(Command):
             self.inspect_files(
                 output_dir, templates, vars)
             return
+        if not os.path.exists(output_dir):
+            self.interactive = self.options.interactive = False
         
         if self.options.svn_repository:
             self.setup_svn_repository(output_dir, dist_name)

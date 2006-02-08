@@ -4,6 +4,9 @@ News: Paste Script
 svn trunk
 ---------
 
+* If the output directory doesn't exist when running ``paster
+  create``, do not default to having interactive (confirmation) on.
+
 0.4.2
 -----
 
