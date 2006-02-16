@@ -134,7 +134,7 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
     print 'Replace %i bytes with %i bytes (%i/%i lines changed%s)' % (
         len(dest_content), len(src_content),
         removed, len(dest_content.splitlines()), msg)
-    prompt = 'Overwrite %s [Y/n/d/b/?] ' % dest_fn
+    prompt = 'Overwrite %s [y/n/d/B/?] ' % dest_fn
     while 1:
         if all_answer is None:
             response = raw_input(prompt).strip().lower()
@@ -146,7 +146,7 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
                 print query_usage
                 continue
             response = all_answer = rest[0]
-        if not response or response[0] == 'y':
+        if response[0] == 'y':
             return True
         elif response[0] == 'n':
             return False
@@ -154,7 +154,7 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
             print '\n'.join(c_diff)
         elif response[0] == 'd':
             print '\n'.join(u_diff)
-        elif response[0] == 'b':
+        elif not response or response[0] == 'b':
             import shutil
             new_dest_fn = dest_fn + '.bak'
             n = 0
