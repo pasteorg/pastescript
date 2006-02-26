@@ -208,8 +208,8 @@ def uuid4():
         from os import urandom
     except:
         from random import randrange
-        uuid = UUID(randrange(1<<32), randrange(1<<16), randrange(1<<16),
-                    randrange(1<<8), randrange(1<<8), randrange(1<<48))
+        uuid = UUID(randrange(1<<32L), randrange(1<<16), randrange(1<<16),
+                    randrange(1<<8), randrange(1<<8), randrange(1<<48L))
     else:
         uuid = UUID(0, 0, 0, 0, 0, 0)
         uuid.bytes = urandom(16)
