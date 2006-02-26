@@ -12,7 +12,7 @@ def random_bytes(length):
     """
     try:
         return os.urandom(length)
-    except NotImplementedError:
+    except AttributeError:
         return ''.join([
             chr(random.randrange(256)) for i in xrange(length)])
 
