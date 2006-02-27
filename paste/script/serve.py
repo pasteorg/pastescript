@@ -31,6 +31,9 @@ class ServeCommand(Command):
     If start/stop/restart is given, then --daemon is implied, and it will
     start (normal operation), stop (--stop-daemon), or do both.
     """
+    
+    # used by subclasses that configure apps and servers differently
+    requires_config_file = True
 
     parser = Command.standard_parser(quiet=True)
     parser.add_option('-n', '--app-name',
@@ -104,13 +107,20 @@ class ServeCommand(Command):
         self.change_user_group(
             self.options.set_user, self.options.set_group)
 
-        if not self.args:
-            raise BadCommand('You must give a config file')
-        app_spec = self.args[0]
-        if len(self.args) > 1:
-            cmd = self.args[1]
+        if self.requires_config_file:
+            if not self.args:
+                raise BadCommand('You must give a config file')
+            app_spec = self.args[0]
+            if len(self.args) > 1:
+                cmd = self.args[1]
+            else:
+                cmd = None
         else:
-            cmd = None
+            app_spec = ""
+            if self.args:
+                cmd = self.args[0]
+            else:
+                cmd = None
             
         if self.options.reload:
             if os.environ.get(self._reloader_environ_key):
@@ -165,9 +175,9 @@ class ServeCommand(Command):
             # @@: Should we also redirect logging-based logs to this file?
             # e.g., the root logger?
 
-        server = loadserver(server_spec, name=server_name,
+        server = self.loadserver(server_spec, name=server_name,
                             relative_to=base)
-        app = loadapp(app_spec, name=app_name,
+        app = self.loadapp(app_spec, name=app_name,
                       relative_to=base)
 
         if self.verbose > 0:
@@ -182,6 +192,13 @@ class ServeCommand(Command):
             else:
                 msg = ''
             print 'Exiting%s (-v to see traceback)' % msg
+    
+    def loadserver(self, server_spec, name, relative_to):
+            return loadserver(server_spec, name=name,
+             relative_to=relative_to)
+    
+    def loadapp(self, app_spec, name, relative_to):
+            return loadapp(app_spec, name=name, relative_to=relative_to)
 
     def daemonize(self):
         if self.verbose > 0:
