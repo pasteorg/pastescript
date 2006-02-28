@@ -128,7 +128,8 @@ class ServeCommand(Command):
                 if self.verbose > 1:
                     print 'Running reloading file monitor'
                 reloader.install(int(self.options.reload_interval))
-                reloader.watch_file(self.args[0])
+                if self.requires_config_file:
+                    reloader.watch_file(self.args[0])
             else:
                 return self.restart_with_reloader()
 
