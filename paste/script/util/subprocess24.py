@@ -363,6 +363,9 @@ if mswindows:
                                  STARTF_USESHOWWINDOW, CREATE_NEW_CONSOLE
         from win32event import WaitForSingleObject, INFINITE, WAIT_OBJECT_0
     else:
+        raise ImportError(
+            "Windows subprocess module must be installed: see "
+            "http://effbot.org/downloads/#subprocess")
         from _subprocess import *
         class STARTUPINFO:
             dwFlags = 0
