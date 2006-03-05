@@ -94,6 +94,9 @@ For the latest changes see the `news file
 
     [paste.entry_point_description]
     paste.entry_point_description = paste.script.entrypoints:MetaEntryPointDescription
+    
+    [console_scripts]
+    paster=paste.script.command:run
     """,
     install_requires=[
       'Paste',
