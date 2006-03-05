@@ -127,21 +127,26 @@ class CreateDistroCommand(Command):
     def setup_svn_repository(self, output_dir, dist_name):
         # @@: Use subprocess
         svn_repos = self.options.svn_repository
-        svn_repos_path = os.path.join(svn_repos, dist_name)
-        cmd = '''\
-svn mkdir %(svn_repos_path)s          \\
-          %(svn_repos_path)s/trunk    \\
-          %(svn_repos_path)s/tags     \\
-          %(svn_repos_path)s/branches \\
-    -m "New project %(dist_name)s"''' % {'svn_repos_path': svn_repos_path, 
-                                         'dist_name': dist_name}
+        svn_repos_path = os.path.join(svn_repos, dist_name).replace('\\','/')
+        svn_command = 'svn'
+        if sys.platform == 'win32':
+            svn_command += '.exe'
+        # @@: The previous method of formatting this string using \ doesn't work on Windows
+        cmd = '%(svn_command)s mkdir %(svn_repos_path)s' + \
+            ' %(svn_repos_path)s/trunk %(svn_repos_path)s/tags' + \
+            ' %(svn_repos_path)s/branches -m "New project %(dist_name)s"'
+        cmd = cmd % {
+            'svn_repos_path': svn_repos_path, 
+            'dist_name': dist_name,
+            'svn_command':svn_command,
+        }
         if self.verbose:
             print "Running:"
             print cmd
         if not self.simulate:
             os.system(cmd)
-        svn_repos_path_trunk = os.path.join(svn_repos_path,'trunk')
-        cmd = 'svn co "%s" "%s"' % (svn_repos_path_trunk, output_dir)
+        svn_repos_path_trunk = os.path.join(svn_repos_path,'trunk').replace('\\','/')
+        cmd = svn_command+' co "%s" "%s"' % (svn_repos_path_trunk, output_dir)
         if self.verbose:
             print "Running %s" % cmd
         if not self.simulate:
@@ -159,12 +164,15 @@ svn mkdir %(svn_repos_path)s          \\
     def add_svn_repository(self, vars, output_dir):
         svn_repos = self.options.svn_repository
         egg_info_dir = pluginlib.egg_info_dir(output_dir, vars['project'])
-        self.run_command('svn', 'add', '-N', egg_info_dir)
+        svn_command = 'svn'
+        if sys.platform == 'win32':
+            svn_command += '.exe'
+        self.run_command(svn_command, 'add', '-N', egg_info_dir)
         paster_plugins_file = os.path.join(
             egg_info_dir, 'paster_plugins.txt')
         if os.path.exists(paster_plugins_file):
-            self.run_command('svn', 'add', paster_plugins_file)
-        self.run_command('svn', 'ps', 'svn:ignore',
+            self.run_command(svn_command, 'add', paster_plugins_file)
+        self.run_command(svn_command, 'ps', 'svn:ignore',
                          '\n'.join(self.ignore_egg_info_files),
                          egg_info_dir)
         if self.verbose:
