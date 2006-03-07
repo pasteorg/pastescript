@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+0.5
+---
 
 * If the output directory doesn't exist when running ``paster
   create``, do not default to having interactive (confirmation) on.
