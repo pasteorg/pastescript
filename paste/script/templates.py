@@ -94,6 +94,12 @@ class Template(object):
 
     def write_files(self, command, output_dir, vars):
         template_dir = self.template_dir()
+        if not os.path.exists(output_dir):
+            print "Creating directory %s" % output_dir
+            if not command.simulate:
+                # Don't let copydir create this top-level directory,
+                # since copydir will svn add it sometimes:
+                os.makedirs(output_dir)
         copydir.copy_dir(template_dir, output_dir,
                          vars,
                          verbosity=command.verbose,
