@@ -55,7 +55,12 @@ def remove_plugin(egg_info_dir, plugin_name):
     
 def find_egg_info_dir(dir):
     while 1:
-        for fn in os.listdir(dir):
+        try:
+            filenames = os.listdir(dir)
+        except OSError:
+            # Probably permission denied or something
+            return None
+        for fn in filenames:
             if fn.endswith('.egg-info'):
                 return os.path.join(dir, fn)
         parent = os.path.dirname(dir)
