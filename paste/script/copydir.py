@@ -140,7 +140,18 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
             response = raw_input(prompt).strip().lower()
         else:
             response = all_answer
-        if response.startswith('all '):
+        if not response or response[0] == 'b':
+            import shutil
+            new_dest_fn = dest_fn + '.bak'
+            n = 0
+            while os.path.exists(new_dest_fn):
+                n += 1
+                new_dest_fn = dest_fn + '.bak' + str(n)
+            print 'Backing up %s to %s' % (dest_fn, new_dest_fn)
+            if not simulate:
+                shutil.copyfile(dest_fn, new_dest_fn)
+            return True
+        elif response.startswith('all '):
             rest = response[4:].strip()
             if not rest or rest[0] not in ('y', 'n', 'b'):
                 print query_usage
@@ -154,17 +165,6 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
             print '\n'.join(c_diff)
         elif response[0] == 'd':
             print '\n'.join(u_diff)
-        elif not response or response[0] == 'b':
-            import shutil
-            new_dest_fn = dest_fn + '.bak'
-            n = 0
-            while os.path.exists(new_dest_fn):
-                n += 1
-                new_dest_fn = dest_fn + '.bak' + str(n)
-            print 'Backing up %s to %s' % (dest_fn, new_dest_fn)
-            if not simulate:
-                shutil.copyfile(dest_fn, new_dest_fn)
-            return True
         else:
             print query_usage
 

@@ -42,13 +42,13 @@ class Template(object):
         return os.path.join(self.module_dir(), self._template_dir)
 
     def run(self, command, output_dir, vars):
-        vars = self.check_vars(vars)
+        vars = self.check_vars(vars, command)
         self.pre(command, output_dir, vars)
         self.write_files(command, output_dir, vars)
         self.post(command, output_dir, vars)
 
-    def check_vars(self, vars):
-        expect_vars = self.read_vars()
+    def check_vars(self, vars, cmd):
+        expect_vars = self.read_vars(cmd)
         if not expect_vars:
             # Assume that variables aren't defined
             return vars
@@ -57,7 +57,11 @@ class Template(object):
         errors = []
         for var in expect_vars:
             if var.name not in unused_vars:
-                if var.default is NoDefault:
+                if cmd.interactive:
+                    prompt = 'Enter %s' % var.full_description()
+                    response = cmd.challenge(prompt, var.default)
+                    converted_vars[var.name] = response
+                elif var.default is command.NoDefault:
                     errors.append('Required variable missing: %s'
                                   % var.full_description())
                 else:
@@ -68,6 +72,7 @@ class Template(object):
             raise command.BadCommand(
                 'Errors in variables:\n%s' % '\n'.join(errors))
         converted_vars.update(unused_vars)
+        vars.update(converted_vars)
         return converted_vars
         
     def read_vars(self, command=None):
@@ -153,7 +158,7 @@ class var(object):
                     var.description)
             else:
                 print '  %s' % var.name
-            if var.default is not NoDefault:
+            if var.default is not command.NoDefault:
                 print '      default: %r' % var.default
         print
 
@@ -194,7 +199,7 @@ def find_args_in_template(template):
         if len(args) == len(defaults):
             default = defaults.pop(0)
         else:
-            default = NoDefault
+            default = command.NoDefault
         arg = args.pop(0)
         if arg in _skip_variables:
             continue
@@ -242,8 +247,8 @@ def find_args_in_dir(dir, verbose=False):
                 print >> sys.stderr, (
                     "Variable descriptions do not match: %s: %s and %s"
                     % (var_name, cur_var.description, var.description))
-            if (cur_var.default is not NoDefault
-                and var.default is not NoDefault
+            if (cur_var.default is not command.NoDefault
+                and var.default is not command.NoDefault
                 and cur_var.default != var.default):
                 print >> sys.stderr, (
                     "Variable defaults do not match: %s: %r and %r"

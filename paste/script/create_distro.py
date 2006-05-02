@@ -3,6 +3,7 @@ import sys
 import os
 import pkg_resources
 from command import Command, BadCommand
+import copydir
 import pluginlib
 import fnmatch
 
@@ -47,6 +48,10 @@ class CreateDistroCommand(Command):
                       dest='inspect_files',
                       action='store_true',
                       help="Show where the files in the given (already created) directory came from (useful when using multiple templates)")
+    parser.add_option('--config',
+                      action='store',
+                      dest='config',
+                      help="Template variables file")
 
     _bad_chars_re = re.compile('[^a-zA-Z0-9_]')
 
@@ -71,25 +76,36 @@ class CreateDistroCommand(Command):
                     tmpl.summary)
             print
         if not self.args:
-            raise BadCommand('You must provide a PACKAGE_NAME')
+            if self.interactive:
+                dist_name = self.challenge('Enter project name')
+            else:
+                raise BadCommand('You must provide a PACKAGE_NAME')
+        else:
+            dist_name = self.args[0].lstrip(os.path.sep)
+
         templates = [tmpl for name, tmpl in templates]
-        dist_name = self.args[0].lstrip(os.path.sep)
+        output_dir = os.path.join(self.options.output_dir, dist_name)
         
         pkg_name = self._bad_chars_re.sub('', dist_name.lower())
         vars = {'project': dist_name,
                 'package': pkg_name,
                 }
         vars.update(self.parse_vars(self.args[1:]))
+        if self.options.config and os.path.exists(self.options.config):
+            for key, value in self.read_vars(self.options.config).items():
+                vars.setdefault(key, value)
+        
         if self.verbose: # @@: > 1?
             self.display_vars(vars)
 
-        output_dir = os.path.join(self.options.output_dir, dist_name)
         if self.options.inspect_files:
             self.inspect_files(
                 output_dir, templates, vars)
             return
         if not os.path.exists(output_dir):
-            self.interactive = self.options.interactive = False
+            # We want to avoid asking questions in copydir if the path
+            # doesn't exist yet
+            copydir.all_answer = 'y'
         
         if self.options.svn_repository:
             self.setup_svn_repository(output_dir, dist_name)
@@ -119,6 +135,12 @@ class CreateDistroCommand(Command):
         if self.options.svn_repository:
             self.add_svn_repository(vars, output_dir)
 
+        if self.options.config:
+            write_vars = vars.copy()
+            del write_vars['project']
+            del write_vars['package']
+            self.write_vars(self.options.config, write_vars)
+        
     def create_template(self, template, output_dir, vars):
         if self.verbose:
             print 'Creating template %s' % template.name

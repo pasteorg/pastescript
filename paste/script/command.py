@@ -6,6 +6,7 @@ import os
 import re
 import textwrap
 import pluginlib
+import ConfigParser
 try:
     import subprocess
 except ImportError:
@@ -18,6 +19,9 @@ class BadCommand(Exception):
         self.message = message
         self.exit_code = exit_code
         Exception.__init__(self, message)
+
+class NoDefault:
+    pass
 
 dist = pkg_resources.get_distribution('PasteScript')
 
@@ -70,7 +74,6 @@ def run(args=None):
     invoke(command, command_name, options, args[1:])
 
 def parse_exe_file(config):
-    import ConfigParser
     import shlex
     p = ConfigParser.RawConfigParser()
     p.read([config])
@@ -270,6 +273,23 @@ class Command(object):
                 return response[0].lower() == 'y'
             print 'Y or N please'
 
+    def challenge(self, prompt, default=NoDefault):
+        """
+        Prompt the user for a variable.
+        """
+        if default is not NoDefault:
+            prompt += ' [%r]' % default
+        prompt += ': '
+        while 1:
+            response = raw_input(prompt).strip()
+            if not response:
+                if default is not NoDefault:
+                    return default
+                else:
+                    continue
+            else:
+                return response
+        
     def pad(self, s, length, dir='left'):
         if len(s) >= length:
             return s
@@ -591,7 +611,54 @@ class Command(object):
             name, value = arg.split('=', 1)
             result[name] = value
         return result
+    
+    def read_vars(self, config, section='pastescript'):
+        """
+        Given a configuration filename, this will return a map of values.
+        """
+        result = {}
+        p = ConfigParser.RawConfigParser()
+        p.read([config])
+        if p.has_section(section):
+            for key, value in p.items(section):
+                if key.endswith('__eval__'):
+                    result[key[:-len('__eval__')]] = eval(value)
+                else:
+                    result[key] = value
+        return result
 
+    def write_vars(self, config, vars, section='pastescript'):
+        """
+        Given a configuration filename, this will add items in the
+        vars mapping to the configuration file.  Will create the
+        configuration file if it doesn't exist.
+        """
+        modified = False
+
+        p = ConfigParser.RawConfigParser()
+        if not os.path.exists(config):
+            f = open(config, 'w')
+            f.write('')
+            f.close()
+            modified = True
+        p.read([config])
+        if not p.has_section(section):
+            p.add_section(section)
+            modified = True
+
+        existing_options = p.options(section)
+        for key, value in vars.items():
+            if (key not in existing_options and
+                '%s__eval__' % key not in existing_options):
+                if not isinstance(value, str):
+                    p.set(section, '%s__eval__' % key, repr(value))
+                else:
+                    p.set(section, key, value)
+                modified = True
+
+        if modified:
+            p.write(open(config, 'w'))
+        
     def indent_block(self, text, indent=2, initial=None):
         """
         Indent the block of text (each line is indented).  If you give
@@ -625,8 +692,7 @@ class NotFoundCommand(Command):
             print '  %s  %s' % (self.pad(name, length=longest),
                                 command.load().summary)
         return 2
-    
-        
+
 def popdefault(dict, name, default=None):
     if name not in dict:
         return default
