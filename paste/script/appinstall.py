@@ -30,6 +30,9 @@ class AbstractInstallCommand(Command):
         default_sysconfigs.insert(
             0, (False, os.path.join(os.environ['HOME'], '.paste', 'config',
                                     'sysconfig.py')))
+    if os.environ.get('PASTE_SYSCONFIG'):
+        default_sysconfigs.insert(
+            0, (False, os.environ['PASTE_SYSCONFIG']))
 
     def run(self, args):
         # This is overridden so we can parse sys-config before we pass
