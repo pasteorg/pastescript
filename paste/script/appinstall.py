@@ -425,6 +425,7 @@ class SetupCommand(AbstractInstallCommand):
         if not config_spec.startswith('config:'):
             config_spec = 'config:' + config_spec
         config_file = config_spec[len('config:'):]
+        config_file = os.path.join(os.getcwd(), config_file)
         conf = appconfig(config_spec, relative_to=os.getcwd())
         ep_name = conf.context.entry_point_name
         ep_group = conf.context.protocol
