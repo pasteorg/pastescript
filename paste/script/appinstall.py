@@ -414,17 +414,27 @@ class SetupCommand(AbstractInstallCommand):
     parser.add_option('--name',
                       action='store',
                       dest='section_name',
-                      default='main',
+                      default=None,
                       help='The name of the section to set up (default: app:main)')
 
     def command(self):
         config_spec = self.args[0]
         section = self.options.section_name
+        if section is None:
+            if '#' in config_spec:
+                config_spec, section = config_spec.split('#', 1)
+            else:
+                section = 'main'
         if not ':' in section:
+            plain_section = section
             section = 'app:'+section
+        else:
+            plain_section = section.split(':', 1)[0]
         if not config_spec.startswith('config:'):
             config_spec = 'config:' + config_spec
-        config_file = config_spec[len('config:'):]
+        if plain_section != 'main':
+            config_spec += '#' + plain_section
+        config_file = config_spec[len('config:'):].split('#', 1)[0]
         config_file = os.path.join(os.getcwd(), config_file)
         conf = appconfig(config_spec, relative_to=os.getcwd())
         ep_name = conf.context.entry_point_name
