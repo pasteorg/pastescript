@@ -457,8 +457,9 @@ class Installer(object):
     Packages that simply refer to this installer can provide a file
     ``*.egg-info/paste_deploy_config.ini_tmpl`` that will be
     interpreted by Cheetah.  They can also provide ``websetup``
-    modules with a ``setup_config(command, filename, section,
-    sysconfig)`` function in it, that will be called.
+    modules with a ``setup_app(command, conf, vars)`` (or the
+    now-deprecated ``setup_config(command, filename, section, vars)``)
+    function, that will be called.
 
     In the future other functions or configuration files may be
     called.
@@ -542,7 +543,12 @@ class Installer(object):
 
         The default implementation calls
         ``package.websetup.setup_config(command, filename, section,
+        vars)`` or ``package.websetup.setup_app(command, config,
         vars)``
+
+        With ``setup_app`` the ``config`` object is a dictionary with
+        the extra attributes ``global_conf``, ``local_conf`` and
+        ``filename``
         """
         for line in self.dist.get_metadata_lines('top_level.txt'):
             line = line.strip()
@@ -557,6 +563,20 @@ class Installer(object):
                 continue
             if command.verbose:
                 print 'Running setup_config() from %s' % mod_name
-            mod.setup_config(command, filename, section, vars)
-            
-    
+            if hasattr(mod, 'setup_app'):
+                self._call_setup_app(
+                    mod.setup_app, command, filename, section, vars)
+            elif hasattr(mod, 'setup_config'):
+                mod.setup_config(command, filename, section, vars)
+            else:
+                print 'No setup_app() or setup_config() function in %s (%s)' % (
+                    mod.__name__, mod.__file__)
+
+    def _call_setup_app(self, func, command, filename, section, vars):
+        filename = os.path.abspath(filename)
+        if ':' in section:
+            section = section.split(':', 1)[1]
+        conf = 'config:%s#%s' % (filename, section)
+        conf = appconfig(conf)
+        conf.filename = filename
+        func(command, conf, vars)

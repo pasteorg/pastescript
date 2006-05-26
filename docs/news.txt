@@ -1,6 +1,12 @@
 News: Paste Script
 ==================
 
+0.9
+---
+
+* Installer calls ``websetup.setup_app(command, conf, vars)``;
+  ``setup_config()`` will be deprecated in the future
+
 0.5
 ---
 
