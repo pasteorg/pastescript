@@ -402,6 +402,8 @@ class Command(object):
         the user what to do if a file exists with different content.
         """
         global difflib
+        assert content is not None, (
+            "You cannot pass a content of None")
         self.ensure_dir(os.path.dirname(filename), svn_add=svn_add)
         if not os.path.exists(filename):
             if self.verbose:
@@ -513,10 +515,25 @@ class Command(object):
         """
         Runs the command, respecting verbosity and simulation.
         Returns stdout, or None if simulating.
+        
+        Keyword arguments:
+        
+        cwd: 
+            the current working directory to run the command in
+        capture_stderr: 
+            if true, then both stdout and stderr will be returned
+        expect_returncode: 
+            if true, then don't fail if the return code is not 0
+        force_no_simulate:
+            if true, run the command even if --simulate
         """
         cwd = popdefault(kw, 'cwd', os.getcwd())
         capture_stderr = popdefault(kw, 'capture_stderr', False)
         expect_returncode = popdefault(kw, 'expect_returncode', False)
+        force = popdefault(kw, 'force_no_simulate', False)
+        simulate = self.simulate
+        if force:
+            simulate = False
         assert not kw, ("Arguments not expected: %s" % kw)
         if capture_stderr:
             stderr_pipe = subprocess.STDOUT
@@ -536,7 +553,7 @@ class Command(object):
                 % (cmd, e))
         if self.verbose:
             print 'Running %s %s' % (cmd, ' '.join(args))
-        if self.simulate:
+        if simulate:
             return None
         stdout, stderr = proc.communicate()
         if proc.returncode and not expect_returncode:
