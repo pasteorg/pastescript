@@ -15,6 +15,9 @@ If you are developer, see the `Developer Documentation
 templates to ``paster``.  For a list of updates see the `news file
 <news.html>`_.
 
+Paste Script is released under the `MIT license
+<http://www.opensource.org/licenses/mit-license.php>`_.
+
 ``paster serve``
 ----------------
 
