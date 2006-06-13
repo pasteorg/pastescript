@@ -1,3 +1,5 @@
+# (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
+# Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 """
 This is a module to check the filesystem for the presence and
 permissions of certain files.  It can also be used to correct the

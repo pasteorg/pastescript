@@ -1,3 +1,5 @@
+# (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
+# Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 """A collection of string operations (most are no longer used).
 
 Warning: most of the code you see here isn't normally used nowadays.
