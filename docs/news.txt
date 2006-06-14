@@ -7,6 +7,16 @@ News: Paste Script
 * Installer calls ``websetup.setup_app(command, conf, vars)``;
   ``setup_config()`` will be deprecated in the future
 
+* Added copyright information
+
+* ``paster serve config.ini#section`` works now
+
+* ``paster make-config/setup-app`` will read ``$PASTE_SYSCONFIG`` to
+  find extra ``sysconfig.py`` files.
+
+* ``paster create`` will now query interactively for variables if they
+  aren't explicitly provided.
+
 0.5
 ---
 
