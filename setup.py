@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.5.2'
+version = '0.9.1'
 
 setup(
     name="PasteScript",
