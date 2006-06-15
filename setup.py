@@ -41,6 +41,7 @@ For the latest changes see the `news file
     author_email="ianb@colorstudy.com",
     url="http://pythonpaste.org/script/",
     namespace_packages=['paste'],
+    license='MIT',
     packages=find_packages(exclude='tests'),
     package_data={
       'paste.script': ['templates/basic_package/setup.*',
