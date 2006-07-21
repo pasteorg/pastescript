@@ -184,10 +184,9 @@ The source files are just a directory of files that will be copied
 into place, potentially with variable substitutions.  Three variables
 are expected: ``project`` is the project name (e.g., ``Project-Name``),
 ``package`` is the Python package in that project (e.g.,
-``projectname``) and ``egg_info_dir`` is the project's .egg-info
-directory name as expected by setuptools (e.g.,
-``Project_Name.egg-info``). Users can add other variables by adding
-``foo=bar`` arguments to ``paster create``.
+``projectname``) and ``egg`` is the project's egg name as expected by
+setuptools (e.g., ``Project_Name``). Users can add other variables by
+adding ``foo=bar`` arguments to ``paster create``.
 
 Filenames are substituted with ``+var_name+``, e.g., ``+package+`` is
 the package directory.

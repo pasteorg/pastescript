@@ -91,7 +91,7 @@ class CreateDistroCommand(Command):
         pkg_name = self._bad_chars_re.sub('', dist_name.lower())
         vars = {'project': dist_name,
                 'package': pkg_name,
-                'egg_info_dir': pluginlib.egg_info_dir('', dist_name),
+                'egg': pluginlib.egg_name(dist_name),
                 }
         vars.update(self.parse_vars(self.args[1:]))
         if self.options.config and os.path.exists(self.options.config):
@@ -123,7 +123,7 @@ class CreateDistroCommand(Command):
         elif self.verbose > 1:
             print 'No setup.py (cannot run egg_info)'
 
-        egg_info_dir = os.path.join(output_dir, vars['egg_info_dir'])
+        egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
         for template in templates:
             for spec in template.egg_plugins:
                 if self.verbose:

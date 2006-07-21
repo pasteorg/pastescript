@@ -4,10 +4,12 @@ News: Paste Script
 0.9.1
 ---
 
-* Added the ``egg_info_dir`` template variable: provides projects
-  with a safe .egg-info directory name as expected by setuptools.
-  This should be used instead of ``+project+.egg-info`` to prevent
-  ``paster create`` errors with project names containing hyphens.
+* Added the ``egg`` template variable: provides projects with a safe
+  egg name as expected by setuptools. This should be used for egg-info
+  directories in templates (e.g. ``+egg+.egg-info`` instead of
+  ``+project+.egg-info``), config files (e.g. use = egg:${egg}), and
+  anywhere else the egg name is expected, to prevent errors with
+  project names containing hyphens.
 
 0.9
 ---

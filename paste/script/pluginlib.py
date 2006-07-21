@@ -114,11 +114,8 @@ def load_global_commands():
         commands[p.name] = p
     return commands
 
+def egg_name(dist_name):
+    return pkg_resources.to_filename(pkg_resources.safe_name(dist_name))
+
 def egg_info_dir(base_dir, dist_name):
-    # @@: This should be replaced with pkg_resources.to_filename
-    # sometime later (to_filename() did not exist at the time this
-    # function was written).  Probably with setuptools 0.6a10's
-    # release.
-    name = pkg_resources.safe_name(dist_name)
-    name = name.replace('-', '_')
-    return os.path.join(base_dir, name + '.egg-info')
+    return os.path.join(base_dir, egg_name(dist_name) + '.egg-info')
