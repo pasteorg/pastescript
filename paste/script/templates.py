@@ -44,7 +44,6 @@ class Template(object):
         return os.path.join(self.module_dir(), self._template_dir)
 
     def run(self, command, output_dir, vars):
-        vars = self.check_vars(vars, command)
         self.pre(command, output_dir, vars)
         self.write_files(command, output_dir, vars)
         self.post(command, output_dir, vars)

@@ -113,6 +113,13 @@ class CreateDistroCommand(Command):
         if self.options.svn_repository:
             self.setup_svn_repository(output_dir, dist_name)
 
+        # First we want to make sure all the templates get a chance to
+        # set their variables, all at once, with the most specialized
+        # template going first (the last template is the most
+        # specialized)...
+        for template in templates[::-1]:
+            vars = template.check_vars(vars, self)
+            
         for template in templates:
             self.create_template(
                 template, output_dir, vars)
