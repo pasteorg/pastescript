@@ -39,7 +39,7 @@ class FileOp(object):
         self.template_vars = template_vars
         self.source_dir = source_dir
     
-    def copy_file(self, template, dest, filename=None, add_py=True):
+    def copy_file(self, template, dest, filename=None, add_py=True, package=True):
         """
         Copy a file from the source location to somewhere in the
         destination.
@@ -54,21 +54,25 @@ class FileOp(object):
             as the template if not provided
         add_py
             Add a .py extension to all files copied
+        package
+            Whether or not this file is part of a Python package, and any
+            directories created should contain a __init__.py file as well.
+        
         """
         if not filename:
             filename = template.split('/')[0]
             if filename.endswith('_tmpl'):
                 filename = filename[:-5]
-        base_package, cdir = self.find_dir(dest)
+        base_package, cdir = self.find_dir(dest, package)
         self.template_vars['base_package'] = base_package
         content = self.load_content(base_package, cdir, filename, template)
         if add_py:
             # @@: Why is it a default to add a .py extension? 
             filename = '%s.py' % filename
         dest = os.path.join(cdir, filename)
-        self.ensure_file(dest, content)
+        self.ensure_file(dest, content, package)
     
-    def copy_dir(self, template_dir, dest, destname=None):
+    def copy_dir(self, template_dir, dest, destname=None, package=True):
         """
         Copy a directory recursively, processing any files within it
         that need to be processed (end in _tmpl).
@@ -81,9 +85,12 @@ class FileOp(object):
         destname
             Use this name instead of the original template_dir name for
             creating the directory
+        package
+            This directory will be a Python package and needs to have a
+            __init__.py file.
         """
         # @@: This should actually be implemented
-        pass  
+        pass
 
     def load_content(self, base_package, base, name, template):
         blank = os.path.join(base, name + '.py')
@@ -98,7 +105,7 @@ class FileOp(object):
                                                  filename=blank)
         return content
 
-    def find_dir(self, dirname):
+    def find_dir(self, dirname, package=False):
         egg_info = pluginlib.find_egg_info_dir(os.getcwd())
         # @@: Should give error about egg_info when top_level.txt missing
         f = open(os.path.join(egg_info, 'top_level.txt'))
@@ -114,7 +121,7 @@ class FileOp(object):
             if os.path.exists(d):
                 possible.append((pkg, d))
         if not possible:
-            self.ensure_dir(os.path.join(base, pkg, dirname))
+            self.ensure_dir(os.path.join(base, pkg, dirname), package=package)
             return self.find_dir(dirname)
         if len(possible) > 1:
             raise BadCommand(
@@ -150,13 +157,18 @@ class FileOp(object):
             dir = os.path.join(*parts[:-1])
         return name, dir
     
-    def ensure_dir(self, dir, svn_add=True):
+    def ensure_dir(self, dir, svn_add=True, package=False):
         """
         Ensure that the directory exists, creating it if necessary.
         Respects verbosity and simulation.
 
         Adds directory to subversion if ``.svn/`` directory exists in
         parent, and directory was created.
+        
+        package
+            If package is True, any directories created will contain a
+            __init__.py file.
+        
         """
         dir = dir.rstrip(os.sep)
         if not dir:
@@ -167,7 +179,7 @@ class FileOp(object):
             # exists.
             return
         if not os.path.exists(dir):
-            self.ensure_dir(os.path.dirname(dir))
+            self.ensure_dir(os.path.dirname(dir), svn_add=svn_add, package=package)
             if self.verbose:
                 print 'Creating %s' % self.shorten(dir)
             if not self.simulate:
@@ -175,18 +187,27 @@ class FileOp(object):
             if (svn_add and
                 os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
                 self.run_command('svn', 'add', dir)
+            if package:
+                initfile = os.path.join(dir, '__init__.py')
+                f = open(initfile, 'wb')
+                f.write("#\n")
+                f.close()
+                print 'Creating %s' % self.shorten(initfile)
+                if (svn_add and
+                    os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
+                    self.run_command('svn', 'add', initfile)
         else:
             if self.verbose > 1:
                 print "Directory already exists: %s" % self.shorten(dir)
 
-    def ensure_file(self, filename, content, svn_add=True):
+    def ensure_file(self, filename, content, svn_add=True, package=False):
         """
         Ensure a file named ``filename`` exists with the given
         content.  If ``--interactive`` has been enabled, this will ask
         the user what to do if a file exists with different content.
         """
         global difflib
-        self.ensure_dir(os.path.dirname(filename), svn_add=svn_add)
+        self.ensure_dir(os.path.dirname(filename), svn_add=svn_add, package=package)
         if not os.path.exists(filename):
             if self.verbose:
                 print 'Creating %s' % filename
