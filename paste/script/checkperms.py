@@ -327,14 +327,15 @@ class PermissionSpec(object):
 class _Rule(object):
     class __metaclass__(type):
         def __new__(meta, class_name, bases, d):
-            cls = type(class_name, bases, d)
-            PermissionSpec.commands[cls.name] = cls
+            cls = type.__new__(meta, class_name, bases, d)
+            PermissionSpec.commands[cls.__name__] = cls
+            return cls
 
     inherit = False
     def noexists(self):
         return ['Path %s does not exist' % path]
 
-class _NoModify(Rule):
+class _NoModify(_Rule):
 
     name = 'nomodify'
                 
@@ -344,7 +345,7 @@ class _NoModify(Rule):
     def fix(self, path):
         pass
 
-class _NoExist(Rule):
+class _NoExist(_Rule):
 
     name = 'noexist'
 
@@ -361,7 +362,7 @@ class _NoExist(Rule):
         # @@: Should delete?
         pass
 
-class _SymLink(Rule):
+class _SymLink(_Rule):
 
     name = 'symlink'
     inherit = True
@@ -396,7 +397,7 @@ class _SymLink(Rule):
             # @@: This should correct the symlink or something:
             print 'Not symlinking %s' % path
 
-class _Permission(Rule):
+class _Permission(_Rule):
 
     name = '*'
 
