@@ -1,6 +1,13 @@
 News: Paste Script
 ==================
 
+0.9.7
+-----
+
+* Update to filemaker commands to take optional argument so that when
+  new directories are for a Python package, they will have a __init__.py
+  created as well.
+
 0.9.6
 -----
 
