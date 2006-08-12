@@ -3,7 +3,7 @@ ez_setup.use_setuptools()
 from setuptools import setup, find_packages
 import re, os
 
-version = '0.9.7'
+version = '0.9.8'
 
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
 news = open(news).read()
