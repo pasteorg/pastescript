@@ -131,8 +131,7 @@ class Template(object):
         """
         pass
 
-class NoDefault:
-    pass
+NoDefault = command.NoDefault
 
 class var(object):
 
@@ -141,6 +140,11 @@ class var(object):
         self.name = name
         self.description = description
         self.default = default
+
+    def __repr__(self):
+        return '<%s %s default=%r>' % (
+            self.__class__.__name__,
+            self.name, self.default)
 
     def full_description(self):
         if self.description:
