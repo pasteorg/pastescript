@@ -1,6 +1,13 @@
 News: Paste Script
 ==================
 
+0.9.8
+-----
+
+* New projects will now ignore
+  ``Package.egg-info/dependency_links.txt``, just like all the other
+  derivative files in the ``egg-info`` directory
+
 0.9.7
 -----
 

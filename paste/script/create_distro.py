@@ -191,6 +191,7 @@ class CreateDistroCommand(Command):
         'PKG-INFO',
         'namespace_packages.txt',
         'SOURCES.txt',
+        'dependency_links.txt',
         'not-zip-safe']
 
     def add_svn_repository(self, vars, output_dir):

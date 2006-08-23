@@ -2,7 +2,8 @@ import urllib
 import os
 from paste.fixture import *
 import pkg_resources
-for spec in ['PasteScript', 'Paste', 'PasteDeploy']:
+for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'PasteWebKit',
+             'ZPTKit']:
     pkg_resources.require(spec)
 
 template_path = os.path.join(
