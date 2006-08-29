@@ -306,6 +306,8 @@ class ServeCommand(Command):
             print 'Starting subprocess with file monitor'
         while 1:
             args = [sys.executable] + sys.argv
+            if sys.platform == "win32":
+                args = ['"%s"' % arg for arg in args]
             new_environ = os.environ.copy()
             new_environ[self._reloader_environ_key] = 'true'
             exit_code = os.spawnve(os.P_WAIT, sys.executable,

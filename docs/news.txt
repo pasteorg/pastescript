@@ -8,6 +8,10 @@ News: Paste Script
   ``Package.egg-info/dependency_links.txt``, just like all the other
   derivative files in the ``egg-info`` directory
 
+* ``paster serve --reload`` was broken on Windows when the Python
+  executable was in a directory with spaces in it.  This is probably a
+  bug in the ``subprocess`` module.
+
 0.9.7
 -----
 
