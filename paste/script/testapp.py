@@ -3,7 +3,7 @@
 import cgi
 import os
 
-page_template = '''
+html_page_template = '''
 <html>
 <head>
   <title>Test Application</title>
@@ -24,12 +24,15 @@ to the URL
 </html>
 '''
 
-row_template = '''
+html_row_template = '''
 <tr>
  <td><b>%(key)s</b></td>
  <td><tt>%(value_literal)s</b></td>
 </tr>
 '''
+
+text_page_template = '%(environ)s'
+text_row_template = '%(key)s: %(value_repr)s\n'
 
 def make_literal(value):
     value = cgi.escape(value, 1)
@@ -37,6 +40,16 @@ def make_literal(value):
     value = value.replace('\r', '\n')
     value = value.replace('\n', '<br>\n')
     return value
+
+def make_test_application(global_conf, text=False, lint=False):
+    from paste.deploy.converters import asbool
+    text = asbool(text)
+    lint = asbool(lint)
+    app = TestApplication(global_conf=global_conf, text=text)
+    if lint:
+        from paste.lint import middleware
+        app = middleware(app)
+    return app
 
 class TestApplication(object):
 
@@ -46,12 +59,19 @@ class TestApplication(object):
     deliberately throw an exception.
     """
 
-    def __init__(self, global_conf):
+    def __init__(self, global_conf=None, text=False):
         self.global_conf = global_conf
+        self.text = text
 
     def __call__(self, environ, start_response):
         if environ.get('QUERY_STRING', '').find('error=') >= 0:
             assert 0, "Here is your error report, ordered and delivered"
+        if self.text:
+            page_template = text_page_template
+            row_template = text_row_template
+        else:
+            page_template = html_page_template
+            row_template = html_row_template
         keys = environ.keys()
         keys.sort()
         rows = []

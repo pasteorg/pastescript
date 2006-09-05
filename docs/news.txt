@@ -1,6 +1,15 @@
 News: Paste Script
 ==================
 
+0.9.9
+-----
+
+* egg:PasteScript#test (the paste.script.testapp) now accepts ``lint``
+  and ``text`` boolean configuration.  ``lint`` will turn on
+  ``paste.lint`` validation.  ``text`` will cause it to return a
+  simple text/plain response with the environ, instead of an HTML
+  table.
+
 0.9.8
 -----
 

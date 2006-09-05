@@ -109,7 +109,7 @@ setup(
     cgi=paste.script.cgi_server:paste_run_cgi
 
     [paste.app_factory]
-    test=paste.script.testapp:TestApplication
+    test=paste.script.testapp:make_test_application
 
     [paste.deployer]
     test=paste.script.testapp:Deployer
