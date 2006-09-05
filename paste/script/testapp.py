@@ -69,9 +69,11 @@ class TestApplication(object):
         if self.text:
             page_template = text_page_template
             row_template = text_row_template
+            content_type = 'text/plain; charset=utf8'
         else:
             page_template = html_page_template
             row_template = html_row_template
+            content_type = 'text/html; charset=utf8'
         keys = environ.keys()
         keys.sort()
         rows = []
@@ -91,7 +93,7 @@ class TestApplication(object):
         page = page_template % {'environ': rows}
         if isinstance(page, unicode):
             page = page.encode('utf8')
-        headers = [('Content-type', 'text/html; charset=utf8')]
+        headers = [('Content-type', content_type)]
         start_response('200 OK', headers)
         return [page]
     
