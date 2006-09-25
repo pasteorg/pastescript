@@ -6,6 +6,7 @@ Provides the two commands for preparing an application:
 """
 
 import os
+import sys
 import new
 from cStringIO import StringIO
 from paste.script.command import Command, BadCommand, run as run_command
@@ -561,6 +562,10 @@ class Installer(object):
                 mod = import_string.import_module(mod_name)
             except ImportError:
                 if command.verbose > 1:
+                    import traceback
+                    print 'Error loading module %s for setup' % mod_name
+                    traceback.print_exc(file=sys.stdout)
+                elif command.verbose > 0:
                     print 'No %s module found for setup' % mod_name
                 continue
             if command.verbose:
