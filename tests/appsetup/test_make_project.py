@@ -35,8 +35,7 @@ def paster_create():
                       'ProjectName',
                       'version=0.1',
                       'author=Test Author',
-                      'author_email=test@example.com',
-                      )
+                      'author_email=test@example.com')
     expect_fn = ['tests', 'docs', 'projectname', 'docs',
                  'setup.py', 'ProjectName.egg-info',
                  ]
@@ -53,8 +52,11 @@ def paster_create():
     setup.mustcontain("include_package_data")
     assert '0.1' in setup
     sitepage = res.files_created['ProjectName/projectname/sitepage.py']
+    proj_dir = os.path.join(testenv.cwd, 'ProjectName')
+    testenv.run('svn commit -m "new project"',
+                cwd=proj_dir)
     testenv.run('python setup.py egg_info',
-                cwd=os.path.join(testenv.cwd, 'ProjectName'),
+                cwd=proj_dir,
                 expect_stderr=True)
     testenv.run('svn', 'commit', '-m', 'Created project', 'ProjectName')
     # A new environment with a new
@@ -66,9 +68,12 @@ def paster_create():
     projenv.environ['PYTHONPATH'] = (
         projenv.environ.get('PYTHONPATH', '') + ':'
         + projenv.base_path)
+    projenv.proj_dir = proj_dir
 
 def make_servlet():
-    res = projenv.run('paster servlet --verbose --simulate test1')
+    res = projenv.run(
+        'paster servlet --verbose --simulate test1',
+        cwd=projenv.proj_dir)
     assert not res.files_created and not res.files_updated
     res = projenv.run('paster servlet -vvv test1')
     assert 'projectname/web/test1.py' in res.files_created

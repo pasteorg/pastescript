@@ -126,7 +126,9 @@ class CreateDistroCommand(Command):
 
         if os.path.exists(os.path.join(output_dir, 'setup.py')):
             self.run_command(sys.executable, 'setup.py', 'egg_info',
-                             cwd=output_dir)
+                             cwd=output_dir,
+                             # This shouldn't be necessary, but a bug in setuptools 0.6c3 is causing a (not entirely fatal) problem that I don't want to fix right now:
+                             expect_returncode=True)
         elif self.verbose > 1:
             print 'No setup.py (cannot run egg_info)'
 
