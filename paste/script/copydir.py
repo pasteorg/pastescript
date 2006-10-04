@@ -32,21 +32,11 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         print '%sDirectory %s exists' % (pad, dest)
     for name in names:
         full = os.path.join(source, name)
-        if name.startswith('.'):
+        reason = should_skip_file(name)
+        if reason:
             if verbosity >= 2:
-                print '%sSkipping hidden file %s' % (pad, full)
-            continue
-        if name.endswith('~') or name.endswith('.bak'):
-            if verbosity >= 2:
-                print '%sSkipping backup file %s' % (pad, full)
-            continue
-        if name.endswith('.pyc'):
-            if verbosity >= 2:
-                print '%sSkipping .pyc file %s' % (pad, full)
-            continue
-        if name in ('CVS', '_darcs'):
-            if verbosity >= 2:
-                print '%sSkipping version control directory %s' % (pad, full)
+                reason = pad + reason % {'filename': full}
+                print reason
             continue
         if sub_vars:
             dest_full = os.path.join(dest, substitute_filename(name, vars))
@@ -107,6 +97,23 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                         print stdout
         elif svn_add and already_exists and verbosity > 1:
             print '%sFile already exists (not doing svn add)' % pad
+
+def should_skip_file(name):
+    """
+    Checks if a file should be skipped based on its name.
+
+    If it should be skipped, returns the reason, otherwise returns
+    None.
+    """
+    if name.startswith('.'):
+        return 'Skipping hidden file %(filename)s'
+    if name.endswith('~') or name.endswith('.bak'):
+        return 'Skipping backup file %(filename)s'
+    if name.endswith('.pyc'):
+        return 'Skipping .pyc file %(filename)s'
+    if name in ('CVS', '_darcs'):
+        return 'Skipping version control directory %(filename)s' % (pad, full)
+    return None
 
 # Overridden on user's request:
 all_answer = None
@@ -177,7 +184,7 @@ Responses:
   D(iff):   Show a unified diff of the proposed changes (dc=context diff)
   B(ackup): Save the current file contents to a .bak file
             (and overwrite)
-  Use "all Y/N/B" to use Y/N/B for answer to all future questions
+  Type "all Y/N/B" to use Y/N/B for answer to all future questions
 """
 
 def svn_makedirs(dir, svn_add, verbosity, pad):
