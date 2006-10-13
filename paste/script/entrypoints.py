@@ -120,7 +120,7 @@ class EntryPointCommand(Command):
                 print
 
     def wrap(self, text, indent=0):
-        text = textwrap.dedent(strip_newlines(text))
+        text = dedent(text)
         width = int(os.environ.get('COLUMNS', 70)) - indent
         text = '\n'.join([line.rstrip() for line in text.splitlines()])
         paras = text.split('\n\n')
@@ -226,7 +226,7 @@ class SuperGeneric(object):
 
     def __init__(self, doc_object):
         self.doc_object = doc_object
-        self.description = textwrap.dedent(strip_newlines(self.doc_object.__doc__))
+        self.description = dedent(self.doc_object.__doc__)
         try:
             if isinstance(self.doc_object, (type, types.ClassType)):
                 func = self.doc_object.__init__.im_func
@@ -243,11 +243,17 @@ class SuperGeneric(object):
         except TypeError:
             sig = None
         if sig:
-            self.description = '%s\n\n%s' % (
-                sig, self.description)
+            if self.description:
+                self.description = '%s\n\n%s' % (
+                    sig, self.description)
+            else:
+                self.description = sig
 
-def strip_newlines(s):
-    return s.strip('\n').strip('\r')
+def dedent(s):
+    if s is None:
+        return s
+    s = s.strip('\n').strip('\r')
+    return textwrap.dedent(s)
 
 def super_generic(obj):
     desc = SuperGeneric(obj)
