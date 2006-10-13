@@ -42,7 +42,7 @@ class EntryPointCommand(Command):
         if self.options.list_entry_points:
             return self.list_entry_points()
         if self.options.show_egg:
-            return self.show_egg()
+            return self.show_egg(self.options.show_egg)
         if not self.args:
             raise BadCommand("You must give an entry point (or --list)")
         pattern = self.get_pattern(self.args[0])
@@ -84,11 +84,43 @@ class EntryPointCommand(Command):
                 if desc and desc.description:
                     print self.wrap(desc.description, indent=4)
 
+    def show_egg(self, egg_name):
+        group_pat = None
+        if self.args:
+            group_pat = self.get_pattern(self.args[0])
+        if egg_name.startswith('egg:'):
+            egg_name = egg_name[4:]
+        dist = pkg_resources.get_distribution(egg_name)
+        entry_map = dist.get_entry_map()
+        entry_groups = entry_map.items()
+        entry_groups.sort()
+        for group, points in entry_groups:
+            if group_pat and not group_pat.search(group):
+                continue
+            print '[%s]' % group
+            points = points.items()
+            points.sort()
+            for name, entry in points:
+                print '%s = %s' % (entry.name, entry.module_name)
+                desc = self.get_entry_point_description(entry, group)
+                if desc and desc.description:
+                    print self.wrap(desc.description, indent=2)
+                print
+
     def wrap(self, text, indent=0):
         text = textwrap.dedent(text)
         width = int(os.environ.get('COLUMNS', 70)) - indent
-        lines = [
-            ' '*indent+line for line in textwrap.wrap(text, width)]
+        text = '\n'.join([line.rstrip() for line in text.splitlines()])
+        paras = text.split('\n\n')
+        new_paras = []
+        for para in paras:
+            if para.lstrip() == para:
+                # leading whitespace means don't rewrap
+                para = '\n'.join(textwrap.wrap(para, width))
+            new_paras.append(para)
+        text = '\n\n'.join(new_paras)
+        lines = [' '*indent + line
+                 for line in text.splitlines()]
         return '\n'.join(lines)
 
     def get_pattern(self, s):
