@@ -10,6 +10,9 @@ News: Paste Script
   simple text/plain response with the environ, instead of an HTML
   table.
 
+* Improvements all around to ``paster points``, plus documentation for
+  existing entry point groups.
+
 0.9.8
 -----
 

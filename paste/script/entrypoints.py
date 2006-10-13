@@ -216,12 +216,6 @@ class EntryPointDescription(object):
     # Should define:
     # * description
 
-class MetaEntryPointDescription(object):
-
-    description = """
-    This is an entry point that describes other entry points.
-    """
-
 class SuperGeneric(object):
 
     def __init__(self, doc_object):

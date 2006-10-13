@@ -111,11 +111,22 @@ setup(
     [paste.app_factory]
     test=paste.script.testapp:make_test_application
 
-    [paste.deployer]
-    test=paste.script.testapp:Deployer
-
     [paste.entry_point_description]
-    paste.entry_point_description = paste.script.entrypoints:MetaEntryPointDescription
+    paste.entry_point_description = paste.script.epdesc:MetaEntryPointDescription
+    paste.paster_create_template = paste.script.epdesc:CreateTemplateDescription
+    paste.paster_command = paste.script.epdesc:PasterCommandDescription
+    paste.global_paster_command = paste.script.epdesc:GlobalPasterCommandDescription
+    paste.app_install = paste.script.epdesc:AppInstallDescription
+
+    # These aren't part of Paste Script particularly, but
+    # we'll document them here
+    console_scripts = paste.script.epdesc:ConsoleScriptsDescription
+    # @@: Need non-console scripts...
+    distutils.commands = paste.script.epdesc:DistutilsCommandsDescription
+    distutils.setup_keywords = paste.script.epdesc:SetupKeywordsDescription
+    egg_info.writers = paste.script.epdesc:EggInfoWriters
+    # @@: Not sure what this does:
+    #setuptools.file_finders = paste.script.epdesc:SetuptoolsFileFinders
     
     [console_scripts]
     paster=paste.script.command:run
