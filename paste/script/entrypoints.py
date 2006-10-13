@@ -8,6 +8,8 @@ import fnmatch
 import re
 import traceback
 from cStringIO import StringIO
+import inspect
+import types
 
 class EntryPointCommand(Command):
 
@@ -23,7 +25,7 @@ class EntryPointCommand(Command):
     entry point is named.
     """
     
-    max_args = 1
+    max_args = 2
 
     parser = Command.standard_parser(verbose=False)
     parser.add_option('--list', '-l',
@@ -49,6 +51,9 @@ class EntryPointCommand(Command):
         groups = self.get_groups_by_pattern(pattern)
         if not groups:
             raise BadCommand('No group matched %s' % self.args[0])
+        ep_pat = None
+        if len(self.args) > 1:
+            ep_pat = self.get_pattern(self.args[1])
         for group in groups:
             desc = self.get_group_description(group)
             print '[%s]' % group
@@ -56,9 +61,9 @@ class EntryPointCommand(Command):
                 print self.wrap(desc)
                 print
             by_dist = {}
-            self.print_entry_points_by_group(group)
+            self.print_entry_points_by_group(group, ep_pat)
 
-    def print_entry_points_by_group(self, group):
+    def print_entry_points_by_group(self, group, ep_pat):
         env = pkg_resources.Environment()
         project_names = list(env)
         project_names.sort()
@@ -67,6 +72,9 @@ class EntryPointCommand(Command):
             assert dists
             dist = dists[0]
             entries = dist.get_entry_map(group).values()
+            if ep_pat:
+                entries = [e for e in entries
+                           if ep_pat.search(e.name)]
             if not entries:
                 continue
             if len(dists) > 1:
@@ -77,9 +85,7 @@ class EntryPointCommand(Command):
             entries.sort(lambda a, b: cmp(a.name, b.name))
             longest_name = max([len(entry.name) for entry in entries])
             for entry in entries:
-                print '  %s%s = %s' % (
-                    entry.name, ' '*(longest_name-len(entry.name)),
-                    entry.module_name)
+                print self._ep_description(entry, longest_name)
                 desc = self.get_entry_point_description(entry, group)
                 if desc and desc.description:
                     print self.wrap(desc.description, indent=4)
@@ -88,6 +94,9 @@ class EntryPointCommand(Command):
         group_pat = None
         if self.args:
             group_pat = self.get_pattern(self.args[0])
+        ep_pat = None
+        if len(self.args) > 1:
+            ep_pat = self.get_pattern(self.args[1])
         if egg_name.startswith('egg:'):
             egg_name = egg_name[4:]
         dist = pkg_resources.get_distribution(egg_name)
@@ -101,7 +110,10 @@ class EntryPointCommand(Command):
             points = points.items()
             points.sort()
             for name, entry in points:
-                print '%s = %s' % (entry.name, entry.module_name)
+                if ep_pat:
+                    if not ep_pat.search(name):
+                        continue
+                print self._ep_description(entry)
                 desc = self.get_entry_point_description(entry, group)
                 if desc and desc.description:
                     print self.wrap(desc.description, indent=2)
@@ -122,6 +134,15 @@ class EntryPointCommand(Command):
         lines = [' '*indent + line
                  for line in text.splitlines()]
         return '\n'.join(lines)
+
+    def _ep_description(self, ep, pad_name=None):
+        name = ep.name
+        if pad_name is not None:
+            name = name + ' '*(pad_name-len(name))
+        dest = ep.module_name
+        if ep.attrs:
+            dest = dest + ':' + '.'.join(ep.attrs)
+        return '%s = %s' % (name, dest)
 
     def get_pattern(self, s):
         if not s:
@@ -181,7 +202,6 @@ class EntryPointCommand(Command):
             if not generic:
                 return super_generic(ep.load())
             # @@: Error if len(generic) > 1?
-            print generic
             obj = generic[0].load()
             desc = obj(ep, group)
         else:
@@ -206,7 +226,25 @@ class SuperGeneric(object):
 
     def __init__(self, doc_object):
         self.doc_object = doc_object
-        self.description = self.doc_object.__doc__
+        self.description = textwrap.dedent(self.doc_object.__doc__.strip())
+        try:
+            if isinstance(self.doc_object, (type, types.ClassType)):
+                func = self.doc_object.__init__.im_func
+            elif (hasattr(self.doc_object, '__call__')
+                  and not isinstance(self.doc_object, types.FunctionType)):
+                func = self.doc_object.__call__
+            else:
+                func = self.doc_object
+            if hasattr(func, '__paste_sig__'):
+                sig = func.__paste_sig__
+            else:
+                sig = inspect.getargspec(func)
+                sig = inspect.formatargspec(*sig)
+        except TypeError:
+            sig = None
+        if sig:
+            self.description = '%s\n\n%s' % (
+                sig, self.description)
 
 def super_generic(obj):
     desc = SuperGeneric(obj)
