@@ -181,7 +181,11 @@ class EntryPointCommand(Command):
     def get_group_description(self, group):
         for entry in pkg_resources.iter_entry_points('paste.entry_point_description'):
             if entry.name == group:
-                return entry.load()
+                ep = entry.load()
+                if hasattr(ep, 'description'):
+                    return ep.description
+                else:
+                    return ep
         return None
 
     def get_entry_point_description(self, ep, group):
