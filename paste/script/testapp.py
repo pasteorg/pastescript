@@ -41,16 +41,6 @@ def make_literal(value):
     value = value.replace('\n', '<br>\n')
     return value
 
-def make_test_application(global_conf, text=False, lint=False):
-    from paste.deploy.converters import asbool
-    text = asbool(text)
-    lint = asbool(lint)
-    app = TestApplication(global_conf=global_conf, text=text)
-    if lint:
-        from paste.lint import middleware
-        app = middleware(app)
-    return app
-
 class TestApplication(object):
 
     """
@@ -97,3 +87,15 @@ class TestApplication(object):
         start_response('200 OK', headers)
         return [page]
     
+
+def make_test_application(global_conf, text=False, lint=False):
+    from paste.deploy.converters import asbool
+    text = asbool(text)
+    lint = asbool(lint)
+    app = TestApplication(global_conf=global_conf, text=text)
+    if lint:
+        from paste.lint import middleware
+        app = middleware(app)
+    return app
+
+make_test_application.__doc__ = TestApplication.__doc__
