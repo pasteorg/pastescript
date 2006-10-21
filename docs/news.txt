@@ -1,6 +1,12 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* Fixed ``paster serve`` to hide KeyboardInterrupt (CTRL-C) tracebacks
+  in ``--reload`` mode.
+
 0.9.9
 -----
 

@@ -310,8 +310,13 @@ class ServeCommand(Command):
                 args = ['"%s"' % arg for arg in args]
             new_environ = os.environ.copy()
             new_environ[self._reloader_environ_key] = 'true'
-            exit_code = os.spawnve(os.P_WAIT, sys.executable,
-                                   args, new_environ)
+            try:
+                exit_code = os.spawnve(os.P_WAIT, sys.executable,
+                                       args, new_environ)
+            except KeyboardInterrupt:
+                if self.verbose > 1:
+                    raise
+                return 1
             if exit_code != 3:
                 return exit_code
             if self.verbose > 0:
