@@ -4,6 +4,8 @@ News: Paste Script
 svn trunk
 ---------
 
+* Added entry point for CherryPy 3's WSGI server.
+
 * Fixed ``paster serve`` to hide KeyboardInterrupt (CTRL-C) tracebacks
   in ``--reload`` mode.
 
