@@ -9,6 +9,10 @@ svn trunk
 * Fixed ``paster serve`` to hide KeyboardInterrupt (CTRL-C) tracebacks
   in ``--reload`` mode.
 
+* Added ``template_renderer`` argument to
+  ``paste.script.copydir.copydir``.  This allows you to use arbitrary
+  template languages, instead of just ``string.Template`` and Cheetah.
+
 0.9.9
 -----
 

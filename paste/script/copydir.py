@@ -18,7 +18,7 @@ import inspect
 
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
              use_cheetah=False, sub_vars=True, interactive=False,
-             svn_add=True, overwrite=True):
+             svn_add=True, overwrite=True, template_renderer=None):
     names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
@@ -50,14 +50,15 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             copy_dir(full, dest_full, vars, verbosity, simulate,
                      indent=indent+1, use_cheetah=use_cheetah,
                      sub_vars=sub_vars, interactive=interactive,
-                     svn_add=svn_add)
+                     svn_add=svn_add, template_renderer=template_renderer)
             continue
         f = open(full, 'rb')
         content = f.read()
         f.close()
         if sub_file:
             content = substitute_content(content, vars, filename=full,
-                                         use_cheetah=use_cheetah)
+                                         use_cheetah=use_cheetah,
+                                         template_renderer=template_renderer)
         already_exists = os.path.exists(dest_full)
         if already_exists:
             f = open(dest_full, 'rb')
@@ -213,8 +214,10 @@ def substitute_filename(fn, vars):
     return fn
 
 def substitute_content(content, vars, filename='<string>',
-                       use_cheetah=False):
+                       use_cheetah=False, template_renderer=None):
     global Cheetah
+    if template_renderer is not None:
+        return template_renderer(content, vars, filename=filename)
     if not use_cheetah:
         v = standard_vars.copy()
         v.update(vars)
