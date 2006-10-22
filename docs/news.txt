@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.0
+---
 
 * Added entry point for CherryPy 3's WSGI server.
 

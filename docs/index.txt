@@ -18,6 +18,15 @@ templates to ``paster``.  For a list of updates see the `news file
 Paste Script is released under the `MIT license
 <http://www.opensource.org/licenses/mit-license.php>`_.
 
+Status
+------
+
+Paste Script is now at version 1.0.  Paste Script is an actively
+maintained project.  As of 1.0, we'll make a strong effort to maintain
+backward compatibility.  This will include deprecation warnings when
+necessary.  Major changes will take place under new functions or with
+new entry points.
+
 ``paster serve``
 ----------------
 
