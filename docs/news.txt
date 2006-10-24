@@ -1,6 +1,15 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* Added a ``warn_returncode`` option to ``Command.run_command``, and
+  make ``ensure_file`` use this for its svn command.
+
+* If the svn command-line program isn't working for you, commands that
+  use ``ensure_file`` will continue to work but just with a warning.
+
 1.0
 ---
 

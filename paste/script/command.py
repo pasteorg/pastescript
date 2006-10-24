@@ -413,7 +413,8 @@ class Command(object):
                 f.write(content)
                 f.close()
             if svn_add and os.path.exists(os.path.join(os.path.dirname(filename), '.svn')):
-                self.run_command('svn', 'add', filename)
+                self.run_command('svn', 'add', filename,
+                                 warn_returncode=True)
             return
         f = open(filename, 'rb')
         old_content = f.read()
@@ -531,6 +532,9 @@ class Command(object):
         capture_stderr = popdefault(kw, 'capture_stderr', False)
         expect_returncode = popdefault(kw, 'expect_returncode', False)
         force = popdefault(kw, 'force_no_simulate', False)
+        warn_returncode = popdefault(kw, 'warn_returncode', False)
+        if warn_returncode:
+            expect_returncode = True
         simulate = self.simulate
         if force:
             simulate = False
@@ -570,6 +574,9 @@ class Command(object):
             if stdout:
                 print 'Command output:'
                 print stdout
+        elif proc.returncode and warn_returncode:
+            print 'Warning: command failed (%s %s)' % (cmd, ' '.join(args))
+            print 'Exited with code %s' % proc.returncode
         return stdout
 
     def write_file(self, filename, content, source=None,
