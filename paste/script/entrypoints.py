@@ -160,7 +160,9 @@ class EntryPointCommand(Command):
             desc = self.get_group_description(group)
             print '[%s]' % group
             if desc:
-                print self.wrap(desc.description, indent=2)
+                if hasattr(desc, 'description'):
+                    desc = desc.description
+                print self.wrap(desc, indent=2)
 
     def get_groups_by_pattern(self, pattern):
         env = pkg_resources.Environment()
