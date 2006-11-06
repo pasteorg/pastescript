@@ -83,9 +83,8 @@ class EntryPointCommand(Command):
             else:
                 print '%s' % dist
             entries.sort(lambda a, b: cmp(a.name, b.name))
-            longest_name = max([len(entry.name) for entry in entries])
             for entry in entries:
-                print self._ep_description(entry, longest_name)
+                print self._ep_description(entry)
                 desc = self.get_entry_point_description(entry, group)
                 if desc and desc.description:
                     print self.wrap(desc.description, indent=4)
