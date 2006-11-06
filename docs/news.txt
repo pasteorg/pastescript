@@ -10,6 +10,9 @@ svn trunk
 * If the svn command-line program isn't working for you, commands that
   use ``ensure_file`` will continue to work but just with a warning.
 
+* Removed copyright notice that was accidentally included in new
+  packages created by ``paster create``
+
 1.0
 ---
 
