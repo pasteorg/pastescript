@@ -21,9 +21,8 @@ MAXFD = 1024
 
 class ServeCommand(Command):
 
-    max_args = 2
     min_args = 0
-    usage = 'CONFIG_FILE [start|stop|restart|status]'
+    usage = 'CONFIG_FILE [start|stop|restart|status] [var=value]'
     takes_config_file = 1
     summary = "Serve the described application"
     description = """\
@@ -32,6 +31,9 @@ class ServeCommand(Command):
     
     If start/stop/restart is given, then --daemon is implied, and it will
     start (normal operation), stop (--stop-daemon), or do both.
+
+    You can also include variable assignments like 'http_port=8080'
+    and then use %(http_port)s in your config files.
     """
     
     # used by subclasses that configure apps and servers differently
@@ -98,6 +100,7 @@ class ServeCommand(Command):
 
     _reloader_environ_key = 'PYTHON_RELOADER_SHOULD_RUN'
 
+    possible_subcommands = ('start', 'stop', 'restart', 'status')
     def command(self):
         if self.options.stop_daemon:
             return self.stop_daemon()
@@ -113,17 +116,23 @@ class ServeCommand(Command):
             if not self.args:
                 raise BadCommand('You must give a config file')
             app_spec = self.args[0]
-            if len(self.args) > 1:
+            if (len(self.args) > 1
+                and self.args[1] in self.possible_subcommands):
                 cmd = self.args[1]
+                restvars = self.args[2:]
             else:
                 cmd = None
+                restvars = self.args[1:]
         else:
             app_spec = ""
-            if self.args:
+            if (self.args
+                and self.args[0] in self.possible_subcommands):
                 cmd = self.args[0]
+                restvars = self.args[1:]
             else:
                 cmd = None
-            
+                restvars = self.args[:]
+
         if self.options.reload:
             if os.environ.get(self._reloader_environ_key):
                 from paste import reloader
@@ -154,6 +163,7 @@ class ServeCommand(Command):
                 return result
 
         app_name = self.options.app_name
+        vars = self.parse_vars(restvars)
         if not self._scheme_re.search(app_spec):
             app_spec = 'config:' + app_spec
         server_name = self.options.server_name
@@ -179,9 +189,9 @@ class ServeCommand(Command):
             # e.g., the root logger?
 
         server = self.loadserver(server_spec, name=server_name,
-                            relative_to=base)
+                                 relative_to=base, global_conf=vars)
         app = self.loadapp(app_spec, name=app_name,
-                      relative_to=base)
+                           relative_to=base, global_conf=vars)
 
         if self.verbose > 0:
             print 'Starting server in PID %i.' % os.getpid()
@@ -196,12 +206,15 @@ class ServeCommand(Command):
                 msg = ''
             print 'Exiting%s (-v to see traceback)' % msg
     
-    def loadserver(self, server_spec, name, relative_to):
-            return loadserver(server_spec, name=name,
-             relative_to=relative_to)
+    def loadserver(self, server_spec, name, relative_to, **kw):
+            return loadserver(
+                server_spec, name=name,
+                relative_to=relative_to, **kw)
     
-    def loadapp(self, app_spec, name, relative_to):
-            return loadapp(app_spec, name=name, relative_to=relative_to)
+    def loadapp(self, app_spec, name, relative_to, **kw):
+            return loadapp(
+                app_spec, name=name, relative_to=relative_to,
+                **kw)
 
     def daemonize(self):
         if self.verbose > 0:

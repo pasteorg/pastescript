@@ -13,6 +13,10 @@ svn trunk
 * Removed copyright notice that was accidentally included in new
   packages created by ``paster create``
 
+* Allow variable assignments at the end of ``paster serve``, like
+  ``paster serve http_port=80``; then you can use ``%(http_port)s`` in
+  your config files (requires up-to-date Paste Deploy).
+
 1.0
 ---
 
