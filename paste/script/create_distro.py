@@ -132,6 +132,10 @@ class CreateDistroCommand(Command):
         elif self.verbose > 1:
             print 'No setup.py (cannot run egg_info)'
 
+	package_dir = vars.get('package_dir', None)
+	if package_dir:
+	    output_dir = os.path.join(output_dir, package_dir)
+
         egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
         for template in templates:
             for spec in template.egg_plugins:
