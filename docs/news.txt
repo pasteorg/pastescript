@@ -17,6 +17,11 @@ svn trunk
   ``paster serve http_port=80``; then you can use ``%(http_port)s`` in
   your config files (requires up-to-date Paste Deploy).
 
+* Allow a ``package_dir`` variable so that you can put your package
+  into subdirectories of the base directory (e.g., ``src/``)
+
+* Changes to the ``twisted.web2`` wrapper (from pythy).
+
 1.0
 ---
 
