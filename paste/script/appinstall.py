@@ -553,11 +553,15 @@ class Installer(object):
         the extra attributes ``global_conf``, ``local_conf`` and
         ``filename``
         """
-        for line in self.dist.get_metadata_lines('top_level.txt'):
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            mod_name = line + '.websetup'
+        modules = [
+            line.strip()
+            for line in self.dist.get_metadata_lines('top_level.txt'):
+            if line.strip() and not line.strip().startswith('#')]
+        if not modules:
+            print 'No modules are listed in top_level.txt'
+            print 'Try running python setup.py egg_info to regenerate that file'
+        for mod_name in modules:
+            mod_name = mod_name + '.websetup'
             try:
                 mod = import_string.import_module(mod_name)
             except ImportError:

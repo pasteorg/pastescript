@@ -22,6 +22,10 @@ svn trunk
 
 * Changes to the ``twisted.web2`` wrapper (from pythy).
 
+* Warn when you run ``paster setup-app`` and no modules are listed in
+  ``top_level.txt`` (which can happen with a newly checked out
+  project).
+
 1.0
 ---
 
