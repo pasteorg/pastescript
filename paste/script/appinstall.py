@@ -555,7 +555,7 @@ class Installer(object):
         """
         modules = [
             line.strip()
-            for line in self.dist.get_metadata_lines('top_level.txt'):
+            for line in self.dist.get_metadata_lines('top_level.txt')
             if line.strip() and not line.strip().startswith('#')]
         if not modules:
             print 'No modules are listed in top_level.txt'
