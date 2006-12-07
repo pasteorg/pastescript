@@ -570,7 +570,7 @@ class Installer(object):
                     print 'Error loading module %s for setup' % mod_name
                     traceback.print_exc(file=sys.stdout)
                 elif command.verbose > 0:
-                    print 'No %s module found for setup' % mod_name
+                    print 'Warning: No %s module found for setup' % mod_name
                 continue
             if command.verbose:
                 print 'Running setup_config() from %s' % mod_name
