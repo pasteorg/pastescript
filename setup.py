@@ -110,6 +110,7 @@ setup(
     flup_scgi_fork=paste.script.flup_server:run_scgi_fork [Flup]
     cgi=paste.script.cgi_server:paste_run_cgi
     cherrypy=paste.script.cherrypy_server:cpwsgi_server [CherryPy]
+    twisted=paste.script.twisted_web2_server:run_twisted
 
     [paste.app_factory]
     test=paste.script.testapp:make_test_application

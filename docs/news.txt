@@ -1,6 +1,11 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* Added entry point for twisted server
+
 1.1
 ---
 
