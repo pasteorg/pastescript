@@ -9,7 +9,7 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
     """
     Serves the specified WSGI app via CherryPyWSGIServer.
 
-    (Requires CherryPy>=3.0.0beta)
+    (Requires CherryPy>=3.0.0)
 
     ``app``
 
@@ -65,7 +65,7 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
 
         The timeout in seconds for accepted connections.
     """
-    from cherrypy import _cpwsgiserver
+    from cherrypy import wsgiserver
 
     if ssl_pem:
         port = port or 4443
@@ -83,8 +83,8 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
         if var is not None:
             kwargs[var_name] = int(var)
 
-    server = _cpwsgiserver.CherryPyWSGIServer(bind_addr, app,
-                                              server_name=server_name, **kwargs)
+    server = wsgiserver.CherryPyWSGIServer(bind_addr, app,
+                                           server_name=server_name, **kwargs)
     server.ssl_certificate = server.ssl_private_key = ssl_pem
     if protocol_version:
         server.protocol = protocol_version

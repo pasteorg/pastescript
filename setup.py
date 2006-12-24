@@ -79,7 +79,7 @@ setup(
       'Config': ['PasteDeploy'],
       'WSGIUtils': ['WSGIUtils'],
       'Flup': ['Flup'],
-      'CherryPy': ['CherryPy>=3.0.0beta'],
+      'CherryPy': ['CherryPy>=3.0.0'],
       # the Paste feature means the complete set of features;
       # (other features are truly optional)
       'Paste': ['PasteDeploy', 'Cheetah'],
