@@ -90,7 +90,10 @@ def make_servlet():
 
 def do_pytest():
     res = projenv.run('py.test tests/',
-                      cwd=os.path.join(testenv.cwd, 'ProjectName'))
+                      cwd=os.path.join(testenv.cwd, 'ProjectName'),
+                      expect_stderr=True)
+    assert len(res.stderr.splitlines()) <= 1, (
+        "Too much info on stderr: %s" % res.stderr)
 
 def config_permissions():
     projenv.writefile('ProjectName.egg-info/iscape.txt',
@@ -99,7 +102,10 @@ def config_permissions():
                       frompath='admin_index.py')
     projenv.writefile('tests/test_forbidden.py',
                       frompath='test_forbidden.py')
-    res = projenv.run('py.test tests/test_forbidden.py')
+    res = projenv.run('py.test tests/test_forbidden.py',
+                      expect_stderr=True)
+    assert len(res.stderr.splitlines()) <= 1, (
+        "Too much info on stderr: %s" % res.stderr)
 
 def make_tag():
     global tagenv
