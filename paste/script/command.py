@@ -22,7 +22,7 @@ class BadCommand(Exception):
         self.exit_code = exit_code
         Exception.__init__(self, message)
 
-class NoDefault:
+class NoDefault(object):
     pass
 
 dist = pkg_resources.get_distribution('PasteScript')
