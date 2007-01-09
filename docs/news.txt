@@ -13,6 +13,10 @@ svn trunk
 
 * Added entry point for twisted server
 
+* Made ``paste.script.pluginlib:egg_info_dir`` work with packages that
+  put the ``Package.egg-info/`` directory in a subdirectory (typically
+  ``src/``).
+
 1.1
 ---
 
