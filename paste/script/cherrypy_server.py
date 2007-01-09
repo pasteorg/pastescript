@@ -1,6 +1,7 @@
 """
 Entry point for CherryPy's WSGI server
 """
+import paste.script.wsgiserver as wsgiserver
 
 def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
                   ssl_pem=None, protocol_version=None, numthreads=None,
@@ -8,8 +9,6 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
                   timeout=None):
     """
     Serves the specified WSGI app via CherryPyWSGIServer.
-
-    (Requires CherryPy>=3.0.0)
 
     ``app``
 
@@ -65,10 +64,10 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
 
         The timeout in seconds for accepted connections.
     """
-    from cherrypy import wsgiserver
-
+    is_ssl = False
     if ssl_pem:
         port = port or 4443
+        is_ssl = True
 
     if not port:
         if ':' in host:
@@ -90,7 +89,12 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
         server.protocol = protocol_version
 
     try:
-        print "serving on %s:%s" % bind_addr
+        protocol = is_ssl and 'https' or 'http'
+        if host == '0.0.0.0':
+            print 'serving on 0.0.0.0:%s view at %s://127.0.0.1:%s' % \
+                (port, protocol, port)
+        else:
+            print "serving on %s://%s:%s" % (protocol, host, port)
         server.start()
     except (KeyboardInterrupt, SystemExit):
         server.stop()

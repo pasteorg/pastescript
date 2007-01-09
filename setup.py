@@ -79,7 +79,6 @@ setup(
       'Config': ['PasteDeploy'],
       'WSGIUtils': ['WSGIUtils'],
       'Flup': ['Flup'],
-      'CherryPy': ['CherryPy>=3.0.0'],
       # the Paste feature means the complete set of features;
       # (other features are truly optional)
       'Paste': ['PasteDeploy', 'Cheetah'],
@@ -109,7 +108,7 @@ setup(
     flup_scgi_thread=paste.script.flup_server:run_scgi_thread [Flup]
     flup_scgi_fork=paste.script.flup_server:run_scgi_fork [Flup]
     cgi=paste.script.cgi_server:paste_run_cgi
-    cherrypy=paste.script.cherrypy_server:cpwsgi_server [CherryPy]
+    cherrypy=paste.script.cherrypy_server:cpwsgi_server
     twisted=paste.script.twisted_web2_server:run_twisted
 
     [paste.app_factory]
