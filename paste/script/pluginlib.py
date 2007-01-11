@@ -19,6 +19,8 @@ def add_plugin(egg_info_dir, plugin_name):
         # Nothing to do
         return
     lines.append(plugin_name)
+    if not os.path.exists(os.path.dirname(fn)):
+        os.makedirs(os.path.dirname(fn))
     f = open(fn, 'w')
     for line in lines:
         f.write(line)
