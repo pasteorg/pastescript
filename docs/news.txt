@@ -8,7 +8,7 @@ svn trunk
   and SIGTERM
 
 * The CherryPy wsgiserver is now available at
-``paste.script.wsgiserver`` (no longer requiring CherryPy to be
+  ``paste.script.wsgiserver`` (no longer requiring CherryPy to be
   installed)
 
 * Added entry point for twisted server
