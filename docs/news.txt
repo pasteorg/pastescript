@@ -17,6 +17,9 @@ svn trunk
   put the ``Package.egg-info/`` directory in a subdirectory (typically
   ``src/``).
 
+* Remove Cheetah requirement.  Packages using Cheetah templates should
+  require Cheetah themselves.
+
 1.1
 ---
 

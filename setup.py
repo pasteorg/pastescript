@@ -137,6 +137,5 @@ setup(
     install_requires=[
       'Paste',
       'PasteDeploy',
-      'Cheetah',
       ],
     )
