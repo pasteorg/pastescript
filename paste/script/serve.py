@@ -175,6 +175,15 @@ class ServeCommand(Command):
             server_spec = app_spec
         base = os.getcwd()
 
+        # Ensure the log file is writeable
+        if self.options.log_file:
+            try:
+                writeable_log_file = open(self.options.log_file, 'w')
+            except IOError, ioe:
+                msg = 'Error: Unable to write to log file: %s' % ioe
+                raise BadCommand(msg)
+            writeable_log_file.close()
+
         if self.options.daemon:
             self.daemonize()
 
