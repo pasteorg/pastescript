@@ -18,7 +18,10 @@ svn trunk
   ``src/``).
 
 * Remove Cheetah requirement.  Packages using Cheetah templates should
-  require Cheetah themselves.
+  require Cheetah themselves.  If you are using ``paster make-config``
+  and you *don't* want to use Cheetah, you must add ``use_cheetah =
+  False`` to your ``Installer`` subclass (it defaults to true for
+  backward compatibility).
 
 * Make scripts work when there is no ``setup.py`` (if you aren't
   making a Python/setuptools package).

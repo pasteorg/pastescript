@@ -13,7 +13,7 @@ from paste.script.command import Command, BadCommand, run as run_command
 import paste.script.templates
 from paste.script import copydir
 import pkg_resources
-from Cheetah.Template import Template
+Cheetah = None
 from ConfigParser import ConfigParser
 from paste.util import import_string
 from paste.deploy import appconfig
@@ -478,6 +478,10 @@ class Installer(object):
     # specified:
     default_config_filename = None
 
+    # Set this to true to use Cheetah to fill your templates, or false
+    # to not do so:
+    use_cheetah = True
+
     def __init__(self, dist, ep_group, ep_name):
         self.dist = dist
         self.ep_group = ep_group
@@ -517,15 +521,22 @@ class Installer(object):
         ``Package.egg-info/paste_deploy_config.ini_tmpl`` and fills it
         with the variables.
         """
+        global Cheetah
         meta_name = 'paste_deploy_config.ini_tmpl'
         if not self.dist.has_metadata(meta_name):
             if command.verbose:
                 print 'No %s found' % meta_name
             return self.simple_config(vars)
-        tmpl = Template(self.dist.get_metadata(meta_name),
-                        searchList=[vars])
-        return copydir.careful_sub(
-            tmpl, vars, meta_name)
+        if self.use_cheetah:
+            if Cheetah is None:
+                import Cheetah
+            tmpl = Cheetah.Template(self.dist.get_metadata(meta_name),
+                                    searchList=[vars])
+            return copydir.careful_sub(
+                tmpl, vars, meta_name)
+        else:
+            tmpl = string.Template(self.dist.get_metadata(meta_name))
+            return tmpl.substitute(vars)
 
     def simple_config(self, vars):
         """
