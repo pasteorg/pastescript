@@ -6,6 +6,7 @@ Provides the two commands for preparing an application:
 """
 
 import os
+import string
 import sys
 import new
 from cStringIO import StringIO
