@@ -20,6 +20,9 @@ svn trunk
 * Remove Cheetah requirement.  Packages using Cheetah templates should
   require Cheetah themselves.
 
+* Make scripts work when there is no ``setup.py`` (if you aren't
+  making a Python/setuptools package).
+
 1.1
 ---
 
