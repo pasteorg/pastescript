@@ -124,11 +124,13 @@ class CreateDistroCommand(Command):
             self.create_template(
                 template, output_dir, vars)
 
+        found_setup_py = False
         if os.path.exists(os.path.join(output_dir, 'setup.py')):
             self.run_command(sys.executable, 'setup.py', 'egg_info',
                              cwd=output_dir,
                              # This shouldn't be necessary, but a bug in setuptools 0.6c3 is causing a (not entirely fatal) problem that I don't want to fix right now:
                              expect_returncode=True)
+            found_setup_py = True
         elif self.verbose > 1:
             print 'No setup.py (cannot run egg_info)'
 
@@ -136,17 +138,19 @@ class CreateDistroCommand(Command):
 	if package_dir:
 	    output_dir = os.path.join(output_dir, package_dir)
 
-        egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
-        for template in templates:
-            for spec in template.egg_plugins:
-                if self.verbose:
-                    print 'Adding %s to paster_plugins.txt' % spec
-                if not self.simulate:
-                    pluginlib.add_plugin(egg_info_dir, spec)
-        if not self.simulate:
-            # We'll include this by default, but you can remove
-            # it later if you want:
-            pluginlib.add_plugin(egg_info_dir, 'PasteScript')
+        # With no setup.py this doesn't make sense:
+        if found_setup_py:
+            egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
+            for template in templates:
+                for spec in template.egg_plugins:
+                    if self.verbose:
+                        print 'Adding %s to paster_plugins.txt' % spec
+                    if not self.simulate:
+                        pluginlib.add_plugin(egg_info_dir, spec)
+            if not self.simulate:
+                # We'll include this by default, but you can remove
+                # it later if you want:
+                pluginlib.add_plugin(egg_info_dir, 'PasteScript')
         
         if self.options.svn_repository:
             self.add_svn_repository(vars, output_dir)
