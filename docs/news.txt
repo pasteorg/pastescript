@@ -5,13 +5,13 @@ svn trunk
 ---------
 
 * Fixed the CherryPy 3 WSGI server entry point's handling of SIGHUP
-  and SIGTERM
+  and SIGTERM.
 
 * The CherryPy wsgiserver is now available at
   ``paste.script.wsgiserver`` (no longer requiring CherryPy to be
-  installed)
+  installed).
 
-* Added entry point for twisted server
+* Added entry point for twisted server.
 
 * Made ``paste.script.pluginlib:egg_info_dir`` work with packages that
   put the ``Package.egg-info/`` directory in a subdirectory (typically
@@ -36,14 +36,14 @@ svn trunk
   use ``ensure_file`` will continue to work but just with a warning.
 
 * Removed copyright notice that was accidentally included in new
-  packages created by ``paster create``
+  packages created by ``paster create``.
 
 * Allow variable assignments at the end of ``paster serve``, like
   ``paster serve http_port=80``; then you can use ``%(http_port)s`` in
   your config files (requires up-to-date Paste Deploy).
 
 * Allow a ``package_dir`` variable so that you can put your package
-  into subdirectories of the base directory (e.g., ``src/``)
+  into subdirectories of the base directory (e.g., ``src/``).
 
 * Changes to the ``twisted.web2`` wrapper (from pythy).
 
