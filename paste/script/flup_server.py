@@ -39,7 +39,6 @@ def run_fcgi_thread(wsgi_app, global_conf,
     if socket:
         assert host is None and port is None
         sock = socket
-        ensure_port_cleanup([sock])
     elif host:
         assert host is not None and port is not None
         sock = (host, int(port))
@@ -60,7 +59,6 @@ def run_fcgi_fork(wsgi_app, global_conf,
     if socket:
         assert host is None and port is None
         sock = socket
-        ensure_port_cleanup([sock])
     elif host:
         assert host is not None and port is not None
         sock = (host, int(port))

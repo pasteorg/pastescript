@@ -4,6 +4,9 @@ News: Paste Script
 svn trunk
 ---------
 
+* Fixed an exception being raised when shutting down flup servers using
+  sockets.
+
 * Fixed the CherryPy 3 WSGI server entry point's handling of SIGHUP
   and SIGTERM.
 
