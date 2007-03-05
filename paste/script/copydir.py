@@ -16,6 +16,12 @@ except ImportError:
     from paste.script.util import subprocess24 as subprocess
 import inspect
 
+class SkipTemplate(Exception):
+    """
+    Raised to indicate that the template should not be copied over.
+    Raise this exception during the substitution of your template
+    """
+
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
              use_cheetah=False, sub_vars=True, interactive=False,
              svn_add=True, overwrite=True, template_renderer=None):
@@ -56,9 +62,12 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         content = f.read()
         f.close()
         if sub_file:
-            content = substitute_content(content, vars, filename=full,
-                                         use_cheetah=use_cheetah,
-                                         template_renderer=template_renderer)
+            try:
+                content = substitute_content(content, vars, filename=full,
+                                             use_cheetah=use_cheetah,
+                                             template_renderer=template_renderer)
+            except SkipTemplate:
+                continue
         already_exists = os.path.exists(dest_full)
         if already_exists:
             f = open(dest_full, 'rb')
@@ -281,6 +290,15 @@ def test(conf, true_cond, false_cond=None):
     else:
         return false_cond
 
+def skip_template(condition=True):
+    """
+    Raise SkipTemplate, which causes copydir to skip the template
+    being processed.  If you pass in a condition, only raise if that
+    condition is true (allows you to use this with string.Template)
+    """
+    if condition:
+        raise SkipTemplate()
+
 def _add_except(exc, info):
     if not hasattr(exc, 'args') or exc.args is None:
         return
@@ -299,6 +317,8 @@ standard_vars = {
     'repr': repr,
     'str': str,
     'bool': bool,
+    'SkipTemplate': SkipTemplate,
+    'skip_template': skip_template,
     }
 
 class TypeMapper(dict):

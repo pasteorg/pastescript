@@ -29,6 +29,11 @@ svn trunk
 * Make scripts work when there is no ``setup.py`` (if you aren't
   making a Python/setuptools package).
 
+* When using ``paste.script.copydir.copy_dir`` (as with most ``paster
+  create`` templates), you can raise ``SkipTemplate`` (or call the
+  ``skip_template()`` function) which will cause the template to be
+  skipped.  You can use this to conditionally include files.
+
 1.1
 ---
 
