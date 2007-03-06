@@ -25,6 +25,37 @@ class SkipTemplate(Exception):
 def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
              use_cheetah=False, sub_vars=True, interactive=False,
              svn_add=True, overwrite=True, template_renderer=None):
+    """
+    Copies the ``source`` directory to the ``dest`` directory.
+
+    ``vars``: A dictionary of variables to use in any substitutions.
+
+    ``verbosity``: Higher numbers will show more about what is happening.
+
+    ``simulate``: If true, then don't actually *do* anything.
+
+    ``indent``: Indent any messages by this amount.
+
+    ``sub_vars``: If true, variables in ``_tmpl`` files and ``+var+``
+    in filenames will be substituted.
+
+    ``use_cheetah``: If true, then any templates encountered will be
+    substituted with Cheetah.  Otherwise ``template_renderer`` or
+    ``string.Template`` will be used for templates.
+
+    ``svn_add``: If true, any files written out in directories with
+    ``.svn/`` directories will be added (via ``svn add``).
+
+    ``overwrite``: If false, then don't every overwrite anything.
+
+    ``interactive``: If you are overwriting a file and interactive is
+    true, then ask before overwriting.
+
+    ``template_renderer``: This is a function for rendering templates
+    (if you don't want to use Cheetah or string.Template).  It should
+    have the signature ``template_renderer(content_as_string,
+    vars_as_dict, filename=filename)``.
+    """
     names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
@@ -225,11 +256,12 @@ def substitute_filename(fn, vars):
 def substitute_content(content, vars, filename='<string>',
                        use_cheetah=False, template_renderer=None):
     global Cheetah
+    v = standard_vars.copy()
+    v.update(vars)
+    vars = v
     if template_renderer is not None:
         return template_renderer(content, vars, filename=filename)
     if not use_cheetah:
-        v = standard_vars.copy()
-        v.update(vars)
         tmpl = LaxTemplate(content)
         try:
             return tmpl.substitute(TypeMapper(v))
