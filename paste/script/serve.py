@@ -94,7 +94,7 @@ class ServeCommand(Command):
                       help='Stop a daemonized server (given a PID file, or default paster.pid file)')
 
 
-    _scheme_re = re.compile(r'^[a-zA-Z0-9_-]+:')
+    _scheme_re = re.compile(r'^[a-z][a-z]+:', re.I)
 
     default_verbosity = 1
 

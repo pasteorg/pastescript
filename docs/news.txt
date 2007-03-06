@@ -34,6 +34,9 @@ svn trunk
   ``skip_template()`` function) which will cause the template to be
   skipped.  You can use this to conditionally include files.
 
+* When using ``paster serve c:/...``, it should no longer confuse
+  ``c:`` with a scheme (such as ``config:`` or ``egg:``).
+
 1.1
 ---
 
