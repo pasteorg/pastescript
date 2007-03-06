@@ -37,6 +37,9 @@ svn trunk
 * When using ``paster serve c:/...``, it should no longer confuse
   ``c:`` with a scheme (such as ``config:`` or ``egg:``).
 
+* More careful about catching import errors in ``websetup``, so if you
+  have a bug in your ``app.websetup`` module it won't swallow it.
+
 1.1
 ---
 

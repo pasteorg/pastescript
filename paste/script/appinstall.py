@@ -574,15 +574,8 @@ class Installer(object):
             print 'Try running python setup.py egg_info to regenerate that file'
         for mod_name in modules:
             mod_name = mod_name + '.websetup'
-            try:
-                mod = import_string.import_module(mod_name)
-            except ImportError:
-                if command.verbose > 1:
-                    import traceback
-                    print 'Error loading module %s for setup' % mod_name
-                    traceback.print_exc(file=sys.stdout)
-                elif command.verbose > 0:
-                    print 'Warning: No %s module found for setup' % mod_name
+            mod = import_string.try_import_module(mod_name)
+            if mod is None:
                 continue
             if command.verbose:
                 print 'Running setup_config() from %s' % mod_name
