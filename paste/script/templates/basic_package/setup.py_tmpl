@@ -1,22 +1,22 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = ${repr(version)|"0.0"}
+version = {{repr(version or "0.0")}}
 
-setup(name=${repr(project)},
+setup(name={{repr(project)}},
       version=version,
-      description="${description|nothing}",
+      description="{{description or ''}}",
       long_description="""\
-${long_description|nothing}""",
+{{long_description or ''}}""",
       classifiers=[], # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
-      keywords=${repr(keywords)|empty},
-      author=${repr(author)|empty},
-      author_email=${repr(author_email)|empty},
-      url=${repr(url)|empty},
-      license=${repr(license_name)|empty},
+      keywords={{repr(keywords or '')}},
+      author={{repr(author or '')}},
+      author_email={{repr(author_email or '')}},
+      url={{repr(url or '')}},
+      license={{repr(license_name or '')}},
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
-      zip_safe=${repr(bool(zip_safe))|False},
+      zip_safe={{repr(bool(zip_safe or False))}},
       install_requires=[
           # -*- Extra requirements: -*-
       ],
@@ -24,4 +24,3 @@ ${long_description|nothing}""",
       # -*- Entry points: -*-
       """,
       )
-      

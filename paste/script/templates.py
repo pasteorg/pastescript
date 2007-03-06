@@ -6,6 +6,8 @@ import inspect
 import copydir
 import command
 
+from paste.util.template import paste_script_template_renderer
+
 class Template(object):
 
     # Subclasses must define:
@@ -26,6 +28,13 @@ class Template(object):
     use_cheetah = False
     # If true, then read all the templates to find the variables:
     read_vars_from_templates = False
+
+    # You can also give this function/method to use something other
+    # than Cheetah or string.Template.  The function should be of the
+    # signature template_renderer(content, vars, filename=filename).
+    # Careful you don't turn this into a method by putting a function
+    # here (without staticmethod)!
+    template_renderer = None
 
     def __init__(self, name):
         self.name = name
@@ -113,7 +122,8 @@ class Template(object):
                          interactive=command.interactive,
                          overwrite=command.options.overwrite,
                          indent=1,
-                         use_cheetah=self.use_cheetah)
+                         use_cheetah=self.use_cheetah,
+                         template_renderer=self.template_renderer)
 
     def print_vars(self, indent=0):
         vars = self.read_vars()
@@ -184,6 +194,8 @@ class BasicPackage(Template):
         var('license_name', 'License name'),
         var('zip_safe', 'True/False: if the package can be distributed as a .zip file', default=False),
         ]
+
+    template_renderer = staticmethod(paste_script_template_renderer)
     
 _skip_variables = ['VFN', 'currentTime', 'self', 'VFFSL', 'dummyTrans',
                    'getmtime', 'trans']
