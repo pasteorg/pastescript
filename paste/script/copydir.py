@@ -359,12 +359,12 @@ class TypeMapper(dict):
         options = item.split('|')
         for op in options[:-1]:
             try:
-                value = eval_with_catch(op, self.copy())
+                value = eval_with_catch(op, dict(self.items()))
                 break
             except (NameError, KeyError):
                 pass
         else:
-            value = eval(options[-1], self.copy())
+            value = eval(options[-1], dict(self.items()))
         if value is None:
             return ''
         else:

@@ -1,6 +1,12 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* Fix related to Python 2.5 (when there are errors creating files, you
+  could get infinite recursion under Python 2.5).
+
 1.3
 ---
 
