@@ -530,7 +530,7 @@ class Installer(object):
             return self.simple_config(vars)
         if self.use_cheetah:
             if Cheetah is None:
-                import Cheetah
+                import Cheetah.Template
             tmpl = Cheetah.Template(self.dist.get_metadata(meta_name),
                                     searchList=[vars])
             return copydir.careful_sub(
