@@ -135,7 +135,7 @@ setup(
     paster=paste.script.command:run
     """,
     install_requires=[
-      'Paste',
+      'Paste>=1.3',
       'PasteDeploy',
       ],
     )

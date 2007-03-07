@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.3
+---
 
 * Fixed an exception being raised when shutting down flup servers using
   sockets.
