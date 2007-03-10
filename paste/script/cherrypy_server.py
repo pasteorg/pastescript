@@ -33,7 +33,7 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
 
             $ openssl genrsa 1024 > host.key
             $ chmod 400 host.key
-            $ openssl req -new -x509 -nodes -sha1 -days 365  \
+            $ openssl req -new -x509 -nodes -sha1 -days 365  \\
                           -key host.key > host.cert
             $ cat host.cert host.key > host.pem
             $ chmod 400 host.pem
