@@ -12,6 +12,10 @@ import errno
 import signal
 import sys
 import time
+try:
+    import subprocess
+except ImportError:
+    from paste.util import subprocess24 as subprocess
 from command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
 import threading
@@ -72,6 +76,10 @@ class ServeCommand(Command):
                       dest='reload_interval',
                       default=1,
                       help="Seconds between checking files (low number can cause significant CPU usage)")
+    parser.add_option('--monitor-restart',
+                      dest='monitor_restart',
+                      action='store_true',
+                      help="Auto-restart server if it dies")
     parser.add_option('--status',
                       action='store_true',
                       dest='show_status',
@@ -99,6 +107,7 @@ class ServeCommand(Command):
     default_verbosity = 1
 
     _reloader_environ_key = 'PYTHON_RELOADER_SHOULD_RUN'
+    _monitor_environ_key = 'PASTE_MONITOR_SHOULD_RUN'
 
     possible_subcommands = ('start', 'stop', 'restart', 'status')
     def command(self):
@@ -143,6 +152,10 @@ class ServeCommand(Command):
                     reloader.watch_file(self.args[0])
             else:
                 return self.restart_with_reloader()
+
+        if (self.options.monitor_restart
+            and not os.environ.get(self._monitor_environ_key)):
+            return self.restart_with_monitor()
 
         if cmd not in (None, 'start', 'stop', 'restart', 'status'):
             raise BadCommand(
@@ -324,23 +337,44 @@ class ServeCommand(Command):
         return 0
 
     def restart_with_reloader(self):
+        self.restart_with_monitor(reloader=True)
+
+    def restart_with_monitor(self, reloader=False):
         if self.verbose > 0:
-            print 'Starting subprocess with file monitor'
+            if reloader:
+                print 'Starting subprocess with file monitor'
+            else:
+                print 'Starting subprocess with monitor parent'
         while 1:
             args = [sys.executable] + sys.argv
             if sys.platform == "win32":
                 args = ['"%s"' % arg for arg in args]
             new_environ = os.environ.copy()
-            new_environ[self._reloader_environ_key] = 'true'
+            if reloader:
+                new_environ[self._reloader_environ_key] = 'true'
+            else:
+                new_environ[self._monitor_environ_key] = 'true'
+            proc = None
             try:
-                exit_code = os.spawnve(os.P_WAIT, sys.executable,
-                                       args, new_environ)
+                proc = subprocess.Popen(args, env=new_environ)
+                exit_code = proc.wait()
             except KeyboardInterrupt:
+                print '^C caught in monitor process'
+                if (proc is not None
+                    and hasattr(os, 'kill')):
+                    import signal
+                    try:
+                        os.kill(proc.pid, signal.SIGTERM)
+                    except (OSError, IOError):
+                        pass
                 if self.verbose > 1:
                     raise
                 return 1
-            if exit_code != 3:
-                return exit_code
+            if reloader:
+                # Reloader always exits with code 3; but if we are
+                # a monitor, any exit code will restart
+                if exit_code != 3:
+                    return exit_code
             if self.verbose > 0:
                 print '-'*20, 'Restarting', '-'*20
 
