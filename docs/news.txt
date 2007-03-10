@@ -7,6 +7,9 @@ svn trunk
 * Fix related to Python 2.5 (when there are errors creating files, you
   could get infinite recursion under Python 2.5).
 
+* Use ``subprocess`` module in ``paster serve`` command.  Added
+  ``--monitor`` option which will restart the server if it exits.
+
 1.3
 ---
 
