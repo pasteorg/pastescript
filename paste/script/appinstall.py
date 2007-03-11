@@ -529,9 +529,8 @@ class Installer(object):
                 print 'No %s found' % meta_name
             return self.simple_config(vars)
         if self.use_cheetah:
-            if Cheetah is None:
-                import Cheetah.Template
-            tmpl = Cheetah.Template(self.dist.get_metadata(meta_name),
+            from Cheetah.Template import Template
+            tmpl = Template(self.dist.get_metadata(meta_name),
                                     searchList=[vars])
             return copydir.careful_sub(
                 tmpl, vars, meta_name)
