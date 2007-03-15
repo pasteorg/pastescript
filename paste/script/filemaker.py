@@ -19,7 +19,7 @@ class FileOp(object):
                        verbose=True, 
                        interactive=True,
                        source_dir=None,
-                       template_vars={}):
+                       template_vars=None):
         """
         Initialize our File operation helper object
         
@@ -33,9 +33,11 @@ class FileOp(object):
           
                 FileOp(source_dir=os.path.dirname(__file__) + '/templates')
         """
-        self.simulate=simulate
+        self.simulate = simulate
         self.verbose = verbose
         self.interactive = interactive
+        if template_vars is None:
+            template_vars = {}
         self.template_vars = template_vars
         self.source_dir = source_dir
     
@@ -90,7 +92,7 @@ class FileOp(object):
             __init__.py file.
         """
         # @@: This should actually be implemented
-        pass
+        raise NotImplementedError
 
     def load_content(self, base_package, base, name, template):
         blank = os.path.join(base, name + '.py')
