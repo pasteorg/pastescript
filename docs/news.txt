@@ -10,6 +10,9 @@ svn trunk
 * Use ``subprocess`` module in ``paster serve`` command.  Added
   ``--monitor`` option which will restart the server if it exits.
 
+* The ``exe`` command now does % substitution in keys (e.g.,
+  ``pid_file=%(here)s/paste.pid``).
+
 1.3
 ---
 

@@ -65,6 +65,8 @@ Which translates to:
                     extra_args.pop(0)
                     break
                 args.append(extra_args.pop(0))
+        vars = {'here': os.path.dirname(filename),
+                '__file__': filename}
         f = open(filename)
         lines = f.readlines()
         f.close()
@@ -98,6 +100,7 @@ Which translates to:
             elif name == 'plugin':
                 options[:0] = ['--plugin', value]
             else:
+                value = value % vars
                 options.append('--%s=%s' % (name.replace('_', '-'), value))
         os.environ['PASTE_CONFIG_FILE'] = filename
         options.extend(extra_args)
