@@ -114,6 +114,8 @@ class FileOp(object):
         packages = [l.strip() for l in f.readlines()
                     if l.strip() and not l.strip().startswith('#')]
         f.close()
+        if not len(packages):
+            raise BadCommand("No top level dir found for %s" % dirname)
         # @@: This doesn't support deeper servlet directories,
         # or packages not kept at the top level.
         base = os.path.dirname(egg_info)
@@ -123,7 +125,8 @@ class FileOp(object):
             if os.path.exists(d):
                 possible.append((pkg, d))
         if not possible:
-            self.ensure_dir(os.path.join(base, pkg, dirname), package=package)
+            self.ensure_dir(os.path.join(base, packages[0], dirname),
+                            package=package)
             return self.find_dir(dirname)
         if len(possible) > 1:
             raise BadCommand(
