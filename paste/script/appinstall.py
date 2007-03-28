@@ -444,6 +444,10 @@ class SetupCommand(AbstractInstallCommand):
         ep_name = conf.context.entry_point_name
         ep_group = conf.context.protocol
         dist = conf.context.distribution
+        if dist is None:
+            raise pkg_resources.DistributionNotFound(
+                "No distribution found with spec %r"
+                % (conf.loader.spec))
         installer = self.get_installer(dist, ep_group, ep_name)
         installer.setup_config(
             self, config_file, section, self.sysconfig_install_vars(installer))
