@@ -445,9 +445,8 @@ class SetupCommand(AbstractInstallCommand):
         ep_group = conf.context.protocol
         dist = conf.context.distribution
         if dist is None:
-            raise pkg_resources.DistributionNotFound(
-                "No distribution found with spec %r"
-                % (conf.context.loader.spec))
+            raise BadCommand(
+                "The section %r is not the application (probably a filter).  You should add #section_name, where section_name is the section that configures your application")
         installer = self.get_installer(dist, ep_group, ep_name)
         installer.setup_config(
             self, config_file, section, self.sysconfig_install_vars(installer))
