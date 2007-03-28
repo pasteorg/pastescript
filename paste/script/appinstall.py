@@ -446,7 +446,7 @@ class SetupCommand(AbstractInstallCommand):
         dist = conf.context.distribution
         if dist is None:
             raise BadCommand(
-                "The section %r is not the application (probably a filter).  You should add #section_name, where section_name is the section that configures your application")
+                "The section %r is not the application (probably a filter).  You should add #section_name, where section_name is the section that configures your application" % plain_section)
         installer = self.get_installer(dist, ep_group, ep_name)
         installer.setup_config(
             self, config_file, section, self.sysconfig_install_vars(installer))
