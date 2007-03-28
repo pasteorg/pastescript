@@ -447,7 +447,7 @@ class SetupCommand(AbstractInstallCommand):
         if dist is None:
             raise pkg_resources.DistributionNotFound(
                 "No distribution found with spec %r"
-                % (conf.loader.spec))
+                % (conf.context.loader.spec))
         installer = self.get_installer(dist, ep_group, ep_name)
         installer.setup_config(
             self, config_file, section, self.sysconfig_install_vars(installer))
