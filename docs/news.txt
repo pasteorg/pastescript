@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.3.1
+-----
 
 * Fix related to Python 2.5 (when there are errors creating files, you
   could get infinite recursion under Python 2.5).
@@ -12,6 +12,8 @@ svn trunk
 
 * The ``exe`` command now does % substitution in keys (e.g.,
   ``pid_file=%(here)s/paste.pid``).
+
+* Some import problems with Cheetah should be improved.
 
 1.3
 ---
