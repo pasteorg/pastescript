@@ -348,7 +348,7 @@ class ServeCommand(Command):
         while 1:
             args = [sys.executable] + sys.argv
             if sys.platform == "win32":
-                args[0] = '"%s"' % arg
+                args[0] = '"%s"' % args[0]
             new_environ = os.environ.copy()
             if reloader:
                 new_environ[self._reloader_environ_key] = 'true'
