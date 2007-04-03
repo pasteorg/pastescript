@@ -1,6 +1,11 @@
 News: Paste Script
 ==================
 
+1.3.2
+-----
+
+* ``paster`` was largely broken under Windows; fixed.
+
 1.3.1
 -----
 
