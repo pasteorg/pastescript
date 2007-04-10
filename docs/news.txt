@@ -1,6 +1,17 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* You can use ``+dot+`` in your project template filenames,
+  specifically so that you can use leading dots in the filename.
+  Usually leading dots cause the file to be ignored.  So if you want
+  to have new projects contain a ``.cvsignore`` file, you can put a
+  ``+dot+cvsignore`` file in your template.
+
+* Relatedly, ``+plus+`` has been added so you can include pluses.
+
 1.3.2
 -----
 

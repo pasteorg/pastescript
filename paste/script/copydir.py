@@ -56,6 +56,10 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
     have the signature ``template_renderer(content_as_string,
     vars_as_dict, filename=filename)``.
     """
+    # This allows you to use a leading +dot+ in filenames which would
+    # otherwise be skipped because leading dots make the file hidden:
+    vars.setdefault('dot', '.')
+    vars.setdefault('plus', '+')
     names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
