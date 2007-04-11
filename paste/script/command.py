@@ -528,6 +528,7 @@ class Command(object):
         force_no_simulate:
             if true, run the command even if --simulate
         """
+        cmd = self.quote_first_command_arg(cmd)
         cwd = popdefault(kw, 'cwd', os.getcwd())
         capture_stderr = popdefault(kw, 'capture_stderr', False)
         expect_returncode = popdefault(kw, 'expect_returncode', False)
@@ -578,6 +579,27 @@ class Command(object):
             print 'Warning: command failed (%s %s)' % (cmd, ' '.join(args))
             print 'Exited with code %s' % proc.returncode
         return stdout
+
+    def quote_first_command_arg(self, arg):
+        """
+        There's a bug in Windows when running an executable that's
+        located inside a path with a space in it.  This method handles
+        that case, or on non-Windows systems or an executable with no
+        spaces, it just leaves well enough alone.
+        """
+        if (sys.platform != 'win32'
+            or ' ' not in arg):
+            # Problem does not apply:
+            return arg
+        try:
+            import win32api
+        except ImportError:
+            raise ValueError(
+                "The executable %r contains a space, and in order to "
+                "handle this issue you must have the win32api module "
+                "installed" % arg)
+        arg = win32api.GetShortPathName(arg)
+        return arg
 
     def write_file(self, filename, content, source=None,
                    binary=True, svn_add=True):

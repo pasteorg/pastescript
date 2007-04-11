@@ -346,9 +346,7 @@ class ServeCommand(Command):
             else:
                 print 'Starting subprocess with monitor parent'
         while 1:
-            args = [sys.executable] + sys.argv
-            if sys.platform == "win32":
-                args[0] = '"%s"' % args[0]
+            args = [self.quote_first_command_arg(sys.executable)] + sys.argv
             new_environ = os.environ.copy()
             if reloader:
                 new_environ[self._reloader_environ_key] = 'true'
