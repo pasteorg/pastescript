@@ -1,8 +1,12 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.3.3
+-----
+
+* Fixed problem with ``paster serve`` on Windows.  Also on Windows,
+  fixed issue with executables with spaces in their names (this case
+  requires the ``win32all`` module).
 
 * You can use ``+dot+`` in your project template filenames,
   specifically so that you can use leading dots in the filename.
@@ -11,10 +15,6 @@ svn trunk
   ``+dot+cvsignore`` file in your template.
 
 * Relatedly, ``+plus+`` has been added so you can include pluses.
-
-* Fixed problem with ``paster serve`` on Windows and Python 2.5.  Also
-  on Windows, fixed issue with executables with spaces in their names
-  (this case requires the ``win32all`` module).
 
 1.3.2
 -----
