@@ -354,10 +354,17 @@ class ServeCommand(Command):
                 new_environ[self._monitor_environ_key] = 'true'
             proc = None
             try:
-                proc = subprocess.Popen(args, env=new_environ)
-                exit_code = proc.wait()
-            except KeyboardInterrupt:
-                print '^C caught in monitor process'
+                died = False
+                try:
+                    proc = subprocess.Popen(args, env=new_environ)
+                    exit_code = proc.wait()
+                    proc = None
+                except KeyboardInterrupt:
+                    print '^C caught in monitor process'
+                    if self.verbose > 1:
+                        raise
+                    return 1
+            finally:
                 if (proc is not None
                     and hasattr(os, 'kill')):
                     import signal
@@ -365,9 +372,7 @@ class ServeCommand(Command):
                         os.kill(proc.pid, signal.SIGTERM)
                     except (OSError, IOError):
                         pass
-                if self.verbose > 1:
-                    raise
-                return 1
+                
             if reloader:
                 # Reloader always exits with code 3; but if we are
                 # a monitor, any exit code will restart
