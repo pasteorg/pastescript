@@ -191,7 +191,7 @@ class ServeCommand(Command):
         # Ensure the log file is writeable
         if self.options.log_file:
             try:
-                writeable_log_file = open(self.options.log_file, 'w')
+                writeable_log_file = open(self.options.log_file, 'a')
             except IOError, ioe:
                 msg = 'Error: Unable to write to log file: %s' % ioe
                 raise BadCommand(msg)

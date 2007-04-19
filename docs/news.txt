@@ -6,6 +6,8 @@ svn trunk
 
 * Make sure that when using ``--monitor`` or ``--reload``, if the
   parent monitoring process dies, also kill the subprocess.
+* When using ``paster serve --log-file``, append to the log file (was
+  truncating any previous contents).
 
 1.3.3
 -----
