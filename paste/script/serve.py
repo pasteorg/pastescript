@@ -354,8 +354,8 @@ class ServeCommand(Command):
                 new_environ[self._monitor_environ_key] = 'true'
             proc = None
             try:
-                died = False
                 try:
+                    _turn_sigterm_into_systemexit()
                     proc = subprocess.Popen(args, env=new_environ)
                     exit_code = proc.wait()
                     proc = None
@@ -546,3 +546,16 @@ def _cleanup_ports(bound_addresses, maxtries=30, sleeptime=2):
         else:
             raise SystemExit('Timeout waiting for port.')
         sock.close()
+
+def _turn_sigterm_into_systemexit():
+    """
+    Attempts to turn a SIGTERM exception into a SystemExit exception.
+    """
+    try:
+        import signal
+    except ImportError:
+        return
+    def handle_term(signo, frame):
+        raise SystemExit
+    signal.signal(signal.SIGTERM, handle_term)
+    
