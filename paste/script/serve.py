@@ -204,7 +204,7 @@ class ServeCommand(Command):
             self.record_pid(self.options.pid_file)
 
         if self.options.log_file:
-            stdout_log = LazyWriter(self.options.log_file)
+            stdout_log = LazyWriter(self.options.log_file, 'a')
             sys.stdout = stdout_log
             sys.stderr = stdout_log
             # @@: Should we also redirect logging-based logs to this file?
@@ -420,17 +420,23 @@ class ServeCommand(Command):
             
 class LazyWriter(object):
 
-    def __init__(self, filename):
+    """
+    File-like object that opens a file lazily when it is first written
+    to.
+    """
+
+    def __init__(self, filename, mode='w'):
         self.filename = filename
         self.fileobj = None
         self.lock = threading.Lock()
+        self.mode = mode
         
     def open(self):
         if self.fileobj is None:
             self.lock.acquire()
             try:
                 if self.fileobj is None:
-                    self.fileobj = open(self.filename, 'a')
+                    self.fileobj = open(self.filename, self.mode)
             finally:
                 self.lock.release()
         return self.fileobj
