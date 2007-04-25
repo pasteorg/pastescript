@@ -20,6 +20,9 @@ from command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
 import threading
 import atexit
+import logging
+import logging.config
+import ConfigParser
 
 MAXFD = 1024
 
@@ -84,6 +87,7 @@ class ServeCommand(Command):
                       action='store_true',
                       dest='show_status',
                       help="Show the status of the (presumably daemonized) server")
+
 
     if hasattr(os, 'setuid'):
         # I don't think these are availble on Windows
@@ -207,13 +211,23 @@ class ServeCommand(Command):
             stdout_log = LazyWriter(self.options.log_file, 'a')
             sys.stdout = stdout_log
             sys.stderr = stdout_log
-            # @@: Should we also redirect logging-based logs to this file?
-            # e.g., the root logger?
+            logging.basicConfig(stream=stdout_log)
 
         server = self.loadserver(server_spec, name=server_name,
                                  relative_to=base, global_conf=vars)
         app = self.loadapp(app_spec, name=app_name,
                            relative_to=base, global_conf=vars)
+        log_fn = app_spec
+        if log_fn.startswith('config:'):
+            log_fn = app_spec[len('config:'):]
+        elif log_fn.startswith('egg:'):
+            log_fn = None
+        if log_fn:
+            log_fn = os.path.join(base, log_fn)
+            parser = ConfigParser.ConfigParser()
+            parser.read([log_fn])
+            if parser.has_section('logging'):
+                logging.config.fileConfig(log_fn)
 
         if self.verbose > 0:
             print 'Starting server in PID %i.' % os.getpid()

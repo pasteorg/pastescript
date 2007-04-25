@@ -8,6 +8,9 @@ svn trunk
   parent monitoring process dies, also kill the subprocess.
 * When using ``paster serve --log-file``, append to the log file (was
   truncating any previous contents).
+* Read logging information from the server file, using the logging module's
+  `standard configuration format
+  <http://python.org/doc/current/lib/logging-config-fileformat.html>`_
 
 1.3.3
 -----
