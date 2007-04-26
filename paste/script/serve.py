@@ -226,7 +226,7 @@ class ServeCommand(Command):
             log_fn = os.path.join(base, log_fn)
             parser = ConfigParser.ConfigParser()
             parser.read([log_fn])
-            if parser.has_section('logging'):
+            if parser.has_section('loggers'):
                 logging.config.fileConfig(log_fn)
 
         if self.verbose > 0:
