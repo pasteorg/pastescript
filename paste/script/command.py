@@ -390,7 +390,7 @@ class Command(object):
                 os.mkdir(dir)
             if (svn_add and
                 os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
-                self.run_command('svn', 'add', dir)
+                self.svn_command('add', dir)
         else:
             if self.verbose > 1:
                 print "Directory already exists: %s" % self.shorten(dir)
@@ -413,7 +413,7 @@ class Command(object):
                 f.write(content)
                 f.close()
             if svn_add and os.path.exists(os.path.join(os.path.dirname(filename), '.svn')):
-                self.run_command('svn', 'add', filename,
+                self.svn_command('add', filename,
                                  warn_returncode=True)
             return
         f = open(filename, 'rb')
@@ -601,6 +601,19 @@ class Command(object):
         arg = win32api.GetShortPathName(arg)
         return arg
 
+    _svn_failed = False
+
+    def svn_command(self, *args, **kw):
+        """
+        Run an svn command, but don't raise an exception if it fails.
+        """
+        try:
+            return self.run_command('svn', *args, **kw)
+        except OSError, e:
+            if not self._svn_failed:
+                print 'Unable to run svn command (%s); proceeding anyway' % e
+                self._svn_failed = True
+
     def write_file(self, filename, content, source=None,
                    binary=True, svn_add=True):
         """
@@ -643,7 +656,7 @@ class Command(object):
             if (not already_existed
                 and svn_add
                 and os.path.exists(os.path.join(os.path.dirname(filename), '.svn'))):
-                self.run_command('svn', 'add', filename)
+                self.svn_command('add', filename)
 
     def parse_vars(self, args):
         """

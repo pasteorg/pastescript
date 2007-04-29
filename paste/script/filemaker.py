@@ -191,7 +191,7 @@ class FileOp(object):
                 os.mkdir(dir)
             if (svn_add and
                 os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
-                self.run_command('svn', 'add', dir)
+                self.svn_command('add', dir)
             if package:
                 initfile = os.path.join(dir, '__init__.py')
                 f = open(initfile, 'wb')
@@ -200,7 +200,7 @@ class FileOp(object):
                 print 'Creating %s' % self.shorten(initfile)
                 if (svn_add and
                     os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
-                    self.run_command('svn', 'add', initfile)
+                    self.svn_command('add', initfile)
         else:
             if self.verbose > 1:
                 print "Directory already exists: %s" % self.shorten(dir)
@@ -221,7 +221,7 @@ class FileOp(object):
                 f.write(content)
                 f.close()
             if svn_add and os.path.exists(os.path.join(os.path.dirname(filename), '.svn')):
-                self.run_command('svn', 'add', filename)
+                self.svn_command('add', filename)
             return
         f = open(filename, 'rb')
         old_content = f.read()
@@ -274,6 +274,19 @@ class FileOp(object):
             return fn[len(os.getcwd()):].lstrip(os.path.sep)
         else:
             return fn
+
+    _svn_failed = False
+
+    def svn_command(self, *args, **kw):
+        """
+        Run an svn command, but don't raise an exception if it fails.
+        """
+        try:
+            return self.run_command('svn', *args, **kw)
+        except OSError, e:
+            if not self._svn_failed:
+                print 'Unable to run svn command (%s); proceeding anyway' % e
+                self._svn_failed = True
 
     def run_command(self, cmd, *args, **kw):
         """
