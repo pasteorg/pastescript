@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.3.4
+-----
 
 * Make sure that when using ``--monitor`` or ``--reload``, if the
   parent monitoring process dies, also kill the subprocess.
