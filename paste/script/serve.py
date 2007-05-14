@@ -213,10 +213,6 @@ class ServeCommand(Command):
             sys.stderr = stdout_log
             logging.basicConfig(stream=stdout_log)
 
-        server = self.loadserver(server_spec, name=server_name,
-                                 relative_to=base, global_conf=vars)
-        app = self.loadapp(app_spec, name=app_name,
-                           relative_to=base, global_conf=vars)
         log_fn = app_spec
         if log_fn.startswith('config:'):
             log_fn = app_spec[len('config:'):]
@@ -228,6 +224,11 @@ class ServeCommand(Command):
             parser.read([log_fn])
             if parser.has_section('loggers'):
                 logging.config.fileConfig(log_fn)
+
+        server = self.loadserver(server_spec, name=server_name,
+                                 relative_to=base, global_conf=vars)
+        app = self.loadapp(app_spec, name=app_name,
+                           relative_to=base, global_conf=vars)
 
         if self.verbose > 0:
             print 'Starting server in PID %i.' % os.getpid()
