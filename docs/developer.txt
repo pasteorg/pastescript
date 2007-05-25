@@ -170,6 +170,7 @@ with::
     class FrameworkTemplate(templates.Template):
 
         egg_plugins = ['Framework']
+        summary = 'Template for creating a basic Framework package'
         required_templates = ['basic_package']
         _template_dir = 'template'
         use_cheetah = True

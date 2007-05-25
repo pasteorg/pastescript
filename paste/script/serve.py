@@ -90,7 +90,7 @@ class ServeCommand(Command):
 
 
     if hasattr(os, 'setuid'):
-        # I don't think these are availble on Windows
+        # I don't think these are available on Windows
         parser.add_option('--user',
                           dest='set_user',
                           metavar="USERNAME",
