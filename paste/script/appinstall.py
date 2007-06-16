@@ -6,8 +6,11 @@ Provides the two commands for preparing an application:
 """
 
 import os
-import string
 import sys
+if sys.version_info < (2, 4):
+    from paste.script.util import string24 as string
+else:
+    import string
 import new
 from cStringIO import StringIO
 from paste.script.command import Command, BadCommand, run as run_command
