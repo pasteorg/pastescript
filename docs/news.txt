@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.3.5
+-----
 
 * Initialize logging earlier in the serve command for components that want
   to utilize it. Patch from Christopher Lenz.
