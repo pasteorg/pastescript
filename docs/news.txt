@@ -1,6 +1,15 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* paster no longer hides ``pkg_resources.DistributionNotFound`` error
+  messages describing the target project's requirements. Aids the
+  somewhat confusing "did you run setup.py develop?" message when it had
+  already been ran, but since then had a requirement added that wasn't
+  installed.
+
 1.3.5
 -----
 

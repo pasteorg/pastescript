@@ -80,8 +80,11 @@ def resolve_plugins(plugin_list):
         try:
             pkg_resources.require(plugin)
         except pkg_resources.DistributionNotFound, e:
-            e.args = ('Not Found: %s (did you run python setup.py develop?)'
-                     % plugin),
+            msg = '%sNot Found%s: %s (did you run python setup.py develop?)'
+            if str(e) != plugin:
+                e.args = (msg % (str(e) + ': ', ' for', plugin)),
+            else:
+                e.args = (msg % ('', '', plugin)),
             raise
         found.append(plugin)
         dist = get_distro(plugin)
