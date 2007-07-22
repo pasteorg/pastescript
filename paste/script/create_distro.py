@@ -134,9 +134,9 @@ class CreateDistroCommand(Command):
         elif self.verbose > 1:
             print 'No setup.py (cannot run egg_info)'
 
-	package_dir = vars.get('package_dir', None)
-	if package_dir:
-	    output_dir = os.path.join(output_dir, package_dir)
+        package_dir = vars.get('package_dir', None)
+        if package_dir:
+            output_dir = os.path.join(output_dir, package_dir)
 
         # With no setup.py this doesn't make sense:
         if found_setup_py:

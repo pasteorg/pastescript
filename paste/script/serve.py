@@ -271,7 +271,7 @@ class ServeCommand(Command):
 
         # @@: Should we set the umask and cwd now?
 
-        import resource		# Resource usage information.
+        import resource  # Resource usage information.
         maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
         if (maxfd == resource.RLIM_INFINITY):
             maxfd = MAXFD
@@ -279,17 +279,17 @@ class ServeCommand(Command):
         for fd in range(0, maxfd):
             try:
                 os.close(fd)
-            except OSError:	# ERROR, fd wasn't open to begin with (ignored)
+            except OSError:  # ERROR, fd wasn't open to begin with (ignored)
                 pass
 
         if (hasattr(os, "devnull")):
             REDIRECT_TO = os.devnull
         else:
             REDIRECT_TO = "/dev/null"
-        os.open(REDIRECT_TO, os.O_RDWR)	# standard input (0)
+        os.open(REDIRECT_TO, os.O_RDWR)  # standard input (0)
         # Duplicate standard input to standard output and standard error.
-        os.dup2(0, 1)			# standard output (1)
-        os.dup2(0, 2)			# standard error (2)
+        os.dup2(0, 1)  # standard output (1)
+        os.dup2(0, 2)  # standard error (2)
         
         if not self.options.pid_file:
             self.options.pid_file = 'paster.pid'
