@@ -443,6 +443,7 @@ class SetupCommand(AbstractInstallCommand):
             config_spec += '#' + plain_section
         config_file = config_spec[len('config:'):].split('#', 1)[0]
         config_file = os.path.join(os.getcwd(), config_file)
+        self.logging_file_config(config_file)
         conf = appconfig(config_spec, relative_to=os.getcwd())
         ep_name = conf.context.entry_point_name
         ep_group = conf.context.protocol

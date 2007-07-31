@@ -15,6 +15,8 @@ except ImportError:
     from paste.script.util import subprocess24 as subprocess
 difflib = None
 
+from paste.script.util.logging_config import fileConfig
+
 class BadCommand(Exception):
 
     def __init__(self, message, exit_code=2):
@@ -732,6 +734,16 @@ class Command(object):
         first = (' '*initial) + lines[0]
         rest = [(' '*indent)+l for l in lines[1:]]
         return '\n'.join([first]+rest)
+
+    def logging_file_config(self, config_file):
+        """
+        Setup logging via the logging module's fileConfig function with the
+        specified ``config_file``, if applicable.
+        """
+        parser = ConfigParser.ConfigParser()
+        parser.read([config_file])
+        if parser.has_section('loggers'):
+            fileConfig(config_file)
 
 class NotFoundCommand(Command):
 

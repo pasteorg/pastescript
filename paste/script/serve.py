@@ -21,7 +21,6 @@ from paste.deploy import loadapp, loadserver
 import threading
 import atexit
 import logging
-import logging.config
 import ConfigParser
 
 MAXFD = 1024
@@ -220,10 +219,7 @@ class ServeCommand(Command):
             log_fn = None
         if log_fn:
             log_fn = os.path.join(base, log_fn)
-            parser = ConfigParser.ConfigParser()
-            parser.read([log_fn])
-            if parser.has_section('loggers'):
-                logging.config.fileConfig(log_fn)
+            self.logging_file_config(log_fn)
 
         server = self.loadserver(server_spec, name=server_name,
                                  relative_to=base, global_conf=vars)
