@@ -10,6 +10,12 @@ svn trunk
   already been ran, but since then had a requirement added that wasn't
   installed.
 
+* Logging configuration is now read from the config file during ``paster
+  setup-app``.
+
+* Custom Formatters and Handlers (Handlers outside of the logging module)
+  are now supported in logging configuration files.
+
 1.3.5
 -----
 
