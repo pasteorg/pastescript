@@ -102,8 +102,12 @@ config2 = string.replace(config1, "sys.stdout", "sys.stbout")
 config3 = string.replace(
     config1, "formatter=form1", "formatter=misspelled_name")
 
+# config4: support custom Handler classes
+config4 = string.replace(
+    config1, "class=StreamHandler", "class=logging.handlers.StreamHandler")
+
 def test4():
-    for i in range(4):
+    for i in range(5):
         conf = globals()['config%d' % i]
         sys.stdout.write('config%d: ' % i)
         loggerDict = logging.getLogger().manager.loggerDict
