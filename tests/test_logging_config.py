@@ -104,7 +104,7 @@ config3 = string.replace(
 
 # config4: support custom Handler classes
 config4 = string.replace(
-    config1, "class=StreamHandler", "class=logging.handlers.StreamHandler")
+    config1, "class=StreamHandler", "class=logging.StreamHandler")
 
 def test4():
     for i in range(5):
@@ -114,7 +114,8 @@ def test4():
         logging._acquireLock()
         try:
             saved_handlers = logging._handlers.copy()
-            saved_handler_list = logging._handlerList[:]
+            if hasattr(logging, '_handlerList'):
+                saved_handler_list = logging._handlerList[:]
             saved_loggers = loggerDict.copy()
         finally:
             logging._releaseLock()
@@ -128,8 +129,10 @@ def test4():
                 #call again to make sure cleanup is correct
                 logging_config.fileConfig(fn)
             except:
+                if i not in (2, 3):
+                    raise
                 t = sys.exc_info()[0]
-                message(str(t))
+                message(str(t) + ' (expected)')
             else:
                 message('ok.')
             os.remove(fn)
@@ -138,7 +141,8 @@ def test4():
             try:
                 logging._handlers.clear()
                 logging._handlers.update(saved_handlers)
-                logging._handlerList[:] = saved_handler_list
+                if hasattr(logging, '_handlerList'):
+                    logging._handlerList[:] = saved_handler_list
                 loggerDict = logging.getLogger().manager.loggerDict
                 loggerDict.clear()
                 loggerDict.update(saved_loggers)
@@ -186,7 +190,8 @@ def test5():
     logging._acquireLock()
     try:
         saved_handlers = logging._handlers.copy()
-        saved_handler_list = logging._handlerList[:]
+        if hasattr(logging, '_handlerList'):
+            saved_handler_list = logging._handlerList[:]
         saved_loggers = loggerDict.copy()
     finally:
         logging._releaseLock()
@@ -208,7 +213,8 @@ def test5():
         try:
             logging._handlers.clear()
             logging._handlers.update(saved_handlers)
-            logging._handlerList[:] = saved_handler_list
+            if hasattr(logging, '_handlerList'):
+                logging._handlerList[:] = saved_handler_list
             loggerDict = logging.getLogger().manager.loggerDict
             loggerDict.clear()
             loggerDict.update(saved_loggers)
