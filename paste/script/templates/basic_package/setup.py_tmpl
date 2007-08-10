@@ -8,7 +8,7 @@ setup(name={{repr(project)}},
       description="{{description or ''}}",
       long_description="""\
 {{long_description or ''}}""",
-      classifiers=[], # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
+      classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords={{repr(keywords or '')}},
       author={{repr(author or '')}},
       author_email={{repr(author_email or '')}},
