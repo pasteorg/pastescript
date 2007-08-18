@@ -69,14 +69,14 @@ config1 = """
 keys=root,parser
 
 [handlers]
-keys=hand1
+keys=hand1, hand2
 
 [formatters]
-keys=form1
+keys=form1, form2
 
 [logger_root]
 level=NOTSET
-handlers=hand1
+handlers=hand1,hand2
 
 [logger_parser]
 level=DEBUG
@@ -90,8 +90,18 @@ level=NOTSET
 formatter=form1
 args=(sys.stdout,)
 
+[handler_hand2]
+class=StreamHandler
+level=NOTSET
+formatter=form2
+args=(sys.stderr,)
+
 [formatter_form1]
 format=%(levelname)s:%(name)s:%(message)s
+datefmt=
+
+[formatter_form2]
+format=:%(message)s
 datefmt=
 """
 

@@ -111,7 +111,8 @@ def _create_formatters(cp):
     flist = string.split(flist, ",")
     formatters = {}
     for form in flist:
-        sectname = "formatter_%s" % string.strip(form)
+        form = string.strip(form)
+        sectname = "formatter_%s" % form
         opts = cp.options(sectname)
         if "format" in opts:
             fs = cp.get(sectname, "format", 1)
@@ -140,7 +141,8 @@ def _install_handlers(cp, formatters):
     handlers = {}
     fixups = [] #for inter-handler references
     for hand in hlist:
-        sectname = "handler_%s" % string.strip(hand)
+        hand = string.strip(hand)
+        sectname = "handler_%s" % hand
         klass = cp.get(sectname, "class")
         opts = cp.options(sectname)
         if "formatter" in opts:
