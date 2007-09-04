@@ -4,6 +4,8 @@ News: Paste Script
 svn trunk
 ---------
 
+* CherryPy wsgiserver updated to the 3.0.2 release's
+
 * paster no longer hides ``pkg_resources.DistributionNotFound`` error
   messages describing the target project's requirements. Aids the
   somewhat confusing "did you run setup.py develop?" message when it had
