@@ -157,7 +157,7 @@ def should_skip_file(name):
     if name.endswith('.pyc'):
         return 'Skipping .pyc file %(filename)s'
     if name in ('CVS', '_darcs'):
-        return 'Skipping version control directory %(filename)s' % (pad, full)
+        return 'Skipping version control directory %(filename)s'
     return None
 
 # Overridden on user's request:
