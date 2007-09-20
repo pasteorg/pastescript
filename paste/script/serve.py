@@ -191,6 +191,12 @@ class ServeCommand(Command):
             server_spec = app_spec
         base = os.getcwd()
 
+        if self.options.daemon:
+            if not self.options.pid_file:
+                self.options.pid_file = 'paster.pid'
+            if not self.options.log_file:
+                self.options.log_file = 'paster.log'
+
         # Ensure the log file is writeable
         if self.options.log_file:
             try:
@@ -199,6 +205,15 @@ class ServeCommand(Command):
                 msg = 'Error: Unable to write to log file: %s' % ioe
                 raise BadCommand(msg)
             writeable_log_file.close()
+
+        # Ensure the pid file is writeable
+        if self.options.pid_file:
+            try:
+                writeable_pid_file = open(self.options.pid_file, 'a')
+            except IOError, ioe:
+                msg = 'Error: Unable to write to pid file: %s' % ioe
+                raise BadCommand(msg)
+            writeable_pid_file.close()
 
         if self.options.daemon:
             self.daemonize()
@@ -287,11 +302,6 @@ class ServeCommand(Command):
         os.dup2(0, 1)  # standard output (1)
         os.dup2(0, 2)  # standard error (2)
         
-        if not self.options.pid_file:
-            self.options.pid_file = 'paster.pid'
-        if not self.options.log_file:
-            self.options.log_file = 'paster.log'
-
     def record_pid(self, pid_file):
         pid = os.getpid()
         if self.verbose > 1:
