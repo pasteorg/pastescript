@@ -1,6 +1,13 @@
 News: Paste Script
 ==================
 
+svn trunk
+---------
+
+* Check the writability of the pid and log files earlier.  This caused
+  particular problems if you started it in daemon mode, and the files
+  weren't writable.  From Chris Atlee.
+
 1.3.6
 -----
 
