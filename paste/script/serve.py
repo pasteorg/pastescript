@@ -156,10 +156,6 @@ class ServeCommand(Command):
             else:
                 return self.restart_with_reloader()
 
-        if (self.options.monitor_restart
-            and not os.environ.get(self._monitor_environ_key)):
-            return self.restart_with_monitor()
-
         if cmd not in (None, 'start', 'stop', 'restart', 'status'):
             raise BadCommand(
                 'Error: must give start|stop|restart (not %s)' % cmd)
@@ -217,6 +213,10 @@ class ServeCommand(Command):
 
         if self.options.daemon:
             self.daemonize()
+
+        if (self.options.monitor_restart
+            and not os.environ.get(self._monitor_environ_key)):
+            return self.restart_with_monitor()
 
         if self.options.pid_file:
             self.record_pid(self.options.pid_file)

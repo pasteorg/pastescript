@@ -8,6 +8,10 @@ svn trunk
   particular problems if you started it in daemon mode, and the files
   weren't writable.  From Chris Atlee.
 
+* Start the monitor (when using ``--monitor``) after daemonizing, so
+  that ``paster serve --monitor --daemon`` works (before it would
+  constantly restart).
+
 1.3.6
 -----
 
