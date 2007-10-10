@@ -9,6 +9,7 @@ import re
 import textwrap
 import pluginlib
 import ConfigParser
+import getpass
 try:
     import subprocess
 except ImportError:
@@ -277,7 +278,7 @@ class Command(object):
                 return response[0].lower() == 'y'
             print 'Y or N please'
 
-    def challenge(self, prompt, default=NoDefault):
+    def challenge(self, prompt, default=NoDefault, should_echo=True):
         """
         Prompt the user for a variable.
         """
@@ -285,7 +286,11 @@ class Command(object):
             prompt += ' [%r]' % default
         prompt += ': '
         while 1:
-            response = raw_input(prompt).strip()
+            if should_echo:
+                prompt_method = raw_input
+            else:
+                prompt_method = getpass.getpass
+            response = prompt_method(prompt).strip()
             if not response:
                 if default is not NoDefault:
                     return default

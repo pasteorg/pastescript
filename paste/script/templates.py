@@ -69,7 +69,7 @@ class Template(object):
             if var.name not in unused_vars:
                 if cmd.interactive:
                     prompt = 'Enter %s' % var.full_description()
-                    response = cmd.challenge(prompt, var.default)
+                    response = cmd.challenge(prompt, var.default, var.should_echo)
                     converted_vars[var.name] = response
                 elif var.default is command.NoDefault:
                     errors.append('Required variable missing: %s'
@@ -146,15 +146,16 @@ NoDefault = command.NoDefault
 class var(object):
 
     def __init__(self, name, description,
-                 default=''):
+                 default='', should_echo=True):
         self.name = name
         self.description = description
         self.default = default
+        self.should_echo = should_echo
 
     def __repr__(self):
-        return '<%s %s default=%r>' % (
+        return '<%s %s default=%r should_echo=%s>' % (
             self.__class__.__name__,
-            self.name, self.default)
+            self.name, self.default, self.should_echo)
 
     def full_description(self):
         if self.description:
@@ -175,6 +176,8 @@ class var(object):
                 print '  %s' % var.name
             if var.default is not command.NoDefault:
                 print '      default: %r' % var.default
+            if var.should_echo is True:
+                print '      should_echo: %s' % var.should_echo
         print
 
     print_vars = classmethod(print_vars)
