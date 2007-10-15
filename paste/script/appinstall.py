@@ -535,14 +535,22 @@ class Installer(object):
             if command.verbose:
                 print 'No %s found' % meta_name
             return self.simple_config(vars)
+        return self.template_renderer(
+            self.dist.get_metadata(meta_name), vars, filename=meta_name)
+
+    def template_renderer(self, content, vars, filename=None):
+        """
+        Subclasses may override this to provide different template
+        substitution (e.g., use a different template engine).
+        """
         if self.use_cheetah:
             import Cheetah.Template
-            tmpl = Cheetah.Template.Template(self.dist.get_metadata(meta_name),
-                                    searchList=[vars])
+            tmpl = Cheetah.Template.Template(content,
+                                             searchList=[vars])
             return copydir.careful_sub(
-                tmpl, vars, meta_name)
+                tmpl, vars, filename)
         else:
-            tmpl = string.Template(self.dist.get_metadata(meta_name))
+            tmpl = string.Template(content)
             return tmpl.substitute(vars)
 
     def simple_config(self, vars):
@@ -602,3 +610,4 @@ class Installer(object):
         conf = appconfig(conf)
         conf.filename = filename
         func(command, conf, vars)
+

@@ -17,6 +17,12 @@ svn trunk
   then the input will not be echoed (as for a password).  From Dirceu
   Pereira Tiegs.
 
+* Added a method
+  ``paste.script.appinstall.Installer.template_renderer``, which can
+  be used to override template substitution with ``paster
+  make-config``.  The function is similar to the same function used
+  with ``paster create`` templates.
+
 1.3.6
 -----
 
