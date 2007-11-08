@@ -339,7 +339,10 @@ def _add_except(exc, info):
     if not hasattr(exc, 'args') or exc.args is None:
         return
     args = list(exc.args)
-    args[0] += ' ' + info
+    if args:
+        args[0] += ' ' + info
+    else:
+        args = [info]
     exc.args = tuple(args)
     return
     
