@@ -88,6 +88,8 @@ setup(
     help=paste.script.help:HelpCommand
     create=paste.script.create_distro:CreateDistroCommand [Templating]
     serve=paste.script.serve:ServeCommand [Config]
+    request=paste.script.request:RequestCommand [Config]
+    post=paste.script.request:RequestCommand [Config]
     exe=paste.script.exe:ExeCommand
     points=paste.script.entrypoints:EntryPointCommand
     make-config=paste.script.appinstall:MakeConfigCommand

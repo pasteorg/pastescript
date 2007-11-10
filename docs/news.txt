@@ -4,6 +4,10 @@ News: Paste Script
 svn trunk
 ---------
 
+* Added commands ``paster request config.ini URL`` and ``paster post
+  config.ini URL < post-body``, that allow you to do artificial
+  requests to applications.
+
 * Check the writability of the pid and log files earlier.  This caused
   particular problems if you started it in daemon mode, and the files
   weren't writable.  From Chris Atlee.
