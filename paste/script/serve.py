@@ -58,10 +58,11 @@ class ServeCommand(Command):
                       dest='server_name',
                       metavar='SECTION_NAME',
                       help="Use the named server as defined in the configuration file (default: main)")
-    parser.add_option('--daemon',
-                      dest="daemon",
-                      action="store_true",
-                      help="Run in daemon (background) mode")
+    if hasattr(os, 'fork'):
+        parser.add_option('--daemon',
+                          dest="daemon",
+                          action="store_true",
+                          help="Run in daemon (background) mode")
     parser.add_option('--pid-file',
                       dest='pid_file',
                       metavar='FILENAME',

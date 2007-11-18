@@ -27,6 +27,9 @@ svn trunk
   make-config``.  The function is similar to the same function used
   with ``paster create`` templates.
 
+* Remove ``--daemon`` option from Windows, as it depends on
+  ``os.fork``
+
 1.3.6
 -----
 

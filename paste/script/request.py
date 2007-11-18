@@ -28,6 +28,9 @@ class RequestCommand(Command):
     relative to /.command/.  The variable environ['paste.command_request']
     will be set to True in the request, so your application can distinguish
     these calls from normal requests.
+
+    Note that you can pass options besides the options listed here; any unknown
+    options will be passed to the application in environ['QUERY_STRING'].
     """
     
     parser = Command.standard_parser(quiet=True)
