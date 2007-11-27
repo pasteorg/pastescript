@@ -492,7 +492,8 @@ class Command(object):
         for i in range(len(lines)):
             if regex.search(lines[i]):
                 # Found it!
-                if lines[i:] and len(lines[i:]) > 1 and lines[i+1].strip() == text.strip():
+                if (lines[i:] and len(lines[i:]) > 1 and
+                    ''.join(lines[i+1:]).strip().startswith(text.strip())):
                     # Already have it!
                     print 'Warning: line already found in %s (not inserting' % filename
                     print '  %s' % lines[i]
