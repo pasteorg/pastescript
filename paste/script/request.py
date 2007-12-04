@@ -108,7 +108,7 @@ class RequestCommand(Command):
             'wsgi.multiprocess': True,
             'wsgi.errors': sys.stderr,
             'QUERY_STRING': qs,
-            'HTTP_ACCEPT': 'text/plain;q=1.0, */*;q=0.1'
+            'HTTP_ACCEPT': 'text/plain;q=1.0, */*;q=0.1',
             'paste.command_request': True,
             }
         if request_method == 'POST':
