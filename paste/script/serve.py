@@ -25,6 +25,10 @@ import ConfigParser
 
 MAXFD = 1024
 
+class DaemonizeException(Exception):
+    pass
+
+
 class ServeCommand(Command):
 
     min_args = 0
@@ -213,7 +217,12 @@ class ServeCommand(Command):
             writeable_pid_file.close()
 
         if self.options.daemon:
-            self.daemonize()
+            try:
+                self.daemonize()
+            except DaemonizeException, ex:
+                if self.verbose > 0:
+                    print str(ex)
+                return
 
         if (self.options.monitor_restart
             and not os.environ.get(self._monitor_environ_key)):
@@ -266,6 +275,12 @@ class ServeCommand(Command):
                 **kw)
 
     def daemonize(self):
+        pid = live_pidfile(self.options.pid_file)
+        if pid:
+            raise DaemonizeException(
+                "Daemon is already running (PID: %s from PID file %s)"
+                % (pid, self.options.pid_file))
+
         if self.verbose > 0:
             print 'Entering daemon mode'
         pid = os.fork()
