@@ -39,6 +39,12 @@ svn trunk
   file exists and describes a running process, do not start another
   process.
 
+* Added ``umask`` option to
+  ``egg:PasteScript#flup_fcgi_thread/fork``.
+
+* Deprecate the flup entry points, as flup now has the necessary entry
+  points in its own package.
+
 1.3.6
 -----
 
