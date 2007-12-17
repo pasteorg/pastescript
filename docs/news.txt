@@ -33,6 +33,8 @@ svn trunk
 * When using ``paster create`` and inserting text with a ``-*-``
   marker, multi-line text will no longer be reinserted.
 
+* Improved output when skipping templates with ``paster create``
+
 1.3.6
 -----
 
