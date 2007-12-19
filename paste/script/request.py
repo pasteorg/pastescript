@@ -95,17 +95,20 @@ class RequestCommand(Command):
             request_method = 'GET'
         qs = []
         for item in self.args[2:]:
-            qs.append(urllib.quote(item))
+            if '=' in item:
+                item = urllib.quote(item.split('=', 1)[0]) + '=' + urllib.quote(item.split('=', 1)[1])
+            else:
+                item = urllib.quote(item)
+            qs.append(item)
         qs = '&'.join(qs)
         
         environ = {
             'REQUEST_METHOD': request_method,
-            ## FIXME: shouldn't be fixed:
+            ## FIXME: shouldn't be static (an option?):
             'CONTENT_TYPE': 'text/plain',
             'wsgi.run_once': True,
             'wsgi.multithread': False,
-            ## FIXME: should this be true?:
-            'wsgi.multiprocess': True,
+            'wsgi.multiprocess': False,
             'wsgi.errors': sys.stderr,
             'QUERY_STRING': qs,
             'HTTP_ACCEPT': 'text/plain;q=1.0, */*;q=0.1',
