@@ -81,7 +81,7 @@ an idea, but a basic outline looks like this::
         parser.add_option('--goodbye',
                           action='store_true',
                           dest='goodbye',
-                          help="Say 'Goodbye' instead)
+                          help="Say 'Goodbye' instead")
 
         def command(self):
             name = self.args[0]
