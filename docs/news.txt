@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.6
+---
 
 * Added commands ``paster request config.ini URL`` and ``paster post
   config.ini URL < post-body``, that allow you to do artificial
