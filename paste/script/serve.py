@@ -192,7 +192,7 @@ class ServeCommand(Command):
             server_spec = app_spec
         base = os.getcwd()
 
-        if self.options.daemon:
+        if getattr(self.options, 'daemon', False):
             if not self.options.pid_file:
                 self.options.pid_file = 'paster.pid'
             if not self.options.log_file:
