@@ -1,8 +1,8 @@
 News: Paste Script
 ==================
 
-svn trunk
----------
+1.6.1
+-----
 
 * Fix paster serve under Windows.
 
