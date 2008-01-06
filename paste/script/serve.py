@@ -216,7 +216,7 @@ class ServeCommand(Command):
                 raise BadCommand(msg)
             writeable_pid_file.close()
 
-        if self.options.daemon:
+        if getattr(self.options, 'daemon', False):
             try:
                 self.daemonize()
             except DaemonizeException, ex:
