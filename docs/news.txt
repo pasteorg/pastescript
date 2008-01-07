@@ -1,8 +1,10 @@
 News: Paste Script
 ==================
 
-1.6.1
------
+.. contents::
+
+1.6.1 (and 1.6.1.1)
+-------------------
 
 * Fix paster serve under Windows.
 
