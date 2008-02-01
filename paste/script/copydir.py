@@ -103,6 +103,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                                              template_renderer=template_renderer)
             except SkipTemplate:
                 continue
+            if content is None:
+                continue
         already_exists = os.path.exists(dest_full)
         if already_exists:
             f = open(dest_full, 'rb')
@@ -305,6 +307,7 @@ def sub_catcher(filename, vars, func, *args, **kw):
         print 'Skipping file %s' % filename
         if str(e):
             print str(e)
+        raise
     except Exception, e:
         print 'Error in file %s:' % filename
         if isinstance(e, NameError):

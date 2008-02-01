@@ -3,6 +3,12 @@ News: Paste Script
 
 .. contents::
 
+svn trunk
+---------
+
+* Fix SkipTemplate (could raise ``TypeError: argument 1 must be string
+  or read-only buffer, not None`` before)
+
 1.6.1 (and 1.6.1.1)
 -------------------
 
