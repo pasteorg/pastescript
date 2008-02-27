@@ -9,7 +9,6 @@
 import re
 import os
 import errno
-import signal
 import sys
 import time
 try:
@@ -252,7 +251,11 @@ class ServeCommand(Command):
                            relative_to=base, global_conf=vars)
 
         if self.verbose > 0:
-            print 'Starting server in PID %i.' % os.getpid()
+            if hasattr(os, 'getpid'):
+                msg = 'Starting server in PID %i.' % os.getpid()
+            else:
+                msg = 'Starting server.'
+            print msg
         try:
             server(app)
         except (SystemExit, KeyboardInterrupt), e:
@@ -348,6 +351,7 @@ class ServeCommand(Command):
         for j in range(10):
             if not live_pidfile(pid_file):
                 break
+            import signal
             os.kill(pid, signal.SIGTERM)
             time.sleep(1)
         else:
