@@ -4,6 +4,7 @@ import os
 import glob
 from paste.script import pluginlib, copydir
 from paste.script.command import BadCommand
+difflib = None
 try:
     import subprocess
 except ImportError:
@@ -230,7 +231,7 @@ class FileOp(object):
             if self.verbose > 1:
                 print 'File %s matches expected content' % filename
             return
-        if not self.options.overwrite:
+        if self.interactive:
             print 'Warning: file %s does not match expected content' % filename
             if difflib is None:
                 import difflib

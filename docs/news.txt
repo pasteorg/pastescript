@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+svn trunk
+---------
+
+* Fixes for ``paste.script.filemaker``
+
 1.6.2
 -----
 
