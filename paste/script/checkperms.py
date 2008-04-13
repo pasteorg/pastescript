@@ -9,8 +9,6 @@ Currently only supports Posix systems (with Posixy permissions).
 Permission stuff can probably be stubbed out later.
 """
 import os
-import pwd
-import grp
 
 def read_perm_spec(spec):
     """
@@ -175,6 +173,8 @@ def calc_ownership_spec(spec):
     use '-' to mean any-user/any-group.
 
     """
+    import grp
+    import pwd
     user = group = None
     uid = gid = None
     if ':' in spec:
@@ -212,6 +212,8 @@ def ownership_diff(filename, spec):
     Return a list of differences between the ownership of ``filename``
     and the spec given.
     """
+    import grp
+    import pwd
     diffs = []
     uid, user, gid, group = calc_ownership_spec(spec)
     st = os.stat(filename)
