@@ -140,17 +140,8 @@ class CreateDistroCommand(Command):
 
         # With no setup.py this doesn't make sense:
         if found_setup_py:
-            egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
-            for template in templates:
-                for spec in template.egg_plugins:
-                    if self.verbose:
-                        print 'Adding %s to paster_plugins.txt' % spec
-                    if not self.simulate:
-                        pluginlib.add_plugin(egg_info_dir, spec)
-            if not self.simulate:
-                # We'll include this by default, but you can remove
-                # it later if you want:
-                pluginlib.add_plugin(egg_info_dir, 'PasteScript')
+            write_paster_plugins(pluginlib.egg_info_dir(output_dir, dist_name),
+                                 templates, self.verbose, self.simulate)
         
         if self.options.svn_repository:
             self.add_svn_repository(vars, output_dir)
@@ -386,3 +377,22 @@ class CreateDistroCommand(Command):
             print
             return
         tmpl.print_vars(indent=2)
+
+
+def write_paster_plugins(egg_info_dir, templates, verbose=True,
+                         simulate=False):
+    """Write the paster_plugins.txt file to egg_info_dir, with the
+    contents determined from the list of templates.
+
+    Doesn't touch the filesystem if simulate=False.
+    """
+    for template in templates:
+        for spec in template.egg_plugins:
+            if verbose:
+                print 'Adding %s to paster_plugins.txt' % spec
+            if not simulate:
+                pluginlib.add_plugin(egg_info_dir, spec)
+    if not simulate:
+        # We'll include this by default, but you can remove
+        # it later if you want:
+        pluginlib.add_plugin(egg_info_dir, 'PasteScript')
