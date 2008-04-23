@@ -757,7 +757,8 @@ class NotFoundCommand(Command):
         #for name, value in os.environ.items():
         #    print '%s: %s' % (name, value)
         #print sys.argv
-        print 'Command %s not known' % self.command_name
+        print ('Command %r not known (you may need to run setup.py egg_info)'
+               % self.command_name)
         commands = get_commands().items()
         commands.sort()
         if not commands:
