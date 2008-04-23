@@ -8,6 +8,10 @@ from command import Command, BadCommand
 import copydir
 import pluginlib
 import fnmatch
+try:
+    set
+except NameError:
+    from sets import Set as set
 
 class CreateDistroCommand(Command):
 
@@ -119,13 +123,30 @@ class CreateDistroCommand(Command):
         # specialized)...
         for template in templates[::-1]:
             vars = template.check_vars(vars, self)
+
+        # Gather all the templates egg_plugins into one var
+        egg_plugins = set()
+        for template in templates:
+            egg_plugins.update(template.egg_plugins)
+        egg_plugins = list(egg_plugins)
+        egg_plugins.sort()
+        vars['egg_plugins'] = egg_plugins
             
         for template in templates:
             self.create_template(
                 template, output_dir, vars)
 
         found_setup_py = False
+        paster_plugins_mtime = None
         if os.path.exists(os.path.join(output_dir, 'setup.py')):
+            # Grab paster_plugins.txt's mtime; used to determine if the
+            # egg_info command wrote to it
+            egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
+            if egg_info_dir is not None:
+                plugins_path = os.path.join(egg_info_dir, 'paster_plugins.txt')
+                if os.path.exists(plugins_path):
+                    paster_plugins_mtime = os.path.getmtime(plugins_path)
+
             self.run_command(sys.executable, 'setup.py', 'egg_info',
                              cwd=output_dir,
                              # This shouldn't be necessary, but a bug in setuptools 0.6c3 is causing a (not entirely fatal) problem that I don't want to fix right now:
@@ -140,8 +161,22 @@ class CreateDistroCommand(Command):
 
         # With no setup.py this doesn't make sense:
         if found_setup_py:
-            write_paster_plugins(pluginlib.egg_info_dir(output_dir, dist_name),
-                                 templates, self.verbose, self.simulate)
+            # Only write paster_plugins.txt if it wasn't written by
+            # egg_info (the correct way). leaving us to do it is
+            # deprecated and you'll get warned
+            egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
+            plugins_path = os.path.join(egg_info_dir, 'paster_plugins.txt')
+            if len(egg_plugins) and (not os.path.exists(plugins_path) or \
+                    os.path.getmtime(plugins_path) == paster_plugins_mtime):
+                if self.verbose:
+                    print >> sys.stderr, \
+                        ('Manually creating paster_plugins.txt (deprecated! '
+                         'pass a paster_plugins keyword to setup() instead)')
+                for plugin in egg_plugins:
+                    if self.verbose:
+                        print 'Adding %s to paster_plugins.txt' % plugin
+                    if not self.simulate:
+                        pluginlib.add_plugin(egg_info_dir, plugin)
         
         if self.options.svn_repository:
             self.add_svn_repository(vars, output_dir)
@@ -377,22 +412,3 @@ class CreateDistroCommand(Command):
             print
             return
         tmpl.print_vars(indent=2)
-
-
-def write_paster_plugins(egg_info_dir, templates, verbose=True,
-                         simulate=False):
-    """Write the paster_plugins.txt file to egg_info_dir, with the
-    contents determined from the list of templates.
-
-    Doesn't touch the filesystem if simulate=False.
-    """
-    for template in templates:
-        for spec in template.egg_plugins:
-            if verbose:
-                print 'Adding %s to paster_plugins.txt' % spec
-            if not simulate:
-                pluginlib.add_plugin(egg_info_dir, spec)
-    if not simulate:
-        # We'll include this by default, but you can remove
-        # it later if you want:
-        pluginlib.add_plugin(egg_info_dir, 'PasteScript')

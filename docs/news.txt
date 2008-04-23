@@ -8,6 +8,22 @@ svn trunk
 
 * Fixes for ``paste.script.filemaker``
 
+* A setuptools ``egg_info.writers`` entry point is now provided that's
+  responsible for writing paster_plugins.txt for projects that define
+  a new ``paster_plugins`` setup() keyword. paster_plugins.txt will
+  still be created for new projects that need it and lack a
+  ``paster_plugins`` setup() keyword, but this is deprecated. Projects
+  defining ``paster_plugins`` in setup() should also define a
+  ``setup_requires`` setup() keyword including PasteScript.
+
+* An ``egg_plugins`` variable (a list of strings based off the
+  Templates classes' ``egg_plugins`` variables) is now available to
+  paster create templates for the new ``paster_plugins`` setup()
+  keyword.
+
+* PasteScript is no longer included in
+  ``egg_plugins``/paster_plugins.txt by default.
+
 1.6.2
 -----
 
