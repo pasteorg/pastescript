@@ -42,7 +42,8 @@ class FileOp(object):
         self.template_vars = template_vars
         self.source_dir = source_dir
     
-    def copy_file(self, template, dest, filename=None, add_py=True, package=True):
+    def copy_file(self, template, dest, filename=None, add_py=True, package=True,
+                  template_renderer=None):
         """
         Copy a file from the source location to somewhere in the
         destination.
@@ -60,6 +61,8 @@ class FileOp(object):
         package
             Whether or not this file is part of a Python package, and any
             directories created should contain a __init__.py file as well.
+        template_renderer
+            An optional template renderer
         
         """
         if not filename:
@@ -68,7 +71,8 @@ class FileOp(object):
                 filename = filename[:-5]
         base_package, cdir = self.find_dir(dest, package)
         self.template_vars['base_package'] = base_package
-        content = self.load_content(base_package, cdir, filename, template)
+        content = self.load_content(base_package, cdir, filename, template,
+                                    template_renderer=template_renderer)
         if add_py:
             # @@: Why is it a default to add a .py extension? 
             filename = '%s.py' % filename
@@ -95,7 +99,8 @@ class FileOp(object):
         # @@: This should actually be implemented
         raise NotImplementedError
 
-    def load_content(self, base_package, base, name, template):
+    def load_content(self, base_package, base, name, template,
+                     template_renderer=None):
         blank = os.path.join(base, name + '.py')
         if not os.path.exists(blank):
             blank = os.path.join(self.source_dir,
@@ -104,8 +109,9 @@ class FileOp(object):
         content = f.read()
         f.close()
         if blank.endswith('_tmpl'):
-            content = copydir.substitute_content(content, self.template_vars,
-                                                 filename=blank)
+            content = copydir.substitute_content(
+                content, self.template_vars, filename=blank,
+                template_renderer=template_renderer)
         return content
 
     def find_dir(self, dirname, package=False):
