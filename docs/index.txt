@@ -5,7 +5,14 @@ Paste Script
 :revision: $Rev$
 :date: $LastChangedDate$
 
-.. contents::
+Contents:
+
+.. toctree::
+   :maxdepth: 1
+
+   news
+   developer
+   license
 
 Introduction
 ------------

@@ -3,6 +3,8 @@
 import os
 import sys
 
+## FIXME: this should be deprecated in favor of wsgiref
+
 def paste_run_cgi(wsgi_app, global_conf):
     run_with_cgi(wsgi_app)
 
