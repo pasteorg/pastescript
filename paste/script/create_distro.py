@@ -141,7 +141,10 @@ class CreateDistroCommand(Command):
         if os.path.exists(os.path.join(output_dir, 'setup.py')):
             # Grab paster_plugins.txt's mtime; used to determine if the
             # egg_info command wrote to it
-            egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
+            try:
+                egg_info_dir = pluginlib.egg_info_dir(output_dir, dist_name)
+            except IOError:
+                egg_info_dir = None
             if egg_info_dir is not None:
                 plugins_path = os.path.join(egg_info_dir, 'paster_plugins.txt')
                 if os.path.exists(plugins_path):
