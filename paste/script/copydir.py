@@ -158,6 +158,8 @@ def should_skip_file(name):
         return 'Skipping backup file %(filename)s'
     if name.endswith('.pyc'):
         return 'Skipping .pyc file %(filename)s'
+    if name.endswith('$py.class'):
+        return 'Skipping $py.class file %(filename)s'
     if name in ('CVS', '_darcs'):
         return 'Skipping version control directory %(filename)s'
     return None
