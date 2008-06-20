@@ -7,7 +7,7 @@ import warnings
 def warn(name, stacklevel=3):
     # Deprecated 2007-12-17
     warnings.warn(
-        'The egg:PasteScript#%s entry point is deprecated; please use egg:Flup#flup_%s instead'
+        'The egg:PasteScript#flup_%s entry point is deprecated; please use egg:Flup#%s instead'
         % (name, name),
         DeprecationWarning, stacklevel=stacklevel)
 
