@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+svn trunk
+---------
+
+* CherryPy wsgiserver updated to the 3.1.0 release's.
+
 1.6.3
 -----
 
