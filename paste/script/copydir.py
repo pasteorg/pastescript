@@ -1,6 +1,7 @@
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
+import pkg_resources
 import sys
 if sys.version_info < (2, 4):
     from paste.script.util import string24 as string
@@ -60,7 +61,11 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
     # otherwise be skipped because leading dots make the file hidden:
     vars.setdefault('dot', '.')
     vars.setdefault('plus', '+')
-    names = os.listdir(source)
+    use_pkg_resources = isinstance(source, tuple)
+    if use_pkg_resources:
+        names = pkg_resources.resource_listdir(source[0], source[1])
+    else:
+        names = os.listdir(source)
     names.sort()
     pad = ' '*(indent*2)
     if not os.path.exists(dest):
@@ -72,7 +77,10 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
     elif verbosity >= 2:
         print '%sDirectory %s exists' % (pad, dest)
     for name in names:
-        full = os.path.join(source, name)
+        if use_pkg_resources:
+            full = '/'.join([source[1], name])
+        else:
+            full = os.path.join(source, name)
         reason = should_skip_file(name)
         if reason:
             if verbosity >= 2:
@@ -85,7 +93,15 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         if dest_full.endswith('_tmpl'):
             dest_full = dest_full[:-5]
             sub_file = sub_vars
-        if os.path.isdir(full):
+        if use_pkg_resources and pkg_resources.resource_isdir(source[0], full):
+            if verbosity:
+                print '%sRecursing into %s' % (pad, os.path.basename(full))
+            copy_dir((source[0], full), dest_full, vars, verbosity, simulate,
+                     indent=indent+1, use_cheetah=use_cheetah,
+                     sub_vars=sub_vars, interactive=interactive,
+                     svn_add=svn_add, template_renderer=template_renderer)
+            continue
+        elif not use_pkg_resources and os.path.isdir(full):
             if verbosity:
                 print '%sRecursing into %s' % (pad, os.path.basename(full))
             copy_dir(full, dest_full, vars, verbosity, simulate,
@@ -93,9 +109,12 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                      sub_vars=sub_vars, interactive=interactive,
                      svn_add=svn_add, template_renderer=template_renderer)
             continue
-        f = open(full, 'rb')
-        content = f.read()
-        f.close()
+        elif use_pkg_resources:
+            content = pkg_resources.resource_string(source[0], full)
+        else:
+            f = open(full, 'rb')
+            content = f.read()
+            f.close()
         if sub_file:
             try:
                 content = substitute_content(content, vars, filename=full,
@@ -121,7 +140,9 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                     continue
             elif not overwrite:
                 continue
-        if verbosity:
+        if verbosity and use_pkg_resources:
+            print '%sCopying %s to %s' % (pad, full, dest_full)
+        elif verbosity:
             print '%sCopying %s to %s' % (pad, os.path.basename(full), dest_full)
         if not simulate:
             f = open(dest_full, 'wb')

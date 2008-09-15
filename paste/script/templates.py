@@ -41,16 +41,17 @@ class Template(object):
         self._read_vars = None
     
     def module_dir(self):
-        """
-        Returns the module directory of this template.
-        """
+        """Returns the module directory of this template."""
         mod = sys.modules[self.__class__.__module__]
         return os.path.dirname(mod.__file__)
 
     def template_dir(self):
         assert self._template_dir is not None, (
             "Template %r didn't set _template_dir" % self)
-        return os.path.join(self.module_dir(), self._template_dir)
+        if isinstance( self._template_dir, tuple):
+            return self._template_dir
+        else:
+            return os.path.join(self.module_dir(), self._template_dir)
 
     def run(self, command, output_dir, vars):
         self.pre(command, output_dir, vars)

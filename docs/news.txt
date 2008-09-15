@@ -6,6 +6,10 @@ News: Paste Script
 svn trunk
 ---------
 
+* _template_dir now takes a tuple argument, which should be the
+  package name, and the relative location to the package of its template
+  directory. pkg_resources will then be used to load make the templates
+  rather than raw file access making it zip-safe.
 * CherryPy wsgiserver updated to the 3.1.0 release's.
 
 1.6.3
