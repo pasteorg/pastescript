@@ -197,7 +197,10 @@ def uuid1():
 
 def uuid3(namespace, name):
     """Generate a UUID from the MD5 hash of a namespace UUID and a name."""
-    from md5 import md5
+    try:
+        from hashlib import md5
+    except ImportError:
+        from md5 import md5
     uuid = UUID(0, 0, 0, 0, 0, 0)
     uuid.bytes = md5(namespace.bytes + name).digest()[:16]
     uuid.variant = RFC_4122
@@ -221,9 +224,12 @@ def uuid4():
 
 def uuid5(namespace, name):
     """Generate a UUID from the SHA-1 hash of a namespace UUID and a name."""
-    from sha import sha
+    try:
+        from hashlib import sha1
+    except ImportError:
+        from sha import sha as sha1
     uuid = UUID(0, 0, 0, 0, 0, 0)
-    uuid.bytes = sha(namespace.bytes + name).digest()[:16]
+    uuid.bytes = sha1(namespace.bytes + name).digest()[:16]
     uuid.variant = RFC_4122
     uuid.version = 5
     return uuid
