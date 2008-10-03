@@ -421,11 +421,11 @@ def eval_with_catch(expr, vars):
 class LaxTemplate(string.Template):
     # This change of pattern allows for anything in braces, but
     # only identifiers outside of braces:
-    pattern = re.compile(r"""
+    pattern = r"""
     \$(?:
       (?P<escaped>\$)             |   # Escape sequence of two delimiters
       (?P<named>[_a-z][_a-z0-9]*) |   # delimiter and a Python identifier
       {(?P<braced>.*?)}           |   # delimiter and a braced identifier
       (?P<invalid>)                   # Other ill-formed delimiter exprs
     )
-    """, re.VERBOSE | re.IGNORECASE)
+    """
