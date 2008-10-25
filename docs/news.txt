@@ -10,8 +10,13 @@ svn trunk
   package name, and the relative location to the package of its template
   directory. pkg_resources will then be used to load make the templates
   rather than raw file access making it zip-safe.
+
 * CherryPy wsgiserver updated to the 3.1.0 release's.
+
 * Support Python 2.6.
+
+* Added experimental support for a quicker paster serve --reload for
+  Jython.
 
 1.6.3
 -----

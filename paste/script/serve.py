@@ -24,6 +24,8 @@ import ConfigParser
 
 MAXFD = 1024
 
+jython = sys.platform.startswith('java')
+
 class DaemonizeException(Exception):
     pass
 
@@ -108,6 +110,12 @@ class ServeCommand(Command):
                       action='store_true',
                       help='Stop a daemonized server (given a PID file, or default paster.pid file)')
 
+    if jython:
+        parser.add_option('--disable-jython-reloader',
+                          action='store_true',
+                          dest='disable_jython_reloader',
+                          help="Disable the Jython reloader")
+
 
     _scheme_re = re.compile(r'^[a-z][a-z]+:', re.I)
 
@@ -149,16 +157,33 @@ class ServeCommand(Command):
                 cmd = None
                 restvars = self.args[:]
 
+        jython_monitor = False
         if self.options.reload:
-            if os.environ.get(self._reloader_environ_key):
-                from paste import reloader
-                if self.verbose > 1:
-                    print 'Running reloading file monitor'
-                reloader.install(int(self.options.reload_interval))
-                if self.requires_config_file:
-                    reloader.watch_file(self.args[0])
-            else:
-                return self.restart_with_reloader()
+            if jython and not self.options.disable_jython_reloader:
+                # JythonMonitor raises the special SystemRestart
+                # exception that'll cause the Jython interpreter to
+                # reload in the existing Java process (avoiding
+                # subprocess startup time)
+                try:
+                    from paste.reloader import JythonMonitor
+                except ImportError:
+                    pass
+                else:
+                    jython_monitor = JythonMonitor(poll_interval=int(
+                            self.options.reload_interval))
+                    if self.requires_config_file:
+                        jython_monitor.watch_file(self.args[0])
+
+            if not jython_monitor:
+                if os.environ.get(self._reloader_environ_key):
+                    from paste import reloader
+                    if self.verbose > 1:
+                        print 'Running reloading file monitor'
+                    reloader.install(int(self.options.reload_interval))
+                    if self.requires_config_file:
+                        reloader.watch_file(self.args[0])
+                else:
+                    return self.restart_with_reloader()
 
         if cmd not in (None, 'start', 'stop', 'restart', 'status'):
             raise BadCommand(
@@ -256,16 +281,26 @@ class ServeCommand(Command):
             else:
                 msg = 'Starting server.'
             print msg
-        try:
-            server(app)
-        except (SystemExit, KeyboardInterrupt), e:
-            if self.verbose > 1:
-                raise
-            if str(e):
-                msg = ' '+str(e)
-            else:
-                msg = ''
-            print 'Exiting%s (-v to see traceback)' % msg
+
+        def serve():
+            try:
+                server(app)
+            except (SystemExit, KeyboardInterrupt), e:
+                if self.verbose > 1:
+                    raise
+                if str(e):
+                    msg = ' '+str(e)
+                else:
+                    msg = ''
+                print 'Exiting%s (-v to see traceback)' % msg
+
+        if jython_monitor:
+            # JythonMonitor has to be ran from the main thread
+            threading.Thread(target=serve).start()
+            print 'Starting Jython file monitor'
+            jython_monitor.periodic_reload()
+        else:
+            serve()
     
     def loadserver(self, server_spec, name, relative_to, **kw):
             return loadserver(
