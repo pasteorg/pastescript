@@ -185,7 +185,7 @@ class var(object):
 
 class BasicPackage(Template):
 
-    _template_dir = 'templates/basic_package'
+    _template_dir = 'paster-templates/basic_package'
     summary = "A basic setuptools-enabled package"
     vars = [
         var('version', 'Version (like 0.1)'),

@@ -18,6 +18,9 @@ svn trunk
 * Added experimental support for a quicker paster serve --reload for
   Jython.
 
+* Non-Python files in ``paste/script/templates/`` causes an error on
+  2.6; renamed directory to avoid this.
+
 1.6.3
 -----
 
