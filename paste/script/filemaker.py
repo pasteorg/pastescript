@@ -2,6 +2,7 @@
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
 import glob
+import pkg_resources
 from paste.script import pluginlib, copydir
 from paste.script.command import BadCommand
 difflib = None
@@ -41,6 +42,7 @@ class FileOp(object):
             template_vars = {}
         self.template_vars = template_vars
         self.source_dir = source_dir
+        self.use_pkg_resources = isinstance(source_dir, tuple)
     
     def copy_file(self, template, dest, filename=None, add_py=True, package=True,
                   template_renderer=None):
@@ -102,12 +104,21 @@ class FileOp(object):
     def load_content(self, base_package, base, name, template,
                      template_renderer=None):
         blank = os.path.join(base, name + '.py')
+        read_content = True
         if not os.path.exists(blank):
-            blank = os.path.join(self.source_dir,
-                                 template)
-        f = open(blank, 'r')
-        content = f.read()
-        f.close()
+            if self.use_pkg_resources:
+                fullpath = '/'.join([self.source_dir[1], template])
+                content = pkg_resources.resource_string(
+                    self.source_dir[0], fullpath)
+                read_content = False
+                blank = fullpath
+            else:
+                blank = os.path.join(self.source_dir,
+                                     template)
+        if read_content:
+            f = open(blank, 'r')
+            content = f.read()
+            f.close()
         if blank.endswith('_tmpl'):
             content = copydir.substitute_content(
                 content, self.template_vars, filename=blank,
