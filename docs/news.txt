@@ -3,8 +3,8 @@ News: Paste Script
 
 .. contents::
 
-svn trunk
----------
+1.7
+---
 
 * _template_dir now takes a tuple argument, which should be the
   package name, and the relative location to the package of its template
