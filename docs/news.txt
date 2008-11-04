@@ -9,6 +9,9 @@ News: Paste Script
 * filemaker.py's FileOp can now handle a tuple as a source_dir argument that
   should function the same as the _template_dir option for pkg_resources.
 
+* CherryPy wsgiserver updated to trunk@2063 for Python 2.6
+  compatibility.
+
 1.7
 ---
 
