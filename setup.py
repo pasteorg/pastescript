@@ -64,10 +64,10 @@ setup(
     license='MIT',
     packages=find_packages(exclude='tests'),
     package_data={
-      'paste.script': ['templates/basic_package/setup.*',
-                       'templates/basic_package/tests/*.py',
+      'paste.script': ['paster-templates/basic_package/setup.*',
+                       'paster-templates/basic_package/tests/*.py',
                        # @@: docs/ doesn't have any files :(
-                       'templates/basic_package/+package+/*.py'],
+                       'paster-templates/basic_package/+package+/*.py'],
       },
     zip_safe=False,
     scripts=['scripts/paster'],
