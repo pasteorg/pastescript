@@ -3,6 +3,12 @@ News: Paste Script
 
 .. contents::
 
+1.7.2
+-----
+
+* Fix a packaging issue that could cause problems when installing
+  PasteScript.
+
 1.7.1
 -----
 
