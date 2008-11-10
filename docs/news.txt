@@ -3,6 +3,12 @@ News: Paste Script
 
 .. contents::
 
+1.7.3
+-----
+
+* CherryPy wsgiserver updated to 3.1.1, fixes a regression in Python
+  2.5 plus a couple other small fixes.
+
 1.7.2
 -----
 
