@@ -34,6 +34,17 @@ backward compatibility.  This will include deprecation warnings when
 necessary.  Major changes will take place under new functions or with
 new entry points.
 
+``paster create``
+-----------------
+
+This creates the skeleton for new projects.  Many different kinds of
+projects have created skeletons for their projects (Pylons,
+TurboGears, ZopeSkel, and others).
+
+For a tutorial for making new skeletons, see `this tutorial from Lucas
+Szybalski <http://lucasmanual.com/mywiki/PythonPaste>`_.  It also
+discusses creating new subcommands for paster.
+
 ``paster serve``
 ----------------
 
