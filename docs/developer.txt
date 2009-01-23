@@ -195,7 +195,8 @@ the package directory.
 If a file in the template directory ends in ``_tmpl`` then it will be
 substituted.  If ``use_cheetah`` is true, then it's treated as a
 `Cheetah <http://www.cheetahtemplate.org/>`_ template.  Otherwise
-`string.Template <http://python.org/doc/current/lib/node109.html>`_ is
+`string.Template
+<http://docs.python.org/library/string.html#template-strings>`_ is
 used, though full expressions are allowed in ``${expr}`` instead of
 just variables.
 
