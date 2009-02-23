@@ -30,6 +30,22 @@ class BadCommand(Exception):
         self.exit_code = exit_code
         Exception.__init__(self, message)
 
+    def _get_message(self):
+        """Getter for 'message'; needed only to override deprecation
+        in BaseException."""
+        return self.__message
+
+    def _set_message(self, value):
+        """Setter for 'message'; needed only to override deprecation
+        in BaseException."""
+        self.__message = value
+
+    # BaseException.message has been deprecated since Python 2.6.
+    # To prevent DeprecationWarning from popping up over this
+    # pre-existing attribute, use a new property that takes lookup
+    # precedence.
+    message = property(_get_message, _set_message)
+
 class NoDefault(object):
     pass
 
