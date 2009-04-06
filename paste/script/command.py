@@ -244,7 +244,7 @@ class Command(object):
             usage = ''
         self.parser.usage = "%%prog [options]%s\n%s" % (
             usage, self.summary)
-        self.parser.prog = '%s %s' % (sys.argv[0], self.command_name)
+        self.parser.prog = '%s %s' % (os.path.basename(sys.argv[0]), self.command_name)
         if self.description:
             desc = self.description
             desc = textwrap.dedent(desc)
