@@ -244,12 +244,15 @@ class Command(object):
             usage = ''
         self.parser.usage = "%%prog [options]%s\n%s" % (
             usage, self.summary)
-        self.parser.prog = '%s %s' % (os.path.basename(sys.argv[0]), self.command_name)
+        self.parser.prog = self._prog_name()
         if self.description:
             desc = self.description
             desc = textwrap.dedent(desc)
             self.parser.description = desc
         self.options, self.args = self.parser.parse_args(args)
+
+    def _prog_name(self):
+        return '%s %s' % (os.path.basename(sys.argv[0]), self.command_name)
 
     ########################################
     ## Utility methods
