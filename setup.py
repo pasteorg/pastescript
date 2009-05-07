@@ -71,6 +71,8 @@ setup(
       },
     zip_safe=False,
     scripts=['scripts/paster'],
+    test_suite='nose.collector',
+    tests_require=['nose>=0.11'],
     extras_require={
       'Templating': [],
       'Cheetah': ['Cheetah'],
