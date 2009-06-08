@@ -1,10 +1,14 @@
 import urllib
 import os
+from nose import SkipTest
 from paste.fixture import *
 import pkg_resources
 for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'PasteWebKit',
              'ZPTKit']:
-    pkg_resources.require(spec)
+    try:
+        pkg_resources.require(spec)
+    except pkg_resources.DistributionNotFound, dnf:
+        raise SkipTest(repr(dnf))
 
 template_path = os.path.join(
     os.path.dirname(__file__), 'testfiles')
