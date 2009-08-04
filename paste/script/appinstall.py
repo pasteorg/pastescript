@@ -591,12 +591,14 @@ class Installer(object):
             mod = import_string.try_import_module(mod_name)
             if mod is None:
                 continue
-            if command.verbose:
-                print 'Running setup_config() from %s' % mod_name
             if hasattr(mod, 'setup_app'):
+                if command.verbose:
+                    print 'Running setup_app() from %s' % mod_name
                 self._call_setup_app(
                     mod.setup_app, command, filename, section, vars)
             elif hasattr(mod, 'setup_config'):
+                if command.verbose:
+                    print 'Running setup_config() from %s' % mod_name
                 mod.setup_config(command, filename, section, vars)
             else:
                 print 'No setup_app() or setup_config() function in %s (%s)' % (
