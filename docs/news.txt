@@ -3,6 +3,12 @@ News: Paste Script
 
 .. contents::
 
+1.7.4
+-----
+
+* Include special ``here`` and ``__file__`` default vars for logging
+  config files, similar to PasteDeploy config loading.
+
 1.7.3
 -----
 
