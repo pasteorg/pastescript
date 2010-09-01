@@ -177,8 +177,8 @@ def should_skip_file(name):
         return 'Skipping hidden file %(filename)s'
     if name.endswith('~') or name.endswith('.bak'):
         return 'Skipping backup file %(filename)s'
-    if name.endswith('.pyc'):
-        return 'Skipping .pyc file %(filename)s'
+    if name.endswith('.pyc') or name.endswith('.pyo'):
+        return 'Skipping %s file %(filename)s' % os.path.splitext(name)[1]
     if name.endswith('$py.class'):
         return 'Skipping $py.class file %(filename)s'
     if name in ('CVS', '_darcs'):
@@ -379,7 +379,7 @@ def _add_except(exc, info):
         args = [info]
     exc.args = tuple(args)
     return
-    
+
 
 standard_vars = {
     'nothing': None,
@@ -417,7 +417,7 @@ def eval_with_catch(expr, vars):
     except Exception, e:
         _add_except(e, 'in expression %r' % expr)
         raise
-        
+
 class LaxTemplate(string.Template):
     # This change of pattern allows for anything in braces, but
     # only identifiers outside of braces:
