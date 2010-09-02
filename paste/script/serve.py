@@ -38,15 +38,15 @@ class ServeCommand(Command):
     summary = "Serve the described application"
     description = """\
     This command serves a web application that uses a paste.deploy
-    configuration file for the server and application.  
-    
+    configuration file for the server and application.
+
     If start/stop/restart is given, then --daemon is implied, and it will
     start (normal operation), stop (--stop-daemon), or do both.
 
     You can also include variable assignments like 'http_port=8080'
     and then use %(http_port)s in your config files.
     """
-    
+
     # used by subclasses that configure apps and servers differently
     requires_config_file = True
 
@@ -202,6 +202,10 @@ class ServeCommand(Command):
                 return result
             if cmd == 'stop':
                 return result
+            self.options.daemon = True
+
+        if cmd == 'start':
+            self.options.daemon = True
 
         app_name = self.options.app_name
         vars = self.parse_vars(restvars)
@@ -301,12 +305,12 @@ class ServeCommand(Command):
             jython_monitor.periodic_reload()
         else:
             serve()
-    
+
     def loadserver(self, server_spec, name, relative_to, **kw):
             return loadserver(
                 server_spec, name=name,
                 relative_to=relative_to, **kw)
-    
+
     def loadapp(self, app_spec, name, relative_to, **kw):
             return loadapp(
                 app_spec, name=name, relative_to=relative_to,
@@ -355,7 +359,7 @@ class ServeCommand(Command):
         # Duplicate standard input to standard output and standard error.
         os.dup2(0, 1)  # standard output (1)
         os.dup2(0, 2)  # standard error (2)
-        
+
     def record_pid(self, pid_file):
         pid = os.getpid()
         if self.verbose > 1:
@@ -448,7 +452,7 @@ class ServeCommand(Command):
                         os.kill(proc.pid, signal.SIGTERM)
                     except (OSError, IOError):
                         pass
-                
+
             if reloader:
                 # Reloader always exits with code 3; but if we are
                 # a monitor, any exit code will restart
@@ -493,7 +497,7 @@ class ServeCommand(Command):
             os.setgid(gid)
         if uid:
             os.setuid(uid)
-            
+
 class LazyWriter(object):
 
     """
@@ -506,7 +510,7 @@ class LazyWriter(object):
         self.fileobj = None
         self.lock = threading.Lock()
         self.mode = mode
-        
+
     def open(self):
         if self.fileobj is None:
             self.lock.acquire()
@@ -557,7 +561,7 @@ def read_pidfile(filename):
             return None
     else:
         return None
-        
+
 def _remove_pid_file(written_pid, filename, verbosity):
     current_pid = os.getpid()
     if written_pid != current_pid:
@@ -595,8 +599,8 @@ def _remove_pid_file(written_pid, filename, verbosity):
         print 'Stale PID left in file: %s (%e)' % (filename, e)
     else:
         print 'Stale PID removed'
-        
-            
+
+
 def ensure_port_cleanup(bound_addresses, maxtries=30, sleeptime=2):
     """
     This makes sure any open ports are closed.
@@ -640,4 +644,3 @@ def _turn_sigterm_into_systemexit():
     def handle_term(signo, frame):
         raise SystemExit
     signal.signal(signal.SIGTERM, handle_term)
-    
