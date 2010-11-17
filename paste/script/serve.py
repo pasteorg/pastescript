@@ -157,6 +157,10 @@ class ServeCommand(Command):
                 cmd = None
                 restvars = self.args[:]
 
+        if (getattr(self.options, 'daemon', False)
+            and getattr(self.options, 'reload', False)):
+            raise BadCommand('The --daemon and --reload options may not be used together')
+
         jython_monitor = False
         if self.options.reload:
             if jython and not self.options.disable_jython_reloader:
