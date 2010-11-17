@@ -9,6 +9,12 @@ News: Paste Script
 * Include special ``here`` and ``__file__`` default vars for logging
   config files, similar to PasteDeploy config loading.
 
+* Allow Jython to import various bits from ``paste.script.command`` and
+  ``paste.script.copydir`` without throwing an import error (subprocess
+  module cannot be imported on Jython).  This allows PasteScript to work
+  minimally on Jython, although execution will fail for
+  ``command.run_command`` and ``copydir.copydir``.
+
 1.7.3
 -----
 
