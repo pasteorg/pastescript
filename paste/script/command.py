@@ -13,7 +13,11 @@ import getpass
 try:
     import subprocess
 except ImportError:
-    from paste.script.util import subprocess24 as subprocess
+    try:
+        from paste.script.util import subprocess24 as subprocess
+    except ImportError:
+        subprocess = None # jython
+        
 difflib = None
 
 if sys.version_info >= (2, 6):
@@ -560,6 +564,9 @@ class Command(object):
         force_no_simulate:
             if true, run the command even if --simulate
         """
+        if subprocess is None:
+            raise RuntimeError('Environment does not support subprocess '
+                               'module, cannot run command.')
         cmd = self.quote_first_command_arg(cmd)
         cwd = popdefault(kw, 'cwd', os.getcwd())
         capture_stderr = popdefault(kw, 'capture_stderr', False)

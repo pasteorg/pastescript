@@ -14,7 +14,10 @@ Cheetah = None
 try:
     import subprocess
 except ImportError:
-    from paste.script.util import subprocess24 as subprocess
+    try:
+        from paste.script.util import subprocess24 as subprocess
+    except ImportError:
+        subprocess = None # jython
 import inspect
 
 class SkipTemplate(Exception):
@@ -158,6 +161,10 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                     print '%sRunning: %s' % (pad, ' '.join(cmd))
                 if not simulate:
                     # @@: Should
+                    if subprocess is None:
+                        raise RuntimeError('copydir failed, environment '
+                                           'does not support subprocess '
+                                           'module')
                     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
                     stdout, stderr = proc.communicate()
                     if verbosity > 1 and stdout:
