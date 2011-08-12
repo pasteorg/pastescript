@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+1.7.5dev
+--------
+
+* No changes yet
+
 1.7.4
 -----
 
