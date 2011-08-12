@@ -3,13 +3,10 @@ News: Paste Script
 
 .. contents::
 
-1.7.5dev
---------
+1.7.4.1
+-------
 
-* No changes yet
-
-1.7.4
------
+* 1.7.4 had package release problems, was reverted
 
 * Include special ``here`` and ``__file__`` default vars for logging
   config files, similar to PasteDeploy config loading.
