@@ -4,13 +4,14 @@ import re, os
 version = '1.7.4'
 
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
-news = open(news).read()
-parts = re.split(r'([0-9\.]+)\s*\n\r?-+\n\r?', news)
 found_news = ''
-for i in range(len(parts)-1):
-    if parts[i] == version:
-        found_news = parts[i+i]
-        break
+if os.path.exists(news):
+    news = open(news).read()
+    parts = re.split(r'([0-9\.]+)\s*\n\r?-+\n\r?', news)
+    for i in range(len(parts)-1):
+        if parts[i] == version:
+            found_news = parts[i+i]
+            break
 if not found_news:
     print 'Warning: no news for this version found'
 
