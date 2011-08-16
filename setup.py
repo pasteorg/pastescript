@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import re, os
 
-version = '1.7.4.1'
+version = '1.7.4.2'
 
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
 found_news = ''
@@ -130,7 +130,7 @@ setup(
     egg_info.writers = paste.script.epdesc:EggInfoWriters
     # @@: Not sure what this does:
     #setuptools.file_finders = paste.script.epdesc:SetuptoolsFileFinders
-    
+
     [console_scripts]
     paster=paste.script.command:run
 
