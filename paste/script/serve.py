@@ -467,7 +467,6 @@ class ServeCommand(Command):
                         os.kill(proc.pid, signal.SIGTERM)
                     except (OSError, IOError):
                         pass
-            print exit_code
             if reloader:
                 # Reloader always exits with code 3; but if we are
                 # a monitor, any exit code will restart
