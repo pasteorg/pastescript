@@ -34,7 +34,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'Paste Script'
-copyright = '2008, Ian Bicking'
+copyright = '2011, Ian Bicking'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -42,7 +42,7 @@ copyright = '2008, Ian Bicking'
 # The short X.Y version.
 version = '1.7'
 # The full version, including alpha/beta/rc tags.
-release = '1.7.4.2'
+release = '1.7.5'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
