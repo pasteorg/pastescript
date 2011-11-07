@@ -3,6 +3,13 @@ News: Paste Script
 
 .. contents::
 
+hg tip
+------
+
+* Import CherryPy directly instead of including its server inline in the
+  ``paste.script`` package.  You must install CherryPy before using
+  ``egg:PasteScript#cherrypy``
+
 1.7.4.2
 -------
 

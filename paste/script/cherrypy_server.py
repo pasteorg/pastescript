@@ -1,7 +1,14 @@
 """
 Entry point for CherryPy's WSGI server
 """
-import paste.script.wsgiserver as wsgiserver
+try:
+    from cherrypy import wsgiserver
+except ImportError:
+    print '=' * 60
+    print '== You must install CherryPy (pip install cherrypy) to use the egg:PasteScript#cherrypy server'
+    print '=' * 60
+    raise
+
 
 def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
                   ssl_pem=None, protocol_version=None, numthreads=None,
