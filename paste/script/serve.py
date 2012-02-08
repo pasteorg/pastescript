@@ -497,6 +497,11 @@ class ServeCommand(Command):
         if self.verbose > 0:
             print 'Changing user to %s:%s (%s:%s)' % (
                 user, group or '(unknown)', uid, gid)
+        if hasattr(os, 'initgroups'):
+            os.initgroups(user, gid)
+        else:
+            os.setgroups([e.gr_gid for e in grp.getgrall()
+                          if user in e.gr_mem] + [gid]) 
         if gid:
             os.setgid(gid)
         if uid:
