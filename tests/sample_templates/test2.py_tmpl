@@ -1,0 +1,8 @@
+#def body(a)
+This is a real template
+with a $a variable
+#end def
+
+#def inner(foo)
+This variable shouldn't be read
+#end def
