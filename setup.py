@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-import re, os
+import re, os, sys
 
 version = '1.7.5'
 
@@ -13,7 +13,7 @@ if os.path.exists(news):
             found_news = parts[i+i]
             break
 if not found_news:
-    print 'Warning: no news for this version found'
+    sys.stdout.write('Warning: no news for this version found\n')
 
 long_description="""\
 This is a pluggable command-line tool.
