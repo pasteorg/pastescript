@@ -1,0 +1,3 @@
+#def body(b=1)
+This method has a default
+#end def
