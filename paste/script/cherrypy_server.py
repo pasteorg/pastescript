@@ -3,13 +3,19 @@ Entry point for CherryPy's WSGI server
 """
 try:
     from cherrypy import wsgiserver
-    from cherrypy.wsgiserver.ssl_builtin import BuiltinSSLAdapter
 except ImportError:
     print '=' * 60
     print '== You must install CherryPy (pip install cherrypy) to use the egg:PasteScript#cherrypy server'
     print '=' * 60
     raise
 
+try:
+    import ssl
+    from cherrypy.wsgiserver.ssl_builtin import BuiltinSSLAdapter
+except ImportError:
+    builtin = False
+else:
+    builtin = True
 
 def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
                   ssl_pem=None, protocol_version=None, numthreads=None,
@@ -93,8 +99,11 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
     server = wsgiserver.CherryPyWSGIServer(bind_addr, app,
                                            server_name=server_name, **kwargs)
     if is_ssl:
-        server.ssl_module = 'builtin'
-        server.ssl_adapter = BuiltinSSLAdapter(ssl_pem, ssl_pem)
+        if builtin:
+            server.ssl_module = 'builtin'
+            server.ssl_adapter = BuiltinSSLAdapter(ssl_pem, ssl_pem)
+        else:
+            server.ssl_certificate = server.ssl_private_key = ssl_pem
         
     if protocol_version:
         server.protocol = protocol_version
