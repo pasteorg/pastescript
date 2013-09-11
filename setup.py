@@ -61,7 +61,7 @@ setup(
     url="http://pythonpaste.org/script/",
     namespace_packages=['paste'],
     license='MIT',
-    packages=find_packages(exclude='tests'),
+    packages=find_packages(exclude=['tests','tests.*']),
     package_data={
       'paste.script': ['paster-templates/basic_package/setup.*',
                        'paster-templates/basic_package/tests/*.py',

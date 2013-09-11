@@ -47,8 +47,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
     substituted with Cheetah.  Otherwise ``template_renderer`` or
     ``string.Template`` will be used for templates.
 
-    ``svn_add``: If true, any files written out in directories with
-    ``.svn/`` directories will be added (via ``svn add``).
+    ``svn_add``: If true, any files written out in directories that are part of
+    a svn working copy will be added (via ``svn add``).
 
     ``overwrite``: If false, then don't every overwrite anything.
 
@@ -152,9 +152,9 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             f.write(content)
             f.close()
         if svn_add and not already_exists:
-            if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(dest_full)), '.svn')):
+            if os.system('svn info %r >/dev/null 2>&1' % os.path.dirname(os.path.abspath(dest_full))) > 0:
                 if verbosity > 1:
-                    print '%s.svn/ does not exist; cannot add file' % pad
+                    print '%sNot part of a svn working copy; cannot add file' % pad
             else:
                 cmd = ['svn', 'add', dest_full]
                 if verbosity > 1:
@@ -271,9 +271,9 @@ def svn_makedirs(dir, svn_add, verbosity, pad):
     os.mkdir(dir)
     if not svn_add:
         return
-    if not os.path.exists(os.path.join(parent, '.svn')):
+    if os.system('svn info %r >/dev/null 2>&1' % parent) > 0:
         if verbosity > 1:
-            print '%s.svn/ does not exist; cannot add directory' % pad
+            print '%sNot part of a svn working copy; cannot add directory' % pad
         return
     cmd = ['svn', 'add', dir]
     if verbosity > 1:
