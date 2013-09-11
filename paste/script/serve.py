@@ -11,6 +11,7 @@ import os
 import errno
 import sys
 import time
+import traceback
 try:
     import subprocess
 except ImportError:
@@ -21,6 +22,7 @@ import threading
 import atexit
 import logging
 import ConfigParser
+
 
 MAXFD = 1024
 
@@ -278,10 +280,19 @@ class ServeCommand(Command):
             log_fn = os.path.join(base, log_fn)
             self.logging_file_config(log_fn)
 
-        server = self.loadserver(server_spec, name=server_name,
-                                 relative_to=base, global_conf=vars)
-        app = self.loadapp(app_spec, name=app_name,
-                           relative_to=base, global_conf=vars)
+        try:
+            server = self.loadserver(server_spec, name=server_name,
+                                     relative_to=base, global_conf=vars)
+            app = self.loadapp(app_spec, name=app_name,
+                               relative_to=base, global_conf=vars)
+        except SyntaxError, e:
+            if self.options.reload and os.environ.get(self._reloader_environ_key):
+                traceback.print_exc()
+                reloader.watch_file(e.filename)
+                while True:
+                    time.sleep(60*60)
+            else:
+                raise
 
         if self.verbose > 0:
             if hasattr(os, 'getpid'):
@@ -456,7 +467,6 @@ class ServeCommand(Command):
                         os.kill(proc.pid, signal.SIGTERM)
                     except (OSError, IOError):
                         pass
-
             if reloader:
                 # Reloader always exits with code 3; but if we are
                 # a monitor, any exit code will restart
