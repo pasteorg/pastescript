@@ -1,6 +1,8 @@
 syntax: glob
 *.pyc
 *.egg-info/
+*.egg
+.tox
 build/
 dist/
 docs/_build/
