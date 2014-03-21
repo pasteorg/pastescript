@@ -5,9 +5,6 @@ import pkg_resources
 import sys
 from six.moves import input
 from six.moves.urllib.parse import quote
-if sys.version_info < (2, 4):
-    from paste.script.util import string24 as string
-else:
     import string
 import cgi
 

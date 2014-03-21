@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+hg tip
+------
+
+* Drop support of Python 2.5 and older
+
 1.7.5
 -----
 

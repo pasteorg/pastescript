@@ -10,9 +10,6 @@ import os
 import sys
 import six
 from six.moves import filter
-if sys.version_info < (2, 4):
-    from paste.script.util import string24 as string
-else:
     import string
 import new
 from six.moves.cStringIO import StringIO
