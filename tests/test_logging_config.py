@@ -106,15 +106,13 @@ datefmt=
 """
 
 # config2 has a subtle configuration error that should be reported
-config2 = string.replace(config1, "sys.stdout", "sys.stbout")
+config2 = config1.replace("sys.stdout", "sys.stbout")
 
 # config3 has a less subtle configuration error
-config3 = string.replace(
-    config1, "formatter=form1", "formatter=misspelled_name")
+config3 = config1.replace("formatter=form1", "formatter=misspelled_name")
 
 # config4: support custom Handler classes
-config4 = string.replace(
-    config1, "class=StreamHandler", "class=logging.StreamHandler")
+config4 = config1.replace("class=StreamHandler", "class=logging.StreamHandler")
 
 def test4():
     for i in range(5):
