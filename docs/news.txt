@@ -6,6 +6,8 @@ News: Paste Script
 hg tip
 ------
 
+* six module is now required.
+
 * Drop support of Python 2.5 and older
 
 1.7.5
