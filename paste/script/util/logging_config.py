@@ -30,12 +30,12 @@ To use, simply 'import logging' and log away!
 import sys, logging, logging.handlers, string, socket, struct, os, traceback, types
 
 try:
-    import thread
+    import _thread
     import threading
 except ImportError:
     thread = None
 
-from SocketServer import ThreadingTCPServer, StreamRequestHandler
+from six.moves.socketserver import ThreadingTCPServer, StreamRequestHandler
 
 
 DEFAULT_LOGGING_CONFIG_PORT = 9030
@@ -65,9 +65,9 @@ def fileConfig(fname, defaults=None):
     rather than a filename, in which case the file-like object will be read
     using readfp.
     """
-    import ConfigParser
+    from six.moves import configparser
 
-    cp = ConfigParser.ConfigParser(defaults)
+    cp = configparser.ConfigParser(defaults)
     if hasattr(cp, 'readfp') and hasattr(fname, 'readline'):
         cp.readfp(fname)
     else:
@@ -155,7 +155,7 @@ def _install_handlers(cp, formatters):
             klass = _resolve(klass)
         args = cp.get(sectname, "args")
         args = eval(args, vars(logging))
-        h = apply(klass, args)
+        h = klass(*args)
         if "level" in opts:
             level = cp.get(sectname, "level")
             h.setLevel(logging._levelNames[level])
@@ -182,7 +182,7 @@ def _install_loggers(cp, handlers):
     # configure the root first
     llist = cp.get("loggers", "keys")
     llist = string.split(llist, ",")
-    llist = map(lambda x: string.strip(x), llist)
+    llist = [string.strip(x) for x in llist]
     llist.remove("root")
     sectname = "logger_root"
     root = logging.root
@@ -252,7 +252,7 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
     stopListening().
     """
     if not thread:
-        raise NotImplementedError, "listen() needs threading to work"
+        raise NotImplementedError("listen() needs threading to work")
 
     class ConfigStreamHandler(StreamRequestHandler):
         """
@@ -294,8 +294,8 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
                     except:
                         traceback.print_exc()
                     os.remove(file)
-            except socket.error, e:
-                if type(e.args) != types.TupleType:
+            except socket.error as e:
+                if type(e.args) != tuple:
                     raise
                 else:
                     errcode = e.args[0]

@@ -5,7 +5,7 @@ import os
 import sys
 import shlex
 import pkg_resources
-import command
+from . import command
 
 class ExeCommand(command.Command):
 
@@ -39,7 +39,7 @@ Which translates to:
 
     def run(self, argv):
         if argv and argv[0] in ('-h', '--help'):
-            print self.description
+            print(self.description)
             return
         
         if os.environ.get('REQUEST_METHOD'):
@@ -49,9 +49,9 @@ Which translates to:
             # Maybe import cgitb or something?
             
         if '_' not in os.environ:
-            print "Warning: this command is intended to be run with a #! like:"
-            print "  #!/usr/bin/env paster exe"
-            print "It only works with /usr/bin/env, and only as a #! line."
+            print("Warning: this command is intended to be run with a #! like:")
+            print("  #!/usr/bin/env paster exe")
+            print("It only works with /usr/bin/env, and only as a #! line.")
             # Should I actually shlex.split the args?
             filename = argv[-1]
             args = argv[:-1]

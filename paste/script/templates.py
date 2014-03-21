@@ -1,12 +1,14 @@
+from __future__ import print_function
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import sys
 import os
 import inspect
-import copydir
-import command
+from . import copydir
+from . import command
 
 from paste.util.template import paste_script_template_renderer
+import six
 
 class Template(object):
 
@@ -111,7 +113,7 @@ class Template(object):
     def write_files(self, command, output_dir, vars):
         template_dir = self.template_dir()
         if not os.path.exists(output_dir):
-            print "Creating directory %s" % output_dir
+            print("Creating directory %s" % output_dir)
             if not command.simulate:
                 # Don't let copydir create this top-level directory,
                 # since copydir will svn add it sometimes:
@@ -168,18 +170,18 @@ class var(object):
         max_name = max([len(v.name) for v in vars])
         for var in vars:
             if var.description:
-                print '%s%s%s  %s' % (
+                print('%s%s%s  %s' % (
                     ' '*indent,
                     var.name,
                     ' '*(max_name-len(var.name)),
-                    var.description)
+                    var.description))
             else:
-                print '  %s' % var.name
+                print('  %s' % var.name)
             if var.default is not command.NoDefault:
-                print '      default: %r' % var.default
+                print('      default: %r' % var.default)
             if var.should_echo is True:
-                print '      should_echo: %s' % var.should_echo
-        print
+                print('      should_echo: %s' % var.should_echo)
+        print()
 
     print_vars = classmethod(print_vars)
 
@@ -205,7 +207,7 @@ _skip_variables = ['VFN', 'currentTime', 'self', 'VFFSL', 'dummyTrans',
                    'getmtime', 'trans']
 
 def find_args_in_template(template):
-    if isinstance(template, (str, unicode)):
+    if isinstance(template, six.string_types):
         # Treat as filename:
         import Cheetah.Template
         template = Cheetah.Template.Template(file=template)
@@ -244,7 +246,7 @@ def find_args_in_dir(dir, verbose=False):
             if found is None:
                 # Couldn't read variables
                 if verbose:
-                    print 'Template %s has no parseable variables' % full
+                    print('Template %s has no parseable variables' % full)
                 continue
             for var in found:
                 inner_vars[var.name] = var
@@ -252,8 +254,8 @@ def find_args_in_dir(dir, verbose=False):
             # Not a template, don't read it
             continue
         if verbose:
-            print 'Found variable(s) %s in Template %s' % (
-                ', '.join(inner_vars.keys()), full)
+            print('Found variable(s) %s in Template %s' % (
+                ', '.join(inner_vars.keys()), full))
         for var_name, var in inner_vars.items():
             # Easy case:
             if var_name not in all_vars:
@@ -265,14 +267,14 @@ def find_args_in_dir(dir, verbose=False):
                 cur_var.description = var.description
             elif (cur_var.description and var.description
                   and var.description != cur_var.description):
-                print >> sys.stderr, (
+                print((
                     "Variable descriptions do not match: %s: %s and %s"
-                    % (var_name, cur_var.description, var.description))
+                    % (var_name, cur_var.description, var.description)), file=sys.stderr)
             if (cur_var.default is not command.NoDefault
                 and var.default is not command.NoDefault
                 and cur_var.default != var.default):
-                print >> sys.stderr, (
+                print((
                     "Variable defaults do not match: %s: %r and %r"
-                    % (var_name, cur_var.default, var.default))
+                    % (var_name, cur_var.default, var.default)), file=sys.stderr)
     return all_vars
 
