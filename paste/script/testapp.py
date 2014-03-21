@@ -2,6 +2,7 @@
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import cgi
 import os
+import six
 
 html_page_template = '''
 <html>
@@ -73,7 +74,7 @@ class TestApplication(object):
             data['value'] = value
             try:
                 value = repr(value)
-            except Exception, e:
+            except Exception as e:
                 value = 'Cannot use repr(): %s' % e
             data['value_repr'] = value
             data['value_literal'] = make_literal(value)
@@ -81,7 +82,7 @@ class TestApplication(object):
             rows.append(row)
         rows = ''.join(rows)
         page = page_template % {'environ': rows}
-        if isinstance(page, unicode):
+        if isinstance(page, six.text_type):
             page = page.encode('utf8')
         headers = [('Content-type', content_type)]
         start_response('200 OK', headers)

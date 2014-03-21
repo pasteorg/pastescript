@@ -4,21 +4,24 @@
 Provides the two commands for preparing an application:
 ``prepare-app`` and ``setup-app``
 """
+from __future__ import print_function
 
 import os
 import sys
+import six
+from six.moves import filter
 if sys.version_info < (2, 4):
     from paste.script.util import string24 as string
 else:
     import string
 import new
-from cStringIO import StringIO
+from six.moves.cStringIO import StringIO
 from paste.script.command import Command, BadCommand, run as run_command
 import paste.script.templates
 from paste.script import copydir
 import pkg_resources
 Cheetah = None
-from ConfigParser import ConfigParser
+from six.moves.configparser import ConfigParser
 from paste.util import import_string
 from paste.deploy import appconfig
 from paste.script.util import uuid
@@ -58,7 +61,7 @@ class AbstractInstallCommand(Command):
             if args[0] == '--sysconfig':
                 args.pop(0)
                 if not args:
-                    raise BadCommand, (
+                    raise BadCommand(
                         "You gave --sysconfig as the last argument without "
                         "a value")
                 self.sysconfigs.insert(0, (True, args.pop(0)))
@@ -116,13 +119,13 @@ class AbstractInstallCommand(Command):
             if name.endswith('.py'):
                 if not os.path.exists(name):
                     if explicit:
-                        raise BadCommand, (
+                        raise BadCommand(
                             "sysconfig file %s does not exist"
                             % name)
                     else:
                         continue
                 globs = {}
-                execfile(name, globs)
+                six.exec_(compile(open(name).read(), name, 'exec'), globs)
                 mod = new.module('__sysconfig_%i__' % index)
                 for name, value in globs.items():
                     setattr(mod, name, value)
@@ -130,7 +133,7 @@ class AbstractInstallCommand(Command):
             else:
                 try:
                     mod = import_string.simple_import(name)
-                except ImportError, e:
+                except ImportError as e:
                     if explicit:
                         raise
                     else:
@@ -168,7 +171,7 @@ class AbstractInstallCommand(Command):
         """
         val = self.get_sysconfig_option(name)
         if val is None:
-            raise NameError, (
+            raise NameError(
                 "Method %s not found in any sysconfig module" % name)
         return val(*args, **kw)
 
@@ -205,12 +208,12 @@ class AbstractInstallCommand(Command):
         try:
             dist = pkg_resources.get_distribution(req)
             if self.verbose:
-                print 'Distribution already installed:'
-                print ' ', dist, 'from', dist.location
+                print('Distribution already installed:')
+                print(' ', dist, 'from', dist.location)
             return dist
         except pkg_resources.DistributionNotFound:
             if self.options.no_install:
-                print "Because --no-install was given, we won't try to install the package %s" % req
+                print("Because --no-install was given, we won't try to install the package %s" % req)
                 raise
             options = ['-v', '-m']
             for op in self.options.easy_install_op or []:
@@ -222,7 +225,7 @@ class AbstractInstallCommand(Command):
             if self.simulate:
                 raise BadCommand(
                     "Must install %s, but in simulation mode" % req)
-            print "Must install %s" % req
+            print("Must install %s" % req)
             from setuptools.command import easy_install
             from setuptools import setup
             setup(script_args=['-q', 'easy_install']
@@ -322,9 +325,9 @@ class MakeConfigCommand(AbstractInstallCommand):
         if self.verbose > 1:
             print_vars = self.vars.items()
             print_vars.sort()
-            print 'Variables for installation:'
+            print('Variables for installation:')
             for name, value in print_vars:
-                print '  %s: %r' % (name, value)
+                print('  %s: %r' % (name, value))
         self.installer.write_config(self, self.config_file, self.vars)
         edit_success = True
         if self.options.edit:
@@ -335,26 +338,26 @@ class MakeConfigCommand(AbstractInstallCommand):
         setup_config = setup_configs[0]
         if self.options.run_setup:
             if not edit_success:
-                print 'Config-file editing was not successful.'
+                print('Config-file editing was not successful.')
                 if self.ask('Run setup-app anyway?', default=False):
                     self.run_setup(setup_config)
             else:
                 self.run_setup(setup_config)
         else:
             filenames = self.installer.editable_config_files(self.config_file)
-            assert not isinstance(filenames, basestring), (
+            assert not isinstance(filenames, six.string_types), (
                 "editable_config_files returned a string, not a list")
             if not filenames and filenames is not None:
-                print 'No config files need editing'
+                print('No config files need editing')
             else:
-                print 'Now you should edit the config files'
+                print('Now you should edit the config files')
                 if filenames:
                     for fn in filenames:
-                        print '  %s' % fn
+                        print('  %s' % fn)
 
     def show_info(self):
         text = self.installer.description(None)
-        print text
+        print(text)
 
     def check_config_file(self):
         if self.installer.expect_config_directory is None:
@@ -377,23 +380,23 @@ class MakeConfigCommand(AbstractInstallCommand):
     def run_editor(self):
         filenames = self.installer.editable_config_files(self.config_file)
         if filenames is None:
-            print 'Warning: the config file is not known (--edit ignored)'
+            print('Warning: the config file is not known (--edit ignored)')
             return False
         if not filenames:
-            print 'Warning: no config files need editing (--edit ignored)'
+            print('Warning: no config files need editing (--edit ignored)')
             return True
         if len(filenames) > 1:
-            print 'Warning: there is more than one editable config file (--edit ignored)'
+            print('Warning: there is more than one editable config file (--edit ignored)')
             return False
         if not os.environ.get('EDITOR'):
-            print 'Error: you must set $EDITOR if using --edit'
+            print('Error: you must set $EDITOR if using --edit')
             return False
         if self.verbose:
-            print '%s %s' % (os.environ['EDITOR'], filenames[0])
+            print('%s %s' % (os.environ['EDITOR'], filenames[0]))
         retval = os.system('$EDITOR %s' % filenames[0])
         if retval:
-            print 'Warning: editor %s returned with error code %i' % (
-                os.environ['EDITOR'], retval)
+            print('Warning: editor %s returned with error code %i' % (
+                os.environ['EDITOR'], retval))
             return False
         return True
         
@@ -533,7 +536,7 @@ class Installer(object):
         meta_name = 'paste_deploy_config.ini_tmpl'
         if not self.dist.has_metadata(meta_name):
             if command.verbose:
-                print 'No %s found' % meta_name
+                print('No %s found' % meta_name)
             return self.simple_config(vars)
         return self.template_renderer(
             self.dist.get_metadata(meta_name), vars, filename=meta_name)
@@ -584,8 +587,8 @@ class Installer(object):
             for line in self.dist.get_metadata_lines('top_level.txt')
             if line.strip() and not line.strip().startswith('#')]
         if not modules:
-            print 'No modules are listed in top_level.txt'
-            print 'Try running python setup.py egg_info to regenerate that file'
+            print('No modules are listed in top_level.txt')
+            print('Try running python setup.py egg_info to regenerate that file')
         for mod_name in modules:
             mod_name = mod_name + '.websetup'
             mod = import_string.try_import_module(mod_name)
@@ -593,16 +596,16 @@ class Installer(object):
                 continue
             if hasattr(mod, 'setup_app'):
                 if command.verbose:
-                    print 'Running setup_app() from %s' % mod_name
+                    print('Running setup_app() from %s' % mod_name)
                 self._call_setup_app(
                     mod.setup_app, command, filename, section, vars)
             elif hasattr(mod, 'setup_config'):
                 if command.verbose:
-                    print 'Running setup_config() from %s' % mod_name
+                    print('Running setup_config() from %s' % mod_name)
                 mod.setup_config(command, filename, section, vars)
             else:
-                print 'No setup_app() or setup_config() function in %s (%s)' % (
-                    mod.__name__, mod.__file__)
+                print('No setup_app() or setup_config() function in %s (%s)' % (
+                    mod.__name__, mod.__file__))
 
     def _call_setup_app(self, func, command, filename, section, vars):
         filename = os.path.abspath(filename)

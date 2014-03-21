@@ -3,9 +3,10 @@
 import os
 import re
 import sys
-import urlparse
-import urllib
-from command import Command, BadCommand
+from six.moves.urllib.parse import quote
+from six.moves.urllib import parse
+
+from .command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
 from paste.wsgilib import raw_interactive
 
@@ -66,7 +67,7 @@ class RequestCommand(Command):
         vars = {}
         app_spec = self.args[0]
         url = self.args[1]
-        url = urlparse.urljoin('/.command/', url)
+        url = urllib.parse.urljoin('/.command/', url)
         if self.options.config_vars:
             for item in self.option.config_vars:
                 if ':' not in item:
@@ -96,9 +97,9 @@ class RequestCommand(Command):
         qs = []
         for item in self.args[2:]:
             if '=' in item:
-                item = urllib.quote(item.split('=', 1)[0]) + '=' + urllib.quote(item.split('=', 1)[1])
+                item = quote(item.split('=', 1)[0]) + '=' + quote(item.split('=', 1)[1])
             else:
-                item = urllib.quote(item)
+                item = quote(item)
             qs.append(item)
         qs = '&'.join(qs)
         

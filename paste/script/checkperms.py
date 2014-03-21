@@ -22,17 +22,17 @@ def read_perm_spec(spec):
     Examples::
 
       >>> print oct(read_perm_spec('rw-r--r--'))
-      0644
+      0o644
       >>> print oct(read_perm_spec('rw-rwsr--'))
-      02664
+      0o2664
       >>> print oct(read_perm_spec('r-xr--r--'))
-      0544
+      0o544
       >>> print oct(read_perm_spec('r--------'))
-      0400
+      0o400
     """
     total_mask = 0
     # suid/sgid modes give this mask in user, group, other mode:
-    set_bits = (04000, 02000, 0)
+    set_bits = (0o4000, 0o2000, 0)
     pieces = (spec[0:3], spec[3:6], spec[6:9])
     for i, (mode, set_bit) in enumerate(zip(pieces, set_bits)):
         mask = 0
@@ -40,24 +40,24 @@ def read_perm_spec(spec):
         if read == 'r':
             mask = mask | 4
         elif read != '-':
-            raise ValueError, (
+            raise ValueError(
                 "Character %r unexpected (should be '-' or 'r')"
                 % read)
         if write == 'w':
             mask = mask | 2
         elif write != '-':
-            raise ValueError, (
+            raise ValueError(
                 "Character %r unexpected (should be '-' or 'w')"
                 % write)
         if exe == 'x':
             mask = mask | 1
         elif exe not in ('s', '-'):
-            raise ValueError, (
+            raise ValueError(
                 "Character %r unexpected (should be '-', 'x', or 's')"
                 % exe)
         if exe == 's' and i == 2:
-            raise ValueError, (
-                "The 'other' executable setting cannot be suid/sgid ('s')")
+            raise ValueError((
+                "The 'other' executable setting cannot be suid/sgid ('s')"))
         mask = mask << ((2-i)*3)
         if exe == 's':
             mask = mask | set_bit
@@ -65,29 +65,29 @@ def read_perm_spec(spec):
     return total_mask
 
 modes = [
-    (04000, 'setuid bit',
+    (0o4000, 'setuid bit',
      'setuid bit: make contents owned by directory owner'),
-    (02000, 'setgid bit',
+    (0o2000, 'setgid bit',
      'setgid bit: make contents inherit permissions from directory'),
-    (01000, 'sticky bit',
+    (0o1000, 'sticky bit',
      'sticky bit: append-only directory'),
-    (00400, 'read by owner', 'read by owner'),
-    (00200, 'write by owner', 'write by owner'),
-    (00100, 'execute by owner', 'owner can search directory'),
-    (00040, 'allow read by group members',
+    (0o0400, 'read by owner', 'read by owner'),
+    (0o0200, 'write by owner', 'write by owner'),
+    (0o0100, 'execute by owner', 'owner can search directory'),
+    (0o0040, 'allow read by group members',
      'allow read by group members',),
-    (00020, 'allow write by group members',
+    (0o0020, 'allow write by group members',
      'allow write by group members'),
-    (00010, 'execute by group members',
+    (0o0010, 'execute by group members',
      'group members can search directory'),
-    (00004, 'read by others', 'read by others'),
-    (00002, 'write by others', 'write by others'),
-    (00001, 'execution by others', 'others can search directory'),
+    (0o0004, 'read by others', 'read by others'),
+    (0o0002, 'write by others', 'write by others'),
+    (0o0001, 'execution by others', 'others can search directory'),
     ]
 
-exe_bits = [0100, 0010, 0001]
-exe_mask = 0111
-full_mask = 07777
+exe_bits = [0o100, 0o010, 0o001]
+exe_mask = 0o111
+full_mask = 0o7777
 
 def mode_diff(filename, mode, **kw):
     """
@@ -135,14 +135,14 @@ def calc_set_mode(cur_mode, mode, keep_exe=True):
 
     Examples::
 
-      >>> print oct(calc_set_mode(0775, 0644))
-      0755
-      >>> print oct(calc_set_mode(0775, 0744))
-      0744
-      >>> print oct(calc_set_mode(010600, 0644))
-      010644
-      >>> print oct(calc_set_mode(0775, 0644, False))
-      0644
+      >>> print oct(calc_set_mode(0o775, 0o644))
+      0o755
+      >>> print oct(calc_set_mode(0o775, 0o744))
+      0o744
+      >>> print oct(calc_set_mode(0o10600, 0o644))
+      0o10644
+      >>> print oct(calc_set_mode(0o775, 0o644, False))
+      0o644
     """
     for exe_bit in exe_bits:
         if mode & exe_bit:
@@ -397,7 +397,7 @@ class _SymLink(_Rule):
             os.symlink(path, self.dest)
         else:
             # @@: This should correct the symlink or something:
-            print 'Not symlinking %s' % path
+            print('Not symlinking %s' % path)
 
 class _Permission(_Rule):
 

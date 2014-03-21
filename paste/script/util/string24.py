@@ -38,7 +38,7 @@ printable = digits + letters + punctuation + whitespace
 # Case conversion helpers
 # Use str to convert Unicode literal in case of -U
 # Note that Cookie.py bogusly uses _idmap :(
-l = map(chr, xrange(256))
+l = list(map(chr, range(256)))
 _idmap = str('').join(l)
 del l
 
@@ -69,12 +69,12 @@ def maketrans(fromstr, tostr):
 
     """
     if len(fromstr) != len(tostr):
-        raise ValueError, "maketrans arguments must have same length"
+        raise ValueError("maketrans arguments must have same length")
     global _idmapL
     if not _idmapL:
-        _idmapL = map(None, _idmap)
+        _idmapL = list(_idmap)
     L = _idmapL[:]
-    fromstr = map(ord, fromstr)
+    fromstr = list(map(ord, fromstr))
     for i in range(len(fromstr)):
         L[fromstr[i]] = tostr[i]
     return ''.join(L)
@@ -83,6 +83,8 @@ def maketrans(fromstr, tostr):
 
 ####################################################################
 import re as _re
+import six
+from six.moves import range
 
 class _multimap:
     """Helper class for combining multiple mappings.
@@ -123,9 +125,9 @@ class _TemplateMetaclass(type):
         cls.pattern = _re.compile(pattern, _re.IGNORECASE | _re.VERBOSE)
 
 
-class Template:
+@six.patch_with_metaclass(_TemplateMetaclass)
+class Template():
     """A string class for supporting $-substitutions."""
-    __metaclass__ = _TemplateMetaclass
 
     delimiter = '$'
     idpattern = r'[_a-z][_a-z0-9]*'
@@ -378,7 +380,7 @@ def rfind(s, *args):
 # for a bit of speed
 _float = float
 _int = int
-_long = long
+_long = int
 
 # Convert string to float
 def atof(s):
@@ -464,7 +466,7 @@ def zfill(x, width):
     of the specified width.  The string x is never truncated.
 
     """
-    if not isinstance(x, basestring):
+    if not isinstance(x, six.string_types):
         x = repr(x)
     return x.zfill(width)
 

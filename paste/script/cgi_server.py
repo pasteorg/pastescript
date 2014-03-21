@@ -1,6 +1,7 @@
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
+import six
 import sys
 
 ## FIXME: this should be deprecated in favor of wsgiref
@@ -50,7 +51,7 @@ def run_with_cgi(application):
             try:
                 if headers_sent:
                     # Re-raise original exception if headers sent
-                    raise exc_info[0], exc_info[1], exc_info[2]
+                    six.reraise(*exc_info)
             finally:
                 exc_info = None     # avoid dangling circular ref
         elif headers_set:

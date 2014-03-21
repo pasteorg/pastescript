@@ -3,13 +3,14 @@
 import pkg_resources
 import sys
 import optparse
-import bool_optparse
+from . import bool_optparse
 import os
 import re
 import textwrap
-import pluginlib
-import ConfigParser
+from . import pluginlib
+from six.moves import configparser
 import getpass
+from six.moves import input
 try:
     import subprocess
 except ImportError:
@@ -94,7 +95,7 @@ def run(args=None):
     if options.do_help:
         args = ['help'] + args
     if not args:
-        print 'Usage: %s COMMAND' % sys.argv[0]
+        print('Usage: %s COMMAND' % sys.argv[0])
         args = ['help']
     command_name = args[0]
     if command_name not in commands:
@@ -105,7 +106,7 @@ def run(args=None):
 
 def parse_exe_file(config):
     import shlex
-    p = ConfigParser.RawConfigParser()
+    p = configparser.RawConfigParser()
     p.read([config])
     command_name = 'exe'
     options = []
@@ -141,8 +142,8 @@ def invoke(command, command_name, options, args):
     try:
         runner = command(command_name)
         exit_code = runner.run(args)
-    except BadCommand, e:
-        print e.message
+    except BadCommand as e:
+        print(e.message)
         exit_code = e.exit_code
     sys.exit(exit_code)
 
@@ -291,20 +292,20 @@ class Command(object):
         else:
             prompt += ' [y/N]? '
         while 1:
-            response = raw_input(prompt).strip().lower()
+            response = input(prompt).strip().lower()
             if not response:
                 if default in ('careful', 'none'):
-                    print 'Please enter yes or no'
+                    print('Please enter yes or no')
                     continue
                 return default
             if default == 'careful':
                 if response in ('yes', 'no'):
                     return response == 'yes'
-                print 'Please enter "yes" or "no"'
+                print('Please enter "yes" or "no"')
                 continue
             if response[0].lower() in ('y', 'n'):
                 return response[0].lower() == 'y'
-            print 'Y or N please'
+            print('Y or N please')
 
     def challenge(self, prompt, default=NoDefault, should_echo=True):
         """
@@ -420,7 +421,7 @@ class Command(object):
         if not os.path.exists(dir):
             self.ensure_dir(os.path.dirname(dir))
             if self.verbose:
-                print 'Creating %s' % self.shorten(dir)
+                print('Creating %s' % self.shorten(dir))
             if not self.simulate:
                 os.mkdir(dir)
             if (svn_add and
@@ -428,7 +429,7 @@ class Command(object):
                 self.svn_command('add', dir)
         else:
             if self.verbose > 1:
-                print "Directory already exists: %s" % self.shorten(dir)
+                print("Directory already exists: %s" % self.shorten(dir))
 
     def ensure_file(self, filename, content, svn_add=True):
         """
@@ -442,7 +443,7 @@ class Command(object):
         self.ensure_dir(os.path.dirname(filename), svn_add=svn_add)
         if not os.path.exists(filename):
             if self.verbose:
-                print 'Creating %s' % filename
+                print('Creating %s' % filename)
             if not self.simulate:
                 f = open(filename, 'wb')
                 f.write(content)
@@ -456,10 +457,10 @@ class Command(object):
         f.close()
         if content == old_content:
             if self.verbose > 1:
-                print 'File %s matches expected content' % filename
+                print('File %s matches expected content' % filename)
             return
         if not self.options.overwrite:
-            print 'Warning: file %s does not match expected content' % filename
+            print('Warning: file %s does not match expected content' % filename)
             if difflib is None:
                 import difflib
             diff = difflib.context_diff(
@@ -467,10 +468,10 @@ class Command(object):
                 old_content.splitlines(),
                 'expected ' + filename,
                 filename)
-            print '\n'.join(diff)
+            print('\n'.join(diff))
             if self.interactive:
                 while 1:
-                    s = raw_input(
+                    s = input(
                         'Overwrite file with new content? [y/N] ').strip().lower()
                     if not s:
                         s = 'n'
@@ -478,12 +479,12 @@ class Command(object):
                         break
                     if s.startswith('n'):
                         return
-                    print 'Unknown response; Y or N please'
+                    print('Unknown response; Y or N please')
             else:
                 return
                     
         if self.verbose:
-            print 'Overwriting %s with new content' % filename
+            print('Overwriting %s with new content' % filename)
         if not self.simulate:
             f = open(filename, 'wb')
             f.write(content)
@@ -508,8 +509,8 @@ class Command(object):
             # If we are doing a simulation, it's expected that some
             # files won't exist...
             if self.verbose:
-                print 'Would (if not simulating) insert text into %s' % (
-                    self.shorten(filename))
+                print('Would (if not simulating) insert text into %s' % (
+                    self.shorten(filename)))
             return
                 
         f = open(filename)
@@ -523,8 +524,8 @@ class Command(object):
                 if (lines[i:] and len(lines[i:]) > 1 and
                     ''.join(lines[i+1:]).strip().startswith(text.strip())):
                     # Already have it!
-                    print 'Warning: line already found in %s (not inserting' % filename
-                    print '  %s' % lines[i]
+                    print('Warning: line already found in %s (not inserting' % filename)
+                    print('  %s' % lines[i])
                     return
                 
                 if indent:
@@ -538,11 +539,11 @@ class Command(object):
                 "Marker '-*- %s -*-' not found in %s"
                 % (marker_name, filename))
             if 1 or self.simulate: # @@: being permissive right now
-                print 'Warning: %s' % errstr
+                print('Warning: %s' % errstr)
             else:
                 raise ValueError(errstr)
         if self.verbose:
-            print 'Updating %s' % self.shorten(filename)
+            print('Updating %s' % self.shorten(filename))
         if not self.simulate:
             f = open(filename, 'w')
             f.write(''.join(lines))
@@ -588,7 +589,7 @@ class Command(object):
                                     cwd=cwd,
                                     stderr=stderr_pipe,
                                     stdout=subprocess.PIPE)
-        except OSError, e:
+        except OSError as e:
             if e.errno != 2:
                 # File not found
                 raise
@@ -596,27 +597,27 @@ class Command(object):
                 "The expected executable %s was not found (%s)"
                 % (cmd, e))
         if self.verbose:
-            print 'Running %s %s' % (cmd, ' '.join(args))
+            print('Running %s %s' % (cmd, ' '.join(args)))
         if simulate:
             return None
         stdout, stderr = proc.communicate()
         if proc.returncode and not expect_returncode:
             if not self.verbose:
-                print 'Running %s %s' % (cmd, ' '.join(args))
-            print 'Error (exit code: %s)' % proc.returncode
+                print('Running %s %s' % (cmd, ' '.join(args)))
+            print('Error (exit code: %s)' % proc.returncode)
             if stderr:
-                print stderr
+                print(stderr)
             raise OSError("Error executing command %s" % cmd)
         if self.verbose > 2:
             if stderr:
-                print 'Command error output:'
-                print stderr
+                print('Command error output:')
+                print(stderr)
             if stdout:
-                print 'Command output:'
-                print stdout
+                print('Command output:')
+                print(stdout)
         elif proc.returncode and warn_returncode:
-            print 'Warning: command failed (%s %s)' % (cmd, ' '.join(args))
-            print 'Exited with code %s' % proc.returncode
+            print('Warning: command failed (%s %s)' % (cmd, ' '.join(args)))
+            print('Exited with code %s' % proc.returncode)
         return stdout
 
     def quote_first_command_arg(self, arg):
@@ -648,9 +649,9 @@ class Command(object):
         """
         try:
             return self.run_command('svn', *args, **kw)
-        except OSError, e:
+        except OSError as e:
             if not self._svn_failed:
-                print 'Unable to run svn command (%s); proceeding anyway' % e
+                print('Unable to run svn command (%s); proceeding anyway' % e)
                 self._svn_failed = True
 
     def write_file(self, filename, content, source=None,
@@ -673,17 +674,17 @@ class Command(object):
             f.close()
             if content == old_content:
                 if self.verbose:
-                    print 'File %s exists with same content' % (
-                        self.shorten(filename))
+                    print('File %s exists with same content' % (
+                        self.shorten(filename)))
                 return
             if (not self.simulate and self.options.interactive):
                 if not self.ask('Overwrite file %s?' % filename):
                     return
         if self.verbose > 1 and source:
-            print 'Writing %s from %s' % (self.shorten(filename),
-                                          self.shorten(source))
+            print('Writing %s from %s' % (self.shorten(filename),
+                                          self.shorten(source)))
         elif self.verbose:
-            print 'Writing %s' % self.shorten(filename)
+            print('Writing %s' % self.shorten(filename))
         if not self.simulate:
             already_existed = os.path.exists(filename)
             if binary:
@@ -717,7 +718,7 @@ class Command(object):
         Given a configuration filename, this will return a map of values.
         """
         result = {}
-        p = ConfigParser.RawConfigParser()
+        p = configparser.RawConfigParser()
         p.read([config])
         if p.has_section(section):
             for key, value in p.items(section):
@@ -735,7 +736,7 @@ class Command(object):
         """
         modified = False
 
-        p = ConfigParser.RawConfigParser()
+        p = configparser.RawConfigParser()
         if not os.path.exists(config):
             f = open(config, 'w')
             f.write('')
@@ -780,7 +781,7 @@ class Command(object):
         ConfigParser defaults are specified for the special ``__file__``
         and ``here`` variables, similar to PasteDeploy config loading.
         """
-        parser = ConfigParser.ConfigParser()
+        parser = configparser.ConfigParser()
         parser.read([config_file])
         if parser.has_section('loggers'):
             config_file = os.path.abspath(config_file)
@@ -793,20 +794,20 @@ class NotFoundCommand(Command):
         #for name, value in os.environ.items():
         #    print '%s: %s' % (name, value)
         #print sys.argv
-        print ('Command %r not known (you may need to run setup.py egg_info)'
-               % self.command_name)
+        print(('Command %r not known (you may need to run setup.py egg_info)'
+               % self.command_name))
         commands = get_commands().items()
         commands.sort()
         if not commands:
-            print 'No commands registered.'
-            print 'Have you installed Paste Script?'
-            print '(try running python setup.py develop)'
+            print('No commands registered.')
+            print('Have you installed Paste Script?')
+            print('(try running python setup.py develop)')
             return 2
-        print 'Known commands:'
+        print('Known commands:')
         longest = max([len(n) for n, c in commands])
         for name, command in commands:
-            print '  %s  %s' % (self.pad(name, length=longest),
-                                command.load().summary)
+            print('  %s  %s' % (self.pad(name, length=longest),
+                                command.load().summary))
         return 2
 
 def popdefault(dict, name, default=None):

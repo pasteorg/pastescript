@@ -5,6 +5,7 @@ import glob
 import pkg_resources
 from paste.script import pluginlib, copydir
 from paste.script.command import BadCommand
+from six.moves import input
 difflib = None
 try:
     import subprocess
@@ -204,7 +205,7 @@ class FileOp(object):
         if not os.path.exists(dir):
             self.ensure_dir(os.path.dirname(dir), svn_add=svn_add, package=package)
             if self.verbose:
-                print 'Creating %s' % self.shorten(dir)
+                print('Creating %s' % self.shorten(dir))
             if not self.simulate:
                 os.mkdir(dir)
             if (svn_add and
@@ -215,13 +216,13 @@ class FileOp(object):
                 f = open(initfile, 'wb')
                 f.write("#\n")
                 f.close()
-                print 'Creating %s' % self.shorten(initfile)
+                print('Creating %s' % self.shorten(initfile))
                 if (svn_add and
                     os.path.exists(os.path.join(os.path.dirname(dir), '.svn'))):
                     self.svn_command('add', initfile)
         else:
             if self.verbose > 1:
-                print "Directory already exists: %s" % self.shorten(dir)
+                print("Directory already exists: %s" % self.shorten(dir))
 
     def ensure_file(self, filename, content, svn_add=True, package=False):
         """
@@ -233,7 +234,7 @@ class FileOp(object):
         self.ensure_dir(os.path.dirname(filename), svn_add=svn_add, package=package)
         if not os.path.exists(filename):
             if self.verbose:
-                print 'Creating %s' % filename
+                print('Creating %s' % filename)
             if not self.simulate:
                 f = open(filename, 'wb')
                 f.write(content)
@@ -246,10 +247,10 @@ class FileOp(object):
         f.close()
         if content == old_content:
             if self.verbose > 1:
-                print 'File %s matches expected content' % filename
+                print('File %s matches expected content' % filename)
             return
         if self.interactive:
-            print 'Warning: file %s does not match expected content' % filename
+            print('Warning: file %s does not match expected content' % filename)
             if difflib is None:
                 import difflib
             diff = difflib.context_diff(
@@ -257,10 +258,10 @@ class FileOp(object):
                 old_content.splitlines(),
                 'expected ' + filename,
                 filename)
-            print '\n'.join(diff)
+            print('\n'.join(diff))
             if self.interactive:
                 while 1:
-                    s = raw_input(
+                    s = input(
                         'Overwrite file with new content? [y/N] ').strip().lower()
                     if not s:
                         s = 'n'
@@ -268,12 +269,12 @@ class FileOp(object):
                         break
                     if s.startswith('n'):
                         return
-                    print 'Unknown response; Y or N please'
+                    print('Unknown response; Y or N please')
             else:
                 return
                     
         if self.verbose:
-            print 'Overwriting %s with new content' % filename
+            print('Overwriting %s with new content' % filename)
         if not self.simulate:
             f = open(filename, 'wb')
             f.write(content)
@@ -301,9 +302,9 @@ class FileOp(object):
         """
         try:
             return self.run_command('svn', *args, **kw)
-        except OSError, e:
+        except OSError as e:
             if not self._svn_failed:
-                print 'Unable to run svn command (%s); proceeding anyway' % e
+                print('Unable to run svn command (%s); proceeding anyway' % e)
                 self._svn_failed = True
 
     def run_command(self, cmd, *args, **kw):
@@ -324,7 +325,7 @@ class FileOp(object):
                                     cwd=cwd,
                                     stderr=stderr_pipe,
                                     stdout=subprocess.PIPE)
-        except OSError, e:
+        except OSError as e:
             if e.errno != 2:
                 # File not found
                 raise
@@ -332,24 +333,24 @@ class FileOp(object):
                 "The expected executable %s was not found (%s)"
                 % (cmd, e))
         if self.verbose:
-            print 'Running %s %s' % (cmd, ' '.join(args))
+            print('Running %s %s' % (cmd, ' '.join(args)))
         if self.simulate:
             return None
         stdout, stderr = proc.communicate()
         if proc.returncode and not expect_returncode:
             if not self.verbose:
-                print 'Running %s %s' % (cmd, ' '.join(args))
-            print 'Error (exit code: %s)' % proc.returncode
+                print('Running %s %s' % (cmd, ' '.join(args)))
+            print('Error (exit code: %s)' % proc.returncode)
             if stderr:
-                print stderr
+                print(stderr)
             raise OSError("Error executing command %s" % cmd)
         if self.verbose > 2:
             if stderr:
-                print 'Command error output:'
-                print stderr
+                print('Command error output:')
+                print(stderr)
             if stdout:
-                print 'Command output:'
-                print stdout
+                print('Command output:')
+                print(stdout)
         return stdout
 
 def popdefault(dict, name, default=None):

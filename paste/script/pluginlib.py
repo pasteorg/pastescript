@@ -1,3 +1,4 @@
+from __future__ import print_function
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
@@ -50,7 +51,7 @@ def remove_plugin(egg_info_dir, plugin_name):
             "Plugin %s not found in file %s (from: %s)"
             % (plugin_name, fn, lines))
     lines.remove(line)
-    print 'writing', lines
+    print('writing', lines)
     f = open(fn, 'w')
     for line in lines:
         f.write(line)
@@ -80,7 +81,7 @@ def resolve_plugins(plugin_list):
         plugin = plugin_list.pop()
         try:
             pkg_resources.require(plugin)
-        except pkg_resources.DistributionNotFound, e:
+        except pkg_resources.DistributionNotFound as e:
             msg = '%sNot Found%s: %s (did you run python setup.py develop?)'
             if str(e) != plugin:
                 e.args = (msg % (str(e) + ': ', ' for', plugin)),
@@ -94,7 +95,7 @@ def resolve_plugins(plugin_list):
             for add_plugin in parse_lines(data):
                 if add_plugin not in found:
                     plugin_list.append(add_plugin)
-    return map(get_distro, found)
+    return list(map(get_distro, found))
 
 def get_distro(spec):
     return pkg_resources.get_distribution(spec)
