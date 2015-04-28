@@ -5,7 +5,7 @@ import pkg_resources
 import sys
 from six.moves import input
 from six.moves.urllib.parse import quote
-    import string
+import string
 import cgi
 
 import re
