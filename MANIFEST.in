@@ -1,5 +1,10 @@
 recursive-include docs *.txt
 include docs/conf.py
+include docs/*.ini
+include regen-docs
+include scripts/paster
+include tests/sample_templates/*tmpl
+include tox.ini
 recursive-exclude docs/_build/_sources *
 recursive-include docs/_build *.html
 recursive-include tests *.txt *.py
