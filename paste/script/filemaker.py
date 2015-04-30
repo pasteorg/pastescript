@@ -7,10 +7,7 @@ from paste.script import pluginlib, copydir
 from paste.script.command import BadCommand
 from six.moves import input
 difflib = None
-try:
-    import subprocess
-except ImportError:
-    from paste.script.util import subprocess24 as subprocess
+import subprocess
 
 class FileOp(object):
     """

@@ -13,10 +13,7 @@ import errno
 import sys
 import time
 import traceback
-try:
-    import subprocess
-except ImportError:
-    from paste.util import subprocess24 as subprocess
+import subprocess
 from .command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
 import threading
