@@ -30,12 +30,12 @@ To use, simply 'import logging' and log away!
 import sys, logging, logging.handlers, string, socket, struct, os, traceback, types
 
 try:
-    import thread
+    import _thread
     import threading
 except ImportError:
     thread = None
 
-from SocketServer import ThreadingTCPServer, StreamRequestHandler
+from six.moves.socketserver import ThreadingTCPServer, StreamRequestHandler
 
 
 DEFAULT_LOGGING_CONFIG_PORT = 9030
@@ -52,6 +52,16 @@ else:
 #   _listener holds the server object doing the listening
 _listener = None
 
+log_levelNames = {
+    'CRITICAL' : logging.CRITICAL,
+    'ERROR' : logging.ERROR,
+    'WARN' : logging.WARNING,
+    'WARNING' : logging.WARNING,
+    'INFO' : logging.INFO,
+    'DEBUG' : logging.DEBUG,
+    'NOTSET' : logging.NOTSET,
+}
+
 def fileConfig(fname, defaults=None):
     """
     Read the logging configuration from a ConfigParser-format file.
@@ -65,9 +75,9 @@ def fileConfig(fname, defaults=None):
     rather than a filename, in which case the file-like object will be read
     using readfp.
     """
-    import ConfigParser
+    from six.moves import configparser
 
-    cp = ConfigParser.ConfigParser(defaults)
+    cp = configparser.RawConfigParser(defaults)
     if hasattr(cp, 'readfp') and hasattr(fname, 'readline'):
         cp.readfp(fname)
     else:
@@ -90,7 +100,7 @@ def fileConfig(fname, defaults=None):
 
 def _resolve(name):
     """Resolve a dotted name to a global object."""
-    name = string.split(name, '.')
+    name = name.split('.')
     used = name.pop(0)
     found = __import__(used)
     for n in name:
@@ -108,18 +118,18 @@ def _create_formatters(cp):
     flist = cp.get("formatters", "keys")
     if not len(flist):
         return {}
-    flist = string.split(flist, ",")
+    flist = flist.split(",")
     formatters = {}
     for form in flist:
-        form = string.strip(form)
+        form = form.strip()
         sectname = "formatter_%s" % form
         opts = cp.options(sectname)
         if "format" in opts:
-            fs = cp.get(sectname, "format", 1)
+            fs = cp.get(sectname, "format")
         else:
             fs = None
         if "datefmt" in opts:
-            dfs = cp.get(sectname, "datefmt", 1)
+            dfs = cp.get(sectname, "datefmt")
         else:
             dfs = None
         c = logging.Formatter
@@ -137,11 +147,11 @@ def _install_handlers(cp, formatters):
     hlist = cp.get("handlers", "keys")
     if not len(hlist):
         return {}
-    hlist = string.split(hlist, ",")
+    hlist = hlist.split(",")
     handlers = {}
     fixups = [] #for inter-handler references
     for hand in hlist:
-        hand = string.strip(hand)
+        hand = hand.strip()
         sectname = "handler_%s" % hand
         klass = cp.get(sectname, "class")
         opts = cp.options(sectname)
@@ -155,10 +165,10 @@ def _install_handlers(cp, formatters):
             klass = _resolve(klass)
         args = cp.get(sectname, "args")
         args = eval(args, vars(logging))
-        h = apply(klass, args)
+        h = klass(*args)
         if "level" in opts:
             level = cp.get(sectname, "level")
-            h.setLevel(logging._levelNames[level])
+            h.setLevel(log_levelNames[level])
         if len(fmt):
             h.setFormatter(formatters[fmt])
         #temporary hack for FileHandler and MemoryHandler.
@@ -181,8 +191,8 @@ def _install_loggers(cp, handlers):
 
     # configure the root first
     llist = cp.get("loggers", "keys")
-    llist = string.split(llist, ",")
-    llist = map(lambda x: string.strip(x), llist)
+    llist = llist.split(",")
+    llist = [x.strip() for x in llist]
     llist.remove("root")
     sectname = "logger_root"
     root = logging.root
@@ -190,14 +200,14 @@ def _install_loggers(cp, handlers):
     opts = cp.options(sectname)
     if "level" in opts:
         level = cp.get(sectname, "level")
-        log.setLevel(logging._levelNames[level])
+        log.setLevel(log_levelNames[level])
     for h in root.handlers[:]:
         root.removeHandler(h)
     hlist = cp.get(sectname, "handlers")
     if len(hlist):
-        hlist = string.split(hlist, ",")
+        hlist = hlist.split(",")
         for hand in hlist:
-            log.addHandler(handlers[string.strip(hand)])
+            log.addHandler(handlers[hand.strip()])
 
     #and now the others...
     #we don't want to lose the existing loggers,
@@ -208,7 +218,7 @@ def _install_loggers(cp, handlers):
     #what's left in existing is the set of loggers
     #which were in the previous configuration but
     #which are not in the new configuration.
-    existing = root.manager.loggerDict.keys()
+    existing = list(root.manager.loggerDict.keys())
     #now set up the new ones...
     for log in llist:
         sectname = "logger_%s" % log
@@ -223,16 +233,16 @@ def _install_loggers(cp, handlers):
             existing.remove(qn)
         if "level" in opts:
             level = cp.get(sectname, "level")
-            logger.setLevel(logging._levelNames[level])
+            logger.setLevel(log_levelNames[level])
         for h in logger.handlers[:]:
             logger.removeHandler(h)
         logger.propagate = propagate
         logger.disabled = 0
         hlist = cp.get(sectname, "handlers")
         if len(hlist):
-            hlist = string.split(hlist, ",")
+            hlist = hlist.split(",")
             for hand in hlist:
-                logger.addHandler(handlers[string.strip(hand)])
+                logger.addHandler(handlers[hand.strip()])
 
     #Disable any old loggers. There's no point deleting
     #them as other threads may continue to hold references
@@ -252,7 +262,7 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
     stopListening().
     """
     if not thread:
-        raise NotImplementedError, "listen() needs threading to work"
+        raise NotImplementedError("listen() needs threading to work")
 
     class ConfigStreamHandler(StreamRequestHandler):
         """
@@ -294,8 +304,8 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
                     except:
                         traceback.print_exc()
                     os.remove(file)
-            except socket.error, e:
-                if type(e.args) != types.TupleType:
+            except socket.error as e:
+                if type(e.args) != tuple:
                     raise
                 else:
                     errcode = e.args[0]

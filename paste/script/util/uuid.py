@@ -88,7 +88,7 @@ class UUID(object):
                 byte(self.node >> 8) + byte(self.node))
 
     def set_bytes(self, bytes):
-        values = map(ord, bytes)
+        values = list(map(ord, bytes))
         self.time_low = ((values[0] << 24) + (values[1] << 16) +
                          (values[2] << 8) + values[3])
         self.time_mid = (values[4] << 8) + values[5]
@@ -213,8 +213,8 @@ def uuid4():
         from os import urandom
     except:
         from random import randrange
-        uuid = UUID(randrange(1<<32L), randrange(1<<16), randrange(1<<16),
-                    randrange(1<<8), randrange(1<<8), randrange(1<<48L))
+        uuid = UUID(randrange(1<<32), randrange(1<<16), randrange(1<<16),
+                    randrange(1<<8), randrange(1<<8), randrange(1<<48))
     else:
         uuid = UUID(0, 0, 0, 0, 0, 0)
         uuid.bytes = urandom(16)

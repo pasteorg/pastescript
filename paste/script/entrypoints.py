@@ -1,13 +1,14 @@
+from __future__ import print_function
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import textwrap
 import os
 import pkg_resources
-from command import Command, BadCommand
+from .command import Command, BadCommand
 import fnmatch
 import re
 import traceback
-from cStringIO import StringIO
+from six.moves.cStringIO import StringIO
 import inspect
 import types
 
@@ -56,10 +57,10 @@ class EntryPointCommand(Command):
             ep_pat = self.get_pattern(self.args[1])
         for group in groups:
             desc = self.get_group_description(group)
-            print '[%s]' % group
+            print('[%s]' % group)
             if desc:
-                print self.wrap(desc)
-                print
+                print(self.wrap(desc))
+                print()
             by_dist = {}
             self.print_entry_points_by_group(group, ep_pat)
 
@@ -78,16 +79,16 @@ class EntryPointCommand(Command):
             if not entries:
                 continue
             if len(dists) > 1:
-                print '%s (+ %i older versions)' % (
-                    dist, len(dists)-1)
+                print('%s (+ %i older versions)' % (
+                    dist, len(dists)-1))
             else:
-                print '%s' % dist
+                print('%s' % dist)
             entries.sort(lambda a, b: cmp(a.name, b.name))
             for entry in entries:
-                print self._ep_description(entry)
+                print(self._ep_description(entry))
                 desc = self.get_entry_point_description(entry, group)
                 if desc and desc.description:
-                    print self.wrap(desc.description, indent=4)
+                    print(self.wrap(desc.description, indent=4))
 
     def show_egg(self, egg_name):
         group_pat = None
@@ -105,18 +106,18 @@ class EntryPointCommand(Command):
         for group, points in entry_groups:
             if group_pat and not group_pat.search(group):
                 continue
-            print '[%s]' % group
+            print('[%s]' % group)
             points = points.items()
             points.sort()
             for name, entry in points:
                 if ep_pat:
                     if not ep_pat.search(name):
                         continue
-                print self._ep_description(entry)
+                print(self._ep_description(entry))
                 desc = self.get_entry_point_description(entry, group)
                 if desc and desc.description:
-                    print self.wrap(desc.description, indent=2)
-                print
+                    print(self.wrap(desc.description, indent=2))
+                print()
 
     def wrap(self, text, indent=0):
         text = dedent(text)
@@ -154,14 +155,14 @@ class EntryPointCommand(Command):
     def list_entry_points(self):
         pattern = self.get_pattern(self.args and self.args[0])
         groups = self.get_groups_by_pattern(pattern)
-        print '%i entry point groups found:' % len(groups)
+        print('%i entry point groups found:' % len(groups))
         for group in groups:
             desc = self.get_group_description(group)
-            print '[%s]' % group
+            print('[%s]' % group)
             if desc:
                 if hasattr(desc, 'description'):
                     desc = desc.description
-                print self.wrap(desc, indent=2)
+                print(self.wrap(desc, indent=2))
 
     def get_groups_by_pattern(self, pattern):
         env = pkg_resources.Environment()
@@ -192,7 +193,7 @@ class EntryPointCommand(Command):
     def get_entry_point_description(self, ep, group):
         try:
             return self._safe_get_entry_point_description(ep, group)
-        except Exception, e:
+        except Exception as e:
             out = StringIO()
             traceback.print_exc(file=out)
             return ErrorDescription(e, out.getvalue())
@@ -227,8 +228,8 @@ class SuperGeneric(object):
         self.doc_object = doc_object
         self.description = dedent(self.doc_object.__doc__)
         try:
-            if isinstance(self.doc_object, (type, types.ClassType)):
-                func = self.doc_object.__init__.im_func
+            if isinstance(self.doc_object, type):
+                func = self.doc_object.__init__.__func__
             elif (hasattr(self.doc_object, '__call__')
                   and not isinstance(self.doc_object, types.FunctionType)):
                 func = self.doc_object.__call__

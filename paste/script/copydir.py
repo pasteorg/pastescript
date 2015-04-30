@@ -3,12 +3,11 @@
 import os
 import pkg_resources
 import sys
-if sys.version_info < (2, 4):
-    from paste.script.util import string24 as string
-else:
-    import string
+from six.moves import input
+from six.moves.urllib.parse import quote
+import string
 import cgi
-import urllib
+
 import re
 Cheetah = None
 try:
@@ -73,12 +72,12 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
     pad = ' '*(indent*2)
     if not os.path.exists(dest):
         if verbosity >= 1:
-            print '%sCreating %s/' % (pad, dest)
+            print('%sCreating %s/' % (pad, dest))
         if not simulate:
             svn_makedirs(dest, svn_add=svn_add, verbosity=verbosity,
                          pad=pad)
     elif verbosity >= 2:
-        print '%sDirectory %s exists' % (pad, dest)
+        print('%sDirectory %s exists' % (pad, dest))
     for name in names:
         if use_pkg_resources:
             full = '/'.join([source[1], name])
@@ -88,7 +87,7 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         if reason:
             if verbosity >= 2:
                 reason = pad + reason % {'filename': full}
-                print reason
+                print(reason)
             continue
         if sub_vars:
             dest_full = os.path.join(dest, substitute_filename(name, vars))
@@ -98,7 +97,7 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             sub_file = sub_vars
         if use_pkg_resources and pkg_resources.resource_isdir(source[0], full):
             if verbosity:
-                print '%sRecursing into %s' % (pad, os.path.basename(full))
+                print('%sRecursing into %s' % (pad, os.path.basename(full)))
             copy_dir((source[0], full), dest_full, vars, verbosity, simulate,
                      indent=indent+1, use_cheetah=use_cheetah,
                      sub_vars=sub_vars, interactive=interactive,
@@ -106,7 +105,7 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             continue
         elif not use_pkg_resources and os.path.isdir(full):
             if verbosity:
-                print '%sRecursing into %s' % (pad, os.path.basename(full))
+                print('%sRecursing into %s' % (pad, os.path.basename(full)))
             copy_dir(full, dest_full, vars, verbosity, simulate,
                      indent=indent+1, use_cheetah=use_cheetah,
                      sub_vars=sub_vars, interactive=interactive,
@@ -134,7 +133,7 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             f.close()
             if old_content == content:
                 if verbosity:
-                    print '%s%s already exists (same content)' % (pad, dest_full)
+                    print('%s%s already exists (same content)' % (pad, dest_full))
                 continue
             if interactive:
                 if not query_interactive(
@@ -144,9 +143,9 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             elif not overwrite:
                 continue
         if verbosity and use_pkg_resources:
-            print '%sCopying %s to %s' % (pad, full, dest_full)
+            print('%sCopying %s to %s' % (pad, full, dest_full))
         elif verbosity:
-            print '%sCopying %s to %s' % (pad, os.path.basename(full), dest_full)
+            print('%sCopying %s to %s' % (pad, os.path.basename(full), dest_full))
         if not simulate:
             f = open(dest_full, 'wb')
             f.write(content)
@@ -154,11 +153,11 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         if svn_add and not already_exists:
             if os.system('svn info %r >/dev/null 2>&1' % os.path.dirname(os.path.abspath(dest_full))) > 0:
                 if verbosity > 1:
-                    print '%sNot part of a svn working copy; cannot add file' % pad
+                    print('%sNot part of a svn working copy; cannot add file' % pad)
             else:
                 cmd = ['svn', 'add', dest_full]
                 if verbosity > 1:
-                    print '%sRunning: %s' % (pad, ' '.join(cmd))
+                    print('%sRunning: %s' % (pad, ' '.join(cmd)))
                 if not simulate:
                     # @@: Should
                     if subprocess is None:
@@ -168,10 +167,10 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
                     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
                     stdout, stderr = proc.communicate()
                     if verbosity > 1 and stdout:
-                        print 'Script output:'
-                        print stdout
+                        print('Script output:')
+                        print(stdout)
         elif svn_add and already_exists and verbosity > 1:
-            print '%sFile already exists (not doing svn add)' % pad
+            print('%sFile already exists (not doing svn add)' % pad)
 
 def should_skip_file(name):
     """
@@ -217,13 +216,13 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
         msg = '; %i lines removed' % (removed-added)
     else:
         msg = ''
-    print 'Replace %i bytes with %i bytes (%i/%i lines changed%s)' % (
+    print('Replace %i bytes with %i bytes (%i/%i lines changed%s)' % (
         len(dest_content), len(src_content),
-        removed, len(dest_content.splitlines()), msg)
+        removed, len(dest_content.splitlines()), msg))
     prompt = 'Overwrite %s [y/n/d/B/?] ' % dest_fn
     while 1:
         if all_answer is None:
-            response = raw_input(prompt).strip().lower()
+            response = input(prompt).strip().lower()
         else:
             response = all_answer
         if not response or response[0] == 'b':
@@ -233,14 +232,14 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
             while os.path.exists(new_dest_fn):
                 n += 1
                 new_dest_fn = dest_fn + '.bak' + str(n)
-            print 'Backing up %s to %s' % (dest_fn, new_dest_fn)
+            print('Backing up %s to %s' % (dest_fn, new_dest_fn))
             if not simulate:
                 shutil.copyfile(dest_fn, new_dest_fn)
             return True
         elif response.startswith('all '):
             rest = response[4:].strip()
             if not rest or rest[0] not in ('y', 'n', 'b'):
-                print query_usage
+                print(query_usage)
                 continue
             response = all_answer = rest[0]
         if response[0] == 'y':
@@ -248,11 +247,11 @@ def query_interactive(src_fn, dest_fn, src_content, dest_content,
         elif response[0] == 'n':
             return False
         elif response == 'dc':
-            print '\n'.join(c_diff)
+            print('\n'.join(c_diff))
         elif response[0] == 'd':
-            print '\n'.join(u_diff)
+            print('\n'.join(u_diff))
         else:
-            print query_usage
+            print(query_usage)
 
 query_usage = """\
 Responses:
@@ -273,16 +272,16 @@ def svn_makedirs(dir, svn_add, verbosity, pad):
         return
     if os.system('svn info %r >/dev/null 2>&1' % parent) > 0:
         if verbosity > 1:
-            print '%sNot part of a svn working copy; cannot add directory' % pad
+            print('%sNot part of a svn working copy; cannot add directory' % pad)
         return
     cmd = ['svn', 'add', dir]
     if verbosity > 1:
-        print '%sRunning: %s' % (pad, ' '.join(cmd))
+        print('%sRunning: %s' % (pad, ' '.join(cmd)))
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     stdout, stderr = proc.communicate()
     if verbosity > 1 and stdout:
-        print 'Script output:'
-        print stdout
+        print('Script output:')
+        print(stdout)
 
 def substitute_filename(fn, vars):
     for var, value in vars.items():
@@ -301,7 +300,7 @@ def substitute_content(content, vars, filename='<string>',
         tmpl = LaxTemplate(content)
         try:
             return tmpl.substitute(TypeMapper(v))
-        except Exception, e:
+        except Exception as e:
             _add_except(e, ' in file %s' % filename)
             raise
     if Cheetah is None:
@@ -333,18 +332,18 @@ def sub_catcher(filename, vars, func, *args, **kw):
     """
     try:
         return func(*args, **kw)
-    except SkipTemplate, e:
-        print 'Skipping file %s' % filename
+    except SkipTemplate as e:
+        print('Skipping file %s' % filename)
         if str(e):
-            print str(e)
+            print(str(e))
         raise
-    except Exception, e:
-        print 'Error in file %s:' % filename
+    except Exception as e:
+        print('Error in file %s:' % filename)
         if isinstance(e, NameError):
             items = vars.items()
             items.sort()
             for name, value in items:
-                print '%s = %r' % (name, value)
+                print('%s = %r' % (name, value))
         raise
 
 def html_quote(s):
@@ -355,7 +354,7 @@ def html_quote(s):
 def url_quote(s):
     if s is None:
         return ''
-    return urllib.quote(str(s))
+    return quote(str(s))
 
 def test(conf, true_cond, false_cond=None):
     if conf:
@@ -421,7 +420,7 @@ class TypeMapper(dict):
 def eval_with_catch(expr, vars):
     try:
         return eval(expr, vars)
-    except Exception, e:
+    except Exception as e:
         _add_except(e, 'in expression %r' % expr)
         raise
 
