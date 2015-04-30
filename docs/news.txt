@@ -6,6 +6,8 @@ News: Paste Script
 hg tip
 ------
 
+* Experimental Python 3 support.
+
 * six module is now required.
 
 * Drop support of Python 2.5 and older
