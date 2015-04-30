@@ -6,6 +6,7 @@ Create random secrets.
 
 import os
 import random
+from six.moves import range
 
 def random_bytes(length):
     """
@@ -16,7 +17,7 @@ def random_bytes(length):
         return os.urandom(length)
     except AttributeError:
         return ''.join([
-            chr(random.randrange(256)) for i in xrange(length)])
+            chr(random.randrange(256)) for i in range(length)])
 
 def secret_string(length=25):
     """

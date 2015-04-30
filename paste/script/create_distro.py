@@ -1,12 +1,13 @@
+from __future__ import print_function
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import re
 import sys
 import os
 import pkg_resources
-from command import Command, BadCommand
-import copydir
-import pluginlib
+from .command import Command, BadCommand
+from . import copydir
+from . import pluginlib
 import fnmatch
 try:
     set
@@ -74,13 +75,13 @@ class CreateDistroCommand(Command):
         if self.options.list_variables:
             return self.list_variables(templates)
         if self.verbose:
-            print 'Selected and implied templates:'
+            print('Selected and implied templates:')
             max_tmpl_name = max([len(tmpl_name) for tmpl_name, tmpl in templates])
             for tmpl_name, tmpl in templates:
-                print '  %s%s  %s' % (
+                print('  %s%s  %s' % (
                     tmpl_name, ' '*(max_tmpl_name-len(tmpl_name)),
-                    tmpl.summary)
-            print
+                    tmpl.summary))
+            print()
         if not self.args:
             if self.interactive:
                 dist_name = self.challenge('Enter project name')
@@ -156,7 +157,7 @@ class CreateDistroCommand(Command):
                              expect_returncode=True)
             found_setup_py = True
         elif self.verbose > 1:
-            print 'No setup.py (cannot run egg_info)'
+            print('No setup.py (cannot run egg_info)')
 
         package_dir = vars.get('package_dir', None)
         if package_dir:
@@ -172,12 +173,11 @@ class CreateDistroCommand(Command):
             if len(egg_plugins) and (not os.path.exists(plugins_path) or \
                     os.path.getmtime(plugins_path) == paster_plugins_mtime):
                 if self.verbose:
-                    print >> sys.stderr, \
-                        ('Manually creating paster_plugins.txt (deprecated! '
-                         'pass a paster_plugins keyword to setup() instead)')
+                    print(('Manually creating paster_plugins.txt (deprecated! '
+                         'pass a paster_plugins keyword to setup() instead)'), file=sys.stderr)
                 for plugin in egg_plugins:
                     if self.verbose:
-                        print 'Adding %s to paster_plugins.txt' % plugin
+                        print('Adding %s to paster_plugins.txt' % plugin)
                     if not self.simulate:
                         pluginlib.add_plugin(egg_info_dir, plugin)
         
@@ -192,7 +192,7 @@ class CreateDistroCommand(Command):
         
     def create_template(self, template, output_dir, vars):
         if self.verbose:
-            print 'Creating template %s' % template.name
+            print('Creating template %s' % template.name)
         template.run(self, output_dir, vars)
 
     def setup_svn_repository(self, output_dir, dist_name):
@@ -212,14 +212,14 @@ class CreateDistroCommand(Command):
             'svn_command':svn_command,
         }
         if self.verbose:
-            print "Running:"
-            print cmd
+            print("Running:")
+            print(cmd)
         if not self.simulate:
             os.system(cmd)
         svn_repos_path_trunk = os.path.join(svn_repos_path,'trunk').replace('\\','/')
         cmd = svn_command+' co "%s" "%s"' % (svn_repos_path_trunk, output_dir)
         if self.verbose:
-            print "Running %s" % cmd
+            print("Running %s" % cmd)
         if not self.simulate:
             os.system(cmd)
 
@@ -288,30 +288,30 @@ class CreateDistroCommand(Command):
     def display_vars(self, vars):
         vars = vars.items()
         vars.sort()
-        print 'Variables:'
+        print('Variables:')
         max_var = max([len(n) for n, v in vars])
         for name, value in vars:
-            print '  %s:%s  %s' % (
-                name, ' '*(max_var-len(name)), value)
+            print('  %s:%s  %s' % (
+                name, ' '*(max_var-len(name)), value))
         
     def list_templates(self):
         templates = []
         for entry in self.all_entry_points():
             try:
                 templates.append(entry.load()(entry.name))
-            except Exception, e:
+            except Exception as e:
                 # We will not be stopped!
-                print 'Warning: could not load entry point %s (%s: %s)' % (
-                    entry.name, e.__class__.__name__, e)
+                print('Warning: could not load entry point %s (%s: %s)' % (
+                    entry.name, e.__class__.__name__, e))
         max_name = max([len(t.name) for t in templates])
         templates.sort(lambda a, b: cmp(a.name, b.name))
-        print 'Available templates:'
+        print('Available templates:')
         for template in templates:
             # @@: Wrap description
-            print '  %s:%s  %s' % (
+            print('  %s:%s  %s' % (
                 template.name,
                 ' '*(max_name-len(template.name)),
-                template.summary)
+                template.summary))
         
     def inspect_files(self, output_dir, templates, vars):
         file_sources = {}
@@ -361,7 +361,7 @@ class CreateDistroCommand(Command):
             for ext in self._ignore_filenames:
                 if fnmatch.fnmatch(name, ext):
                     if self.verbose > 1:
-                        print '%sIgnoring %s' % (pad, name)
+                        print('%sIgnoring %s' % (pad, name))
                     skip_this = True
                     break
             if skip_this:
@@ -369,16 +369,16 @@ class CreateDistroCommand(Command):
             partial = os.path.join(join, name)
             if partial not in file_sources:
                 if self.verbose > 1:
-                    print '%s%s (not from template)' % (pad, name)
+                    print('%s%s (not from template)' % (pad, name))
                 continue
             templates = file_sources.pop(partial)
-            print '%s%s from:' % (pad, name)
+            print('%s%s from:' % (pad, name))
             for template in templates:
-                print '%s  %s' % (pad, template.name)
+                print('%s  %s' % (pad, template.name))
         for dir in dirs:
             if dir in self._ignore_dirs:
                 continue
-            print '%sRecursing into %s/' % (pad, dir)
+            print('%sRecursing into %s/' % (pad, dir))
             self._show_files(
                 output_dir, file_sources,
                 join=os.path.join(join, dir),
@@ -387,15 +387,15 @@ class CreateDistroCommand(Command):
     def _show_leftovers(self, output_dir, file_sources):
         if not file_sources:
             return
-        print 
-        print 'These files were supposed to be generated by templates'
-        print 'but were not found:'
+        print() 
+        print('These files were supposed to be generated by templates')
+        print('but were not found:')
         file_sources = file_sources.items()
         file_sources.sort()
         for partial, templates in file_sources:
-            print '  %s from:' % partial
+            print('  %s from:' % partial)
             for template in templates:
-                print '    %s' % template.name
+                print('    %s' % template.name)
 
     def list_variables(self, templates):
         for tmpl_name, tmpl in templates:
@@ -408,10 +408,10 @@ class CreateDistroCommand(Command):
 
     def _show_template_vars(self, tmpl_name, tmpl, message=None):
         title = '%s (from %s)' % (tmpl.name, tmpl_name)
-        print title
-        print '-'*len(title)
+        print(title)
+        print('-'*len(title))
         if message is not None:
-            print '  %s' % message
-            print
+            print('  %s' % message)
+            print()
             return
         tmpl.print_vars(indent=2)

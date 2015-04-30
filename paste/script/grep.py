@@ -5,8 +5,9 @@ import py_compile
 import marshal
 import inspect
 import re
-from command import Command
-import pluginlib
+from .command import Command
+from . import pluginlib
+from six.moves import range
 
 class GrepCommand(Command):
 
@@ -41,11 +42,11 @@ class GrepCommand(Command):
         self.basedir = os.path.dirname(
             pluginlib.find_egg_info_dir(os.getcwd()))
         if self.verbose:
-            print "Searching in %s" % self.basedir
+            print("Searching in %s" % self.basedir)
         self.total_files = 0
         self.search_dir(self.basedir)
         if self.verbose > 1:
-            print "Searched %i files" % self.total_files
+            print("Searched %i files" % self.total_files)
 
     def search_dir(self, dir):
         names = os.listdir(dir)
@@ -115,22 +116,22 @@ class GrepCommand(Command):
                 if not any:
                     any = True
                     if as_module:
-                        print '%s (unloadable)' % self.module_name(filename)
+                        print('%s (unloadable)' % self.module_name(filename))
                     else:
-                        print self.relative_name(filename)
-                print '  %3i  %s' % (lineno, line)
+                        print(self.relative_name(filename))
+                print('  %3i  %s' % (lineno, line))
                 if not self.verbose:
                     break
         f.close()
                 
     def found(self, code, filename, path):
-        print self.display(filename, path)
+        print(self.display(filename, path))
         self.find_occurance(code)
 
     def find_occurance(self, code):
         f = open(code.co_filename, 'rb')
         lineno = 0
-        for index, line in zip(xrange(code.co_firstlineno), f):
+        for index, line in zip(range(code.co_firstlineno), f):
             lineno += 1
             pass
         lines = []
@@ -144,7 +145,7 @@ class GrepCommand(Command):
                 else:
                     if this_indent < first_indent:
                         break
-                print '  %3i  %s' % (lineno, line[first_indent:].rstrip())
+                print('  %3i  %s' % (lineno, line[first_indent:].rstrip()))
                 if not self.verbose:
                     break
 

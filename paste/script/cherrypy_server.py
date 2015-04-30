@@ -4,9 +4,9 @@ Entry point for CherryPy's WSGI server
 try:
     from cherrypy import wsgiserver
 except ImportError:
-    print '=' * 60
-    print '== You must install CherryPy (pip install cherrypy) to use the egg:PasteScript#cherrypy server'
-    print '=' * 60
+    print('=' * 60)
+    print('== You must install CherryPy (pip install cherrypy) to use the egg:PasteScript#cherrypy server')
+    print('=' * 60)
     raise
 
 try:
@@ -111,10 +111,10 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
     try:
         protocol = is_ssl and 'https' or 'http'
         if host == '0.0.0.0':
-            print 'serving on 0.0.0.0:%s view at %s://127.0.0.1:%s' % \
-                (port, protocol, port)
+            print('serving on 0.0.0.0:%s view at %s://127.0.0.1:%s' % \
+                (port, protocol, port))
         else:
-            print "serving on %s://%s:%s" % (protocol, host, port)
+            print("serving on %s://%s:%s" % (protocol, host, port))
         server.start()
     except (KeyboardInterrupt, SystemExit):
         server.stop()
