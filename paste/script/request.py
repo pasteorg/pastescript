@@ -6,7 +6,7 @@ import sys
 from six.moves.urllib.parse import quote, urljoin
 
 from .command import Command, BadCommand
-from paste.deploy import loadapp, loadserver
+from paste.deploy import loadapp
 from paste.wsgilib import raw_interactive
 
 class RequestCommand(Command):

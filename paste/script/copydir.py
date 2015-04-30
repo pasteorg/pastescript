@@ -2,13 +2,11 @@
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
 import pkg_resources
-import sys
 from six.moves import input
 from six.moves.urllib.parse import quote
 import string
 import cgi
 
-import re
 Cheetah = None
 try:
     import subprocess

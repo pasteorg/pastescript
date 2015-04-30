@@ -6,7 +6,6 @@ from paste.translogger import TransLogger
 def run_server(wsgi_app, global_conf, host='localhost',
                port=8080):
     from wsgiutils import wsgiServer
-    import logging
     logged_app = TransLogger(wsgi_app)
     port = int(port)
     # For some reason this is problematic on this server:
