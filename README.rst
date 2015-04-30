@@ -2,7 +2,7 @@ PasteScript is a pluggable command-line tool.
 
 It includes some built-in features;
 
-* Create file layouts for packages.  For instance, ``paste create
+* Create file layouts for packages.  For instance, ``paster create
   --template=basic_package MyPackage`` will create a `setuptools
   <https://pythonhosted.org/setuptools/>`_-ready
   file layout.
