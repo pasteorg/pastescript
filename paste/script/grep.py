@@ -150,14 +150,14 @@ class GrepCommand(Command):
                     break
 
     def module_name(self, filename):
-        assert filename, startswith(self.basedir)
+        #assert filename, startswith(self.basedir)
         mod = filename[len(self.basedir):].strip('/').strip(os.path.sep)
         mod = os.path.splitext(mod)[0]
         mod = mod.replace(os.path.sep, '.').replace('/', '.')
         return mod
 
     def relative_name(self, filename):
-        assert filename, startswith(self.basedir)
+        #assert filename, startswith(self.basedir)
         name = filename[len(self.basedir):].strip('/').strip(os.path.sep)
         return name
 
