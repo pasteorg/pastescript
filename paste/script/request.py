@@ -87,7 +87,7 @@ class RequestCommand(Command):
         if self.options.app_name:
             if '#' in app_spec:
                 app_spec = app_spec.split('#', 1)[0]
-            app_spec = app_spec + '#' + options.app_name
+            app_spec = app_spec + '#' + self.options.app_name
         app = loadapp(app_spec, relative_to=os.getcwd(), global_conf=vars)
         if self.command_name.lower() == 'post':
             request_method = 'POST'
