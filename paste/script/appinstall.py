@@ -10,7 +10,7 @@ import os
 import sys
 import six
 from six.moves import filter
-    import string
+import string
 import new
 from six.moves.cStringIO import StringIO
 from paste.script.command import Command, BadCommand, run as run_command
