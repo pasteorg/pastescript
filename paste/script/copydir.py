@@ -13,10 +13,7 @@ Cheetah = None
 try:
     import subprocess
 except ImportError:
-    try:
-        from paste.script.util import subprocess24 as subprocess
-    except ImportError:
-        subprocess = None # jython
+    subprocess = None # jython
 import inspect
 
 class SkipTemplate(Exception):
