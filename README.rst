@@ -4,11 +4,11 @@ It includes some built-in features;
 
 * Create file layouts for packages.  For instance, ``paste create
   --template=basic_package MyPackage`` will create a `setuptools
-  <http://peak.telecommunity.com/DevCenter/setuptools>`_-ready
+  <https://pythonhosted.org/setuptools/>`_-ready
   file layout.
 
 * Serving up web applications, with configuration based on
-  `paste.deploy <http://pythonpaste.org/deploy/paste-deploy.html>`_.
+  `paste.deploy <http://pythonpaste.org/deploy/>`_.
 
 The latest version is available in a `Mercurial repository
 <http://bitbucket.org/ianb/pastescript/>`_.
