@@ -287,6 +287,7 @@ class CreateDistroCommand(Command):
 
     def display_vars(self, vars):
         vars = vars.items()
+        vars = list(vars)  # Deal with dict_items in Python 3
         vars.sort()
         print('Variables:')
         max_var = max([len(n) for n, v in vars])
