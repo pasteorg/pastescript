@@ -320,12 +320,12 @@ class PermissionSpec(object):
             if path.startswith(check_path):
                 action.check(check_path, checker)
                 if not checker.inherit:
-                    break 
+                    break
 
     def paths_sorted(self):
         paths = self.paths.items()
         paths.sort(lambda a, b: -cmp(len(a[0]), len(b[0])))
-                  
+
 class _Rule(object):
     class __metaclass__(type):
         def __new__(meta, class_name, bases, d):
@@ -340,7 +340,7 @@ class _Rule(object):
 class _NoModify(_Rule):
 
     name = 'nomodify'
-                
+
     def __init__(self, path):
         self.path = path
 
@@ -420,7 +420,7 @@ class _Strategy(object):
         self.spec = spec
 
 class _Check(_Strategy):
-    
+
     def noexists(self, path, checker):
         checker.noexists(path)
 
@@ -438,4 +438,4 @@ class _Fixer(_Strategy):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-    
+

@@ -13,23 +13,23 @@ class FileOp(object):
     Enhance the ease of file copying/processing from a package into a target
     project
     """
-    
-    def __init__(self, simulate=False, 
-                       verbose=True, 
+
+    def __init__(self, simulate=False,
+                       verbose=True,
                        interactive=True,
                        source_dir=None,
                        template_vars=None):
         """
         Initialize our File operation helper object
-        
+
         source_dir
             Should refer to the directory within the package
             that contains the templates to be used for the other copy
             operations. It is assumed that packages will keep all their
             templates under a hierarchy starting here.
-          
+
             This should be an absolute path passed in, for example::
-          
+
                 FileOp(source_dir=os.path.dirname(__file__) + '/templates')
         """
         self.simulate = simulate
@@ -40,13 +40,13 @@ class FileOp(object):
         self.template_vars = template_vars
         self.source_dir = source_dir
         self.use_pkg_resources = isinstance(source_dir, tuple)
-    
+
     def copy_file(self, template, dest, filename=None, add_py=True, package=True,
                   template_renderer=None):
         """
         Copy a file from the source location to somewhere in the
         destination.
-        
+
         template
             The filename underneath self.source_dir to copy/process
         dest
@@ -62,7 +62,7 @@ class FileOp(object):
             directories created should contain a __init__.py file as well.
         template_renderer
             An optional template renderer
-        
+
         """
         if not filename:
             filename = template.split('/')[0]
@@ -73,16 +73,16 @@ class FileOp(object):
         content = self.load_content(base_package, cdir, filename, template,
                                     template_renderer=template_renderer)
         if add_py:
-            # @@: Why is it a default to add a .py extension? 
+            # @@: Why is it a default to add a .py extension?
             filename = '%s.py' % filename
         dest = os.path.join(cdir, filename)
         self.ensure_file(dest, content, package)
-    
+
     def copy_dir(self, template_dir, dest, destname=None, package=True):
         """
         Copy a directory recursively, processing any files within it
         that need to be processed (end in _tmpl).
-        
+
         template_dir
             Directory under self.source_dir to copy/process
         dest
@@ -147,13 +147,13 @@ class FileOp(object):
             raise BadCommand(
                 "Multiple %s dirs found (%s)" % (dirname, possible))
         return possible[0]
-    
+
     def parse_path_name_args(self, name):
         """
         Given the name, assume that the first argument is a path/filename
         combination. Return the name and dir of this. If the name ends with
         '.py' that will be erased.
-        
+
         Examples:
             comments             ->          comments, ''
             admin/comments       ->          comments, 'admin'
@@ -176,7 +176,7 @@ class FileOp(object):
         else:
             dir = os.path.join(*parts[:-1])
         return name, dir
-    
+
     def ensure_dir(self, dir, svn_add=True, package=False):
         """
         Ensure that the directory exists, creating it if necessary.
@@ -184,11 +184,11 @@ class FileOp(object):
 
         Adds directory to subversion if ``.svn/`` directory exists in
         parent, and directory was created.
-        
+
         package
             If package is True, any directories created will contain a
             __init__.py file.
-        
+
         """
         dir = dir.rstrip(os.sep)
         if not dir:
@@ -268,7 +268,7 @@ class FileOp(object):
                     print('Unknown response; Y or N please')
             else:
                 return
-                    
+
         if self.verbose:
             print('Overwriting %s with new content' % filename)
         if not self.simulate:

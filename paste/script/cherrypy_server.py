@@ -104,7 +104,7 @@ def cpwsgi_server(app, global_conf=None, host='127.0.0.1', port=None,
             server.ssl_adapter = BuiltinSSLAdapter(ssl_pem, ssl_pem)
         else:
             server.ssl_certificate = server.ssl_private_key = ssl_pem
-        
+
     if protocol_version:
         server.protocol = protocol_version
 

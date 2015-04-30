@@ -32,7 +32,7 @@ class RequestCommand(Command):
     Note that you can pass options besides the options listed here; any unknown
     options will be passed to the application in environ['QUERY_STRING'].
     """
-    
+
     parser = Command.standard_parser(quiet=True)
     parser.add_option('-n', '--app-name',
                       dest='app_name',
@@ -56,7 +56,7 @@ class RequestCommand(Command):
 
     ARG_OPTIONS = ['-n', '--app-name', '--config-var', '--header']
     OTHER_OPTIONS = ['--display-headers']
-    
+
     ## FIXME: some kind of verbosity?
     ## FIXME: allow other methods than POST and GET?
 
@@ -101,7 +101,7 @@ class RequestCommand(Command):
                 item = quote(item)
             qs.append(item)
         qs = '&'.join(qs)
-        
+
         environ = {
             'REQUEST_METHOD': request_method,
             ## FIXME: shouldn't be static (an option?):
@@ -123,7 +123,7 @@ class RequestCommand(Command):
             else:
                 name = 'HTTP_'+name.upper().replace('-', '_')
             environ[name] = value
-            
+
         status, headers, output, errors = raw_interactive(app, url, **environ)
         assert not errors, "errors should be printed directly to sys.stderr"
         if self.options.display_headers:
@@ -186,4 +186,4 @@ class RequestCommand(Command):
         Command.parse_args(self, normal_args)
         # Add the extra arguments back in:
         self.args = self.args + extra_args
-            
+

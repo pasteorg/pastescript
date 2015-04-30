@@ -9,4 +9,4 @@ def test_forbidden():
     #app.get('/admin/', status=401)
     #app.get('/admin/', status=403,
     #        extra_environ={'REMOTE_USER': 'bob'})
-    
+

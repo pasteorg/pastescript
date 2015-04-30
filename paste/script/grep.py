@@ -87,7 +87,7 @@ class GrepCommand(Command):
         code = marshal.load(f)
         f.close()
         self.search_code(code, filename, [])
-        
+
     def search_code(self, code, filename, path):
         if code.co_name != "?":
             path = path + [code.co_name]
@@ -123,7 +123,7 @@ class GrepCommand(Command):
                 if not self.verbose:
                     break
         f.close()
-                
+
     def found(self, code, filename, path):
         print(self.display(filename, path))
         self.find_occurance(code)
@@ -165,4 +165,4 @@ class GrepCommand(Command):
         if parts:
             parts = ':' + parts
         return self.module_name(filename) + parts
-        
+

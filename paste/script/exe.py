@@ -31,7 +31,7 @@ Which translates to:
 
   paster serve --log-file=/path/to/log /path/to/other/config.ini
 """
-    
+
     hidden = True
 
     _exe_section_re = re.compile(r'^\s*\[\s*exe\s*\]\s*$')
@@ -41,13 +41,13 @@ Which translates to:
         if argv and argv[0] in ('-h', '--help'):
             print(self.description)
             return
-        
+
         if os.environ.get('REQUEST_METHOD'):
             # We're probably in a CGI environment
             sys.stdout = sys.stderr
             os.environ['PASTE_DEFAULT_QUIET'] = 'true'
             # Maybe import cgitb or something?
-            
+
         if '_' not in os.environ:
             print("Warning: this command is intended to be run with a #! like:")
             print("  #!/usr/bin/env paster exe")

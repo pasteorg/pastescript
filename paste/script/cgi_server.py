@@ -56,7 +56,7 @@ def run_with_cgi(application):
                 exc_info = None     # avoid dangling circular ref
         elif headers_set:
             raise AssertionError("Headers already set!")
-            
+
         headers_set[:] = [status,response_headers]
         return write
 

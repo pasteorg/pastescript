@@ -136,4 +136,4 @@ def test_project():
     yield do_pytest
     yield config_permissions
     yield make_tag
-    
+

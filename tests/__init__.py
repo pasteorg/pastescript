@@ -29,6 +29,6 @@ if not os.environ.get('PASTE_TESTING'):
     output_dir = os.path.join(here, 'appsetup', 'output')
     if os.path.exists(output_dir):
         shutil.rmtree(output_dir)
-        
+
 pkg_resources.require('FakePlugin')
 

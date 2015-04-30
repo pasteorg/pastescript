@@ -25,7 +25,7 @@ def run_ajp_thread(wsgi_app, global_conf,
         allowedServers=aslist(allowedServers),
         )
     s.run()
-    
+
 def run_ajp_fork(wsgi_app, global_conf,
                  scriptName='', host='localhost', port='8009',
                  allowedServers='127.0.0.1'):
@@ -116,4 +116,4 @@ def run_scgi_fork(wsgi_app, global_conf,
         allowedServers=aslist(allowedServers),
         )
     s.run()
-    
+

@@ -41,7 +41,7 @@ class Template(object):
     def __init__(self, name):
         self.name = name
         self._read_vars = None
-    
+
     def module_dir(self):
         """Returns the module directory of this template."""
         mod = sys.modules[self.__class__.__module__]
@@ -87,7 +87,7 @@ class Template(object):
         converted_vars.update(unused_vars)
         vars.update(converted_vars)
         return converted_vars
-        
+
     def read_vars(self, command=None):
         if self._read_vars is not None:
             return self._read_vars
@@ -97,7 +97,7 @@ class Template(object):
         if not self.read_vars_from_templates:
             self._read_vars = self.vars
             return self.vars
-        
+
         vars = self.vars[:]
         var_names = [var.name for var in self.vars]
         read_vars = find_args_in_dir(
@@ -131,7 +131,7 @@ class Template(object):
     def print_vars(self, indent=0):
         vars = self.read_vars()
         var.print_vars(vars)
-        
+
     def pre(self, command, output_dir, vars):
         """
         Called before template is applied.
@@ -202,7 +202,7 @@ class BasicPackage(Template):
         ]
 
     template_renderer = staticmethod(paste_script_template_renderer)
-    
+
 _skip_variables = ['VFN', 'currentTime', 'self', 'VFFSL', 'dummyTrans',
                    'getmtime', 'trans']
 

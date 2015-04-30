@@ -24,7 +24,7 @@ def default_config_filename(installer):
     value will be used.
 
     Pay attention to ``installer.expect_config_directory`` here,
-    and to ``installer.default_config_filename``.  
+    and to ``installer.default_config_filename``.
     """
     return installer.default_config_filename
 
