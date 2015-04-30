@@ -514,7 +514,7 @@ class ServeCommand(Command):
             os.initgroups(user, gid)
         else:
             os.setgroups([e.gr_gid for e in grp.getgrall()
-                          if user in e.gr_mem] + [gid]) 
+                          if user in e.gr_mem] + [gid])
         if gid:
             os.setgid(gid)
         if uid:

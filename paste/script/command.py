@@ -183,7 +183,7 @@ class Command(object):
 
     def run(self, args):
         self.parse_args(args)
-        
+
         # Setup defaults:
         for name, default in [('verbose', 0),
                               ('quiet', 0),
@@ -324,7 +324,7 @@ class Command(object):
                     continue
             else:
                 return response
-        
+
     def pad(self, s, length, dir='left'):
         if len(s) >= length:
             return s
@@ -341,7 +341,7 @@ class Command(object):
                         overwrite=False):
         """
         Create a standard ``OptionParser`` instance.
-        
+
         Typically used like::
 
             class MyCommand(Command):
@@ -479,7 +479,7 @@ class Command(object):
                     print('Unknown response; Y or N please')
             else:
                 return
-                    
+
         if self.verbose:
             print('Overwriting %s with new content' % filename)
         if not self.simulate:
@@ -509,7 +509,7 @@ class Command(object):
                 print('Would (if not simulating) insert text into %s' % (
                     self.shorten(filename)))
             return
-                
+
         f = open(filename)
         lines = f.readlines()
         f.close()
@@ -524,7 +524,7 @@ class Command(object):
                     print('Warning: line already found in %s (not inserting' % filename)
                     print('  %s' % lines[i])
                     return
-                
+
                 if indent:
                     text = text.lstrip()
                     match = re.search(r'^[ \t]*', lines[i])
@@ -550,14 +550,14 @@ class Command(object):
         """
         Runs the command, respecting verbosity and simulation.
         Returns stdout, or None if simulating.
-        
+
         Keyword arguments:
-        
-        cwd: 
+
+        cwd:
             the current working directory to run the command in
-        capture_stderr: 
+        capture_stderr:
             if true, then both stdout and stderr will be returned
-        expect_returncode: 
+        expect_returncode:
             if true, then don't fail if the return code is not 0
         force_no_simulate:
             if true, run the command even if --simulate
@@ -709,7 +709,7 @@ class Command(object):
             name, value = arg.split('=', 1)
             result[name] = value
         return result
-    
+
     def read_vars(self, config, section='pastescript'):
         """
         Given a configuration filename, this will return a map of values.
@@ -756,7 +756,7 @@ class Command(object):
 
         if modified:
             p.write(open(config, 'w'))
-        
+
     def indent_block(self, text, indent=2, initial=None):
         """
         Indent the block of text (each line is indented).  If you give

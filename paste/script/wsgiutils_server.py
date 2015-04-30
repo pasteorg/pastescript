@@ -15,4 +15,4 @@ def run_server(wsgi_app, global_conf, host='localhost',
     logged_app.logger.info('Starting HTTP server on http://%s:%s',
                            host, port)
     server.serve_forever()
-    
+

@@ -233,7 +233,7 @@ class AbstractInstallCommand(Command):
         installer = installer_class(
             distro, ep_group, ep_name)
         return installer
-    
+
 
 class MakeConfigCommand(AbstractInstallCommand):
 
@@ -394,7 +394,7 @@ class MakeConfigCommand(AbstractInstallCommand):
                 os.environ['EDITOR'], retval))
             return False
         return True
-        
+
 class SetupCommand(AbstractInstallCommand):
 
     default_verbosity = 1
@@ -454,8 +454,8 @@ class SetupCommand(AbstractInstallCommand):
             self, config_file, section, self.sysconfig_install_vars(installer))
         self.call_sysconfig_functions(
             'post_setup_hook', installer, config_file)
-        
-        
+
+
 class Installer(object):
 
     """
@@ -479,7 +479,7 @@ class Installer(object):
     # directory-looking values and reject them.  None means don't
     # check.
     expect_config_directory = False
-    
+
     # Set this to give a default config filename when none is
     # specified:
     default_config_filename = None
@@ -495,7 +495,7 @@ class Installer(object):
 
     def description(self, config):
         return 'An application'
-        
+
     def write_config(self, command, filename, vars):
         """
         Writes the content to the filename (directory or single file).

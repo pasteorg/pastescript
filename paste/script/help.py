@@ -28,7 +28,7 @@ class HelpCommand(Command):
         command = commands[name].load()
         runner = command(name)
         runner.run(['-h'])
-        
+
     def generic_help(self):
         base_parser.print_help()
         print()
@@ -58,4 +58,4 @@ class HelpCommand(Command):
                 #if command.description:
                 #    print self.indent_block(command.description, 4)
             print()
-        
+

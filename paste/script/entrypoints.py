@@ -16,7 +16,7 @@ class EntryPointCommand(Command):
 
     usage = "ENTRY_POINT"
     summary = "Show information about entry points"
-    
+
     description = """\
     Shows information about one or many entry points (you can use
     wildcards for entry point names).  Entry points are used for Egg
@@ -25,7 +25,7 @@ class EntryPointCommand(Command):
     defines what kind of object they describe, and inside groups each
     entry point is named.
     """
-    
+
     max_args = 2
 
     parser = Command.standard_parser(verbose=False)
@@ -178,7 +178,7 @@ class EntryPointCommand(Command):
         eps = eps.keys()
         eps.sort()
         return eps
-    
+
     def get_group_description(self, group):
         for entry in pkg_resources.iter_entry_points('paste.entry_point_description'):
             if entry.name == group:
@@ -212,7 +212,7 @@ class EntryPointCommand(Command):
         else:
             desc = meta.load()
         return desc
-    
+
 class EntryPointDescription(object):
 
     def __init__(self, group):
@@ -266,4 +266,4 @@ class ErrorDescription(object):
         self.exc = exc
         self.tb = '\n'.join(tb)
         self.description = 'Error loading: %s' % exc
-        
+

@@ -86,7 +86,7 @@ class TestApplication(object):
         headers = [('Content-type', content_type)]
         start_response('200 OK', headers)
         return [page]
-    
+
 
 def make_test_application(global_conf, text=False, lint=False):
     from paste.deploy.converters import asbool

@@ -10,7 +10,7 @@ def test_egg_info():
     assert found == os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
         'PasteScript.egg-info')
-    
+
 def test_resolve_plugins():
     plugins = ['FakePlugin']
     all = pluginlib.resolve_plugins(plugins)
@@ -22,4 +22,4 @@ def test_find_commands():
     commands = pluginlib.load_commands_from_plugins(all)
     print(commands)
     assert 'testcom' in commands
-    
+

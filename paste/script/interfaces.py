@@ -14,7 +14,7 @@ class IAppInstall(object):
         given entry point name in the given group.  Right now the only
         group used for this is ``'paste.app_factory'``.
         """
-                 
+
     def description(sys_config):
         """
         Return a text description of the application and its
