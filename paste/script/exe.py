@@ -78,7 +78,6 @@ Which translates to:
                 break
             lines.pop(0)
             lineno += 1
-        pre_options = []
         options = args
         for line in lines:
             lineno += 1

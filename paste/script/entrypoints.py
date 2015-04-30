@@ -61,7 +61,6 @@ class EntryPointCommand(Command):
             if desc:
                 print(self.wrap(desc))
                 print()
-            by_dist = {}
             self.print_entry_points_by_group(group, ep_pat)
 
     def print_entry_points_by_group(self, group, ep_pat):

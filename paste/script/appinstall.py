@@ -7,18 +7,15 @@ Provides the two commands for preparing an application:
 from __future__ import print_function
 
 import os
-import sys
 import six
 from six.moves import filter
 import string
 import new
-from six.moves.cStringIO import StringIO
 from paste.script.command import Command, BadCommand, run as run_command
 import paste.script.templates
 from paste.script import copydir
 import pkg_resources
 Cheetah = None
-from six.moves.configparser import ConfigParser
 from paste.util import import_string
 from paste.deploy import appconfig
 from paste.script.util import uuid
@@ -130,7 +127,7 @@ class AbstractInstallCommand(Command):
             else:
                 try:
                     mod = import_string.simple_import(name)
-                except ImportError as e:
+                except ImportError:
                     if explicit:
                         raise
                     else:

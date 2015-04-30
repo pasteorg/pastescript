@@ -134,7 +134,6 @@ class GrepCommand(Command):
         for index, line in zip(range(code.co_firstlineno), f):
             lineno += 1
             pass
-        lines = []
         first_indent = None
         for line in f:
             lineno += 1

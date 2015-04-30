@@ -24,9 +24,10 @@
 Copyright (C) 2001-2002 Vinay Sajip. All Rights Reserved.
 """
 
-import os, sys, string
-import tempfile
 import logging
+import os
+import sys
+import tempfile
 
 from paste.script.util import logging_config
 
