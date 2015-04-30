@@ -7,19 +7,18 @@ from __future__ import print_function
 # Code taken also from QP:
 #   http://www.mems-exchange.org/software/qp/
 #   From lib/site.py
-import re
-import os
+import atexit
 import errno
+import logging
+import os
+import re
+import subprocess
 import sys
+import threading
 import time
 import traceback
-import subprocess
-from .command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
-import threading
-import atexit
-import logging
-from six.moves import configparser
+from paste.script.command import Command, BadCommand
 
 
 MAXFD = 1024
