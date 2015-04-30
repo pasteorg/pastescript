@@ -6,20 +6,21 @@ Provides the two commands for preparing an application:
 """
 from __future__ import print_function
 
+import new
 import os
 import six
-from six.moves import filter
 import string
-import new
-from paste.script.command import Command, BadCommand, run as run_command
-import paste.script.templates
-from paste.script import copydir
-import pkg_resources
-Cheetah = None
-from paste.util import import_string
+import uuid
 from paste.deploy import appconfig
-from paste.script.util import uuid
+from paste.script import copydir
+from paste.script.command import Command, BadCommand, run as run_command
 from paste.script.util import secret
+from paste.util import import_string
+from six.moves import filter
+import paste.script.templates
+import pkg_resources
+
+Cheetah = None
 
 class AbstractInstallCommand(Command):
 
