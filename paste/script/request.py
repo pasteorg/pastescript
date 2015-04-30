@@ -3,8 +3,7 @@
 import os
 import re
 import sys
-from six.moves.urllib.parse import quote
-from six.moves.urllib import parse
+from six.moves.urllib.parse import quote, urljoin
 
 from .command import Command, BadCommand
 from paste.deploy import loadapp, loadserver
@@ -67,7 +66,7 @@ class RequestCommand(Command):
         vars = {}
         app_spec = self.args[0]
         url = self.args[1]
-        url = urllib.parse.urljoin('/.command/', url)
+        url = urljoin('/.command/', url)
         if self.options.config_vars:
             for item in self.option.config_vars:
                 if ':' not in item:
