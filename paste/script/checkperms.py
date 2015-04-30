@@ -379,7 +379,7 @@ class _SymLink(_Rule):
             % (self.path, path))
         try:
             link = os.path.readlink(path)
-        except OSError:
+        except OSError as e:
             if e.errno != 22:
                 raise
             return ['Path %s is not a symlink (should point to %s)'
