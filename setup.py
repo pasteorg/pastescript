@@ -1,3 +1,20 @@
+# Procedure to release a new version:
+#
+# - run tests: run tox
+# - update version in setup.py (version)
+# - check that "python setup.py sdist" contains all files tracked by
+#   the SCM (Mercurial): update MANIFEST.in if needed
+# - update changelog: docs/news.txt
+#
+# - hg ci
+# - hg tag VERSION
+# - hg push
+# - python2 setup.py register sdist bdist_wheel upload
+# - python3 setup.py bdist_wheel upload
+#
+# - increment version in setup.py (version)
+# - hg ci && hg push
+
 from setuptools import setup, find_packages
 import re, os, sys
 
@@ -13,7 +30,7 @@ if os.path.exists(news):
             found_news = parts[i+i]
             break
 if not found_news:
-    sys.stdout.write('Warning: no news for this version found\n')
+    print('Warning: no news for this version found')
 
 long_description="""\
 This is a pluggable command-line tool.
