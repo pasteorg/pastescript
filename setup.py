@@ -16,7 +16,8 @@
 # - hg ci && hg push
 
 from setuptools import setup, find_packages
-import re, os, sys
+import os
+import re
 
 version = '2.0'
 
