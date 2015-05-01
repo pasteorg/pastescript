@@ -46,7 +46,7 @@ class HelpCommand(Command):
             commands_grouped.setdefault(
                 command.group_name, []).append((name, command))
         commands_grouped = commands_grouped.items()
-        commands_grouped.sort()
+        commands_grouped = sorted(commands_grouped)
         print('Commands:')
         for group, commands in commands_grouped:
             if group:
