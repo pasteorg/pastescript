@@ -313,7 +313,7 @@ class Command(object):
         prompt += ': '
         while 1:
             if should_echo:
-                prompt_method = raw_input
+                prompt_method = input
             else:
                 prompt_method = getpass.getpass
             response = prompt_method(prompt).strip()
