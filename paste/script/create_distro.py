@@ -305,7 +305,7 @@ class CreateDistroCommand(Command):
                 print('Warning: could not load entry point %s (%s: %s)' % (
                     entry.name, e.__class__.__name__, e))
         max_name = max([len(t.name) for t in templates])
-        templates.sort(lambda a, b: cmp(a.name, b.name))
+        templates = sorted(templates, key=lambda a: a.name)
         print('Available templates:')
         for template in templates:
             # @@: Wrap description
