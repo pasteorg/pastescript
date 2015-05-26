@@ -1,18 +1,16 @@
 from __future__ import print_function
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+import fnmatch
+import os
 import re
 import sys
-import os
+
 import pkg_resources
-from .command import Command, BadCommand
+
 from . import copydir
 from . import pluginlib
-import fnmatch
-try:
-    set
-except NameError:
-    from sets import Set as set
+from .command import Command, BadCommand
 
 class CreateDistroCommand(Command):
 
