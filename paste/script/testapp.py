@@ -64,8 +64,7 @@ class TestApplication(object):
             page_template = html_page_template
             row_template = html_row_template
             content_type = 'text/html; charset=utf8'
-        keys = environ.keys()
-        keys.sort()
+        keys = sorted(environ.keys())
         rows = []
         for key in keys:
             data = {'key': key}

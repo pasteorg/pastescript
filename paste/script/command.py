@@ -793,8 +793,7 @@ class NotFoundCommand(Command):
         #print sys.argv
         print(('Command %r not known (you may need to run setup.py egg_info)'
                % self.command_name))
-        commands = get_commands().items()
-        commands.sort()
+        commands = sorted(get_commands().items())
         if not commands:
             print('No commands registered.')
             print('Have you installed Paste Script?')

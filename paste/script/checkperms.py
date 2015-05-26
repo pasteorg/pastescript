@@ -323,8 +323,9 @@ class PermissionSpec(object):
                     break
 
     def paths_sorted(self):
-        paths = self.paths.items()
-        paths.sort(lambda a, b: -cmp(len(a[0]), len(b[0])))
+        paths = sorted(self.paths.items(),
+                       key=lambda key_value: len(key_value[0]),
+                       reversed=True)
 
 class _Rule(object):
     class __metaclass__(type):
