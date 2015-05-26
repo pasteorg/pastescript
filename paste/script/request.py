@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import six
 from six.moves.urllib.parse import quote, urljoin
 
 from .command import Command, BadCommand
@@ -130,7 +131,12 @@ class RequestCommand(Command):
             for name, value in headers:
                 sys.stdout.write('%s: %s\n' % (name, value))
             sys.stdout.write('\n')
-        sys.stdout.write(output)
+        if six.PY3:
+            sys.stdout.flush()
+            sys.stdout.buffer.write(output)
+            sys.stdout.buffer.flush()
+        else:
+            sys.stdout.write(output)
         sys.stdout.flush()
         status_int = int(status.split()[0])
         if status_int != 200:
