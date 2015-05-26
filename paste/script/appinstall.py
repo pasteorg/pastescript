@@ -6,7 +6,7 @@ Provides the two commands for preparing an application:
 """
 from __future__ import print_function
 
-import new
+import types
 import os
 import six
 import string
@@ -121,7 +121,7 @@ class AbstractInstallCommand(Command):
                         continue
                 globs = {}
                 six.exec_(compile(open(name).read(), name, 'exec'), globs)
-                mod = new.module('__sysconfig_%i__' % index)
+                mod = types.ModuleType('__sysconfig_%i__' % index)
                 for name, value in globs.items():
                     setattr(mod, name, value)
                 mod.__file__ = name
