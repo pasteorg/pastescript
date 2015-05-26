@@ -70,7 +70,7 @@ class EntryPointCommand(Command):
             dists = list(env[project_name])
             assert dists
             dist = dists[0]
-            entries = dist.get_entry_map(group).values()
+            entries = list(dist.get_entry_map(group).values())
             if ep_pat:
                 entries = [e for e in entries
                            if ep_pat.search(e.name)]
