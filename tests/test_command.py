@@ -3,6 +3,7 @@ from paste.script import command
 from paste.script import create_distro
 import contextlib
 import os
+import shutil
 import six
 import sys
 import tempfile
@@ -24,9 +25,19 @@ def capture_stdout():
 def temporary_dir():
     old_dir = os.getcwd()
     try:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            os.chdir(tmpdir)
-            yield
+        if hasattr(tempfile, 'TemporaryDirectory'):
+            # Python 3
+            with tempfile.TemporaryDirectory() as tmpdir:
+                os.chdir(tmpdir)
+                yield
+        else:
+            # Python 2
+            tmpdir = tempfile.mkdtemp()
+            try:
+                os.chdir(tmpdir)
+                yield
+            finally:
+                shutil.rmtree(tmpdir)
     finally:
         os.chdir(old_dir)
 
