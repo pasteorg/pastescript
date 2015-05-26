@@ -7,6 +7,6 @@ include tests/sample_templates/*tmpl
 include tox.ini
 recursive-exclude docs/_build/_sources *
 recursive-include docs/_build *.html
-recursive-include tests *.txt *.py
+recursive-include tests *.txt *.py PKG-INFO
 recursive-include paste *.js *.jpg
 recursive-include paste/script/paster-templates/basic_package setup.* *.py *_tmpl
