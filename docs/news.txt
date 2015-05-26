@@ -14,6 +14,8 @@ News: Paste Script
 * Fix error when 'paster create —list-template' on Python 3. Patch written by
   FGtatsuro.
 
+* Create universal wheel package.
+
 2.0 (2015-05-26)
 ----------------
 
