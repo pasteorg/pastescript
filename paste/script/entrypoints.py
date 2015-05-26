@@ -8,7 +8,7 @@ from .command import Command, BadCommand
 import fnmatch
 import re
 import traceback
-from six.moves.cStringIO import StringIO
+from six.moves import cStringIO as StringIO
 import inspect
 import types
 
