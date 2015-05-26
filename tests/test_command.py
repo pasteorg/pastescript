@@ -247,6 +247,40 @@ class EntryPointsTest(unittest.TestCase):
             self.assertEqual(entrypoint,
                              stdout.getvalue())
 
+    def test_show(self):
+        entrypoint = textwrap.dedent('''
+            [console_scripts]
+            When a package is installed, any entry point listed here will be
+            turned into a command-line script.
+
+            nose 1.3.6
+            nosetests = nose:run_exit
+                Error loading: 'function' object has no attribute '__func__'
+            nosetests-3.4 = nose:run_exit
+                Error loading: 'function' object has no attribute '__func__'
+            PasteScript 2.0.2 (+ 1 older versions)
+            paster = paste.script.command:run
+                (args=None)
+            pip 6.1.1
+            pip = pip:main
+                (args=None)
+            pip3 = pip:main
+                (args=None)
+            pip3.4 = pip:main
+                (args=None)
+            setuptools 15.0
+            easy_install = setuptools.command.easy_install:main
+                (argv=None, **kw)
+            easy_install-3.4 = setuptools.command.easy_install:main
+                (argv=None, **kw)
+        ''').strip() + '\n'
+        with capture_stdout() as stdout:
+            res = self.cmd.run(['console_scripts'])
+            self.assertEqual(res, 0)
+
+            self.assertEqual(entrypoint,
+                             stdout.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
