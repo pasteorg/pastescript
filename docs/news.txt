@@ -3,6 +3,14 @@ News: Paste Script
 
 .. contents::
 
+2.0.1
+-----
+
+* Fix --help command on Python 3. Patch written by Atsushi Odagiri (aodag).
+
+* Fix "paster create --template=basic_package test" command on Python 3.
+  Patch written by Atsushi Odagiri (aodag).
+
 2.0 (2015-05-26)
 ----------------
 
