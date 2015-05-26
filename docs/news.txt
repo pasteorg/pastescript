@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+2.0.2
+-----
+
+* Issue #20: Fix "paster points --list" on Python 3.
+
 2.0.1 (2015-05-26)
 ------------------
 

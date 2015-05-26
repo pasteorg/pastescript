@@ -175,9 +175,7 @@ class EntryPointCommand(Command):
                         and name.startswith('paste.description.')):
                         continue
                     eps[name] = None
-        eps = eps.keys()
-        eps.sort()
-        return eps
+        return sorted(eps.keys())
 
     def get_group_description(self, group):
         for entry in pkg_resources.iter_entry_points('paste.entry_point_description'):
