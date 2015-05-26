@@ -10,6 +10,8 @@ def paste_run_cgi(wsgi_app, global_conf):
     run_with_cgi(wsgi_app)
 
 stdout = sys.__stdout__
+if six.PY3:
+    stdout = stdout.buffer
 
 # Taken from the WSGI spec:
 
@@ -36,12 +38,18 @@ def run_with_cgi(application):
              raise AssertionError("write() before start_response()")
 
         elif not headers_sent:
-             # Before the first output, send the stored headers
-             status, response_headers = headers_sent[:] = headers_set
-             stdout.write('Status: %s\r\n' % status)
-             for header in response_headers:
-                 stdout.write('%s: %s\r\n' % header)
-             stdout.write('\r\n')
+            # Before the first output, send the stored headers
+            status, response_headers = headers_sent[:] = headers_set
+            line = 'Status: %s\r\n' % status
+            if six.PY3:
+                line = line.encode('utf-8')
+            stdout.write(line)
+            for header in response_headers:
+                line = '%s: %s\r\n' % header
+                if six.PY3:
+                    line = line.encode('utf-8')
+                stdout.write(line)
+            stdout.write(b'\r\n')
 
         stdout.write(data)
         stdout.flush()
