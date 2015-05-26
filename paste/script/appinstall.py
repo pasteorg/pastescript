@@ -318,8 +318,7 @@ class MakeConfigCommand(AbstractInstallCommand):
         self.vars.setdefault('app_instance_uuid', uuid.uuid4())
         self.vars.setdefault('app_instance_secret', secret.secret_string())
         if self.verbose > 1:
-            print_vars = self.vars.items()
-            print_vars.sort()
+            print_vars = sorted(self.vars.items())
             print('Variables for installation:')
             for name, value in print_vars:
                 print('  %s: %r' % (name, value))

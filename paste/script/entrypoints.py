@@ -65,8 +65,7 @@ class EntryPointCommand(Command):
 
     def print_entry_points_by_group(self, group, ep_pat):
         env = pkg_resources.Environment()
-        project_names = list(env)
-        project_names.sort()
+        project_names = sorted(env)
         for project_name in project_names:
             dists = list(env[project_name])
             assert dists
@@ -82,7 +81,7 @@ class EntryPointCommand(Command):
                     dist, len(dists)-1))
             else:
                 print('%s' % dist)
-            entries.sort(lambda a, b: cmp(a.name, b.name))
+            entries.sort(key=lambda entry: entry.name)
             for entry in entries:
                 print(self._ep_description(entry))
                 desc = self.get_entry_point_description(entry, group)
@@ -100,14 +99,12 @@ class EntryPointCommand(Command):
             egg_name = egg_name[4:]
         dist = pkg_resources.get_distribution(egg_name)
         entry_map = dist.get_entry_map()
-        entry_groups = entry_map.items()
-        entry_groups.sort()
+        entry_groups = sorted(entry_map.items())
         for group, points in entry_groups:
             if group_pat and not group_pat.search(group):
                 continue
             print('[%s]' % group)
-            points = points.items()
-            points.sort()
+            points = sorted(points.items())
             for name, entry in points:
                 if ep_pat:
                     if not ep_pat.search(name):

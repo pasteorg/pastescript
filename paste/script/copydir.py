@@ -333,9 +333,7 @@ def sub_catcher(filename, vars, func, *args, **kw):
     except Exception as e:
         print('Error in file %s:' % filename)
         if isinstance(e, NameError):
-            items = vars.items()
-            items.sort()
-            for name, value in items:
+            for name, value in sorted(vars.items()):
                 print('%s = %r' % (name, value))
         raise
 
