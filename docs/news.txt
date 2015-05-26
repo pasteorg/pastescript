@@ -3,8 +3,8 @@ News: Paste Script
 
 .. contents::
 
-2.0.1
------
+2.0.1 (2015-05-26)
+------------------
 
 * Fix --help command on Python 3. Patch written by Atsushi Odagiri (aodag).
 
