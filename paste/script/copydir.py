@@ -109,9 +109,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         elif use_pkg_resources:
             content = pkg_resources.resource_string(source[0], full)
         else:
-            f = open(full, 'rb')
-            content = f.read()
-            f.close()
+            with open(full, 'r') as f:
+                content = f.read()
         if sub_file:
             try:
                 content = substitute_content(content, vars, filename=full,
@@ -142,9 +141,8 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
         elif verbosity:
             print('%sCopying %s to %s' % (pad, os.path.basename(full), dest_full))
         if not simulate:
-            f = open(dest_full, 'wb')
-            f.write(content)
-            f.close()
+            with open(dest_full, 'w') as f:
+                f.write(content)
         if svn_add and not already_exists:
             if os.system('svn info %r >/dev/null 2>&1' % os.path.dirname(os.path.abspath(dest_full))) > 0:
                 if verbosity > 1:
