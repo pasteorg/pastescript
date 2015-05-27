@@ -224,8 +224,7 @@ class SuperGeneric(object):
         self.description = dedent(self.doc_object.__doc__)
         try:
             if isinstance(self.doc_object, type):
-                # func = six.get_unbound_function(self.doc_object.__init__)
-                func = self.doc_object.__init__.__func__
+                func = six.get_unbound_function(self.doc_object.__init__)
             elif (hasattr(self.doc_object, '__call__')
                   and not isinstance(self.doc_object, types.FunctionType)):
                 func = self.doc_object.__call__
