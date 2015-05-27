@@ -12,6 +12,8 @@ News: Paste Script
 
 * Fix usage of the sort() method on Python 3.
 
+* Fix grep on Python 3.
+
 2.0.1 (2015-05-26)
 ------------------
 
