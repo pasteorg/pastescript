@@ -281,6 +281,50 @@ class EntryPointsTest(unittest.TestCase):
             self.assertEqual(entrypoint,
                              stdout.getvalue())
 
+    def test_paster_command(self):
+        entrypoint = textwrap.dedent('''
+            [paste.global_paster_command]
+            Entry point that adds a command to the ``paster`` script globally.
+            
+            PasteScript 2.0.2
+            create = paste.script.create_distro:CreateDistroCommand
+                (self, name)
+            exe = paste.script.exe:ExeCommand
+                (self, name)
+            help = paste.script.help:HelpCommand
+                (self, name)
+            make-config = paste.script.appinstall:MakeConfigCommand
+                (self, name)
+            points = paste.script.entrypoints:EntryPointCommand
+                (self, name)
+            post = paste.script.request:RequestCommand
+                (self, name)
+            request = paste.script.request:RequestCommand
+                (self, name)
+            serve = paste.script.serve:ServeCommand
+                (self, name)
+            setup-app = paste.script.appinstall:SetupCommand
+                (self, name)
+            [paste.paster_command]
+            Entry point that adds a command to the ``paster`` script to a project
+            that has specifically enabled the command.
+            
+            dummy 0.1dev-r0
+            mycommand = dummy.commands:MyCommand
+                (self, name)
+            FakePlugin 0.1
+            testcom = fakeplugin.testcom:TestCommand
+                Error loading: No module named 'fakeplugin.testcom'
+            PasteScript 2.0.2
+            grep = paste.script.grep:GrepCommand
+                (self, name)
+        ''').strip() + '\n'
+        with capture_stdout() as stdout:
+            res = self.cmd.run(['paster_command'])
+            self.assertEqual(res, 0)
+            self.assertEqual(entrypoint,
+                             stdout.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
