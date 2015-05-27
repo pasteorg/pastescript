@@ -8,6 +8,10 @@ News: Paste Script
 
 * Issue #20: Fix "paster points --list" on Python 3.
 
+* Fix cgi_server on Python 3.
+
+* Fix usage of the sort() method on Python 3.
+
 2.0.1 (2015-05-26)
 ------------------
 
