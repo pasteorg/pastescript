@@ -23,7 +23,8 @@ version = '2.0.2'
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
 found_news = ''
 if os.path.exists(news):
-    news = open(news).read()
+    with open(news) as fp:
+        news = fp.read()
     parts = re.split(r'([0-9\.]+)\s*\n\r?-+\n\r?', news)
     for i in range(len(parts)-1):
         if parts[i] == version:
