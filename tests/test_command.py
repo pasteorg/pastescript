@@ -170,7 +170,7 @@ class CreateDistroCommandTest(unittest.TestCase):
 
 
 class EntryPointsTest(unittest.TestCase):
-    maxDiff = 1024
+    maxDiff = 4096
 
     def setUp(self):
         self.cmd = entrypoints.EntryPointCommand('entrypoint')
@@ -218,22 +218,17 @@ class EntryPointsTest(unittest.TestCase):
             [console_scripts]
             When a package is installed, any entry point listed here will be
             turned into a command-line script.
-
         ''').strip() + '\n'
         with capture_stdout() as stdout:
             res = self.cmd.run(['console_scripts'])
             self.assertEqual(res, 0)
-
             out = stdout.getvalue()
-            self.assertTrue(out.startswith(entrypoint),
-                            repr(out))
+        self.assertTrue(out.startswith(entrypoint),
+                        "%r doesn't start with %r" % (out, entrypoint))
 
     def test_paster_command(self):
-        entrypoint = textwrap.dedent('''
-            [paste.global_paster_command]
-            Entry point that adds a command to the ``paster`` script globally.
-            
-            PasteScript 2.0.2
+        # Issue #20: Check that SuperGeneric works on Python 3
+        paster = textwrap.dedent('''
             create = paste.script.create_distro:CreateDistroCommand
                 (self, name)
             exe = paste.script.exe:ExeCommand
@@ -252,25 +247,13 @@ class EntryPointsTest(unittest.TestCase):
                 (self, name)
             setup-app = paste.script.appinstall:SetupCommand
                 (self, name)
-            [paste.paster_command]
-            Entry point that adds a command to the ``paster`` script to a project
-            that has specifically enabled the command.
-            
-            dummy 0.1dev-r0
-            mycommand = dummy.commands:MyCommand
-                (self, name)
-            FakePlugin 0.1
-            testcom = fakeplugin.testcom:TestCommand
-                Error loading: No module named 'fakeplugin.testcom'
-            PasteScript 2.0.2
-            grep = paste.script.grep:GrepCommand
-                (self, name)
-        ''').strip() + '\n'
+        ''').strip()
         with capture_stdout() as stdout:
             res = self.cmd.run(['paster_command'])
             self.assertEqual(res, 0)
-            self.assertEqual(entrypoint,
-                             stdout.getvalue())
+            out = stdout.getvalue()
+
+        self.assertIn(paster, out)
 
 
 if __name__ == "__main__":
