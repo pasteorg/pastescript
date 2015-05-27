@@ -5,6 +5,7 @@ import py_compile
 import marshal
 import inspect
 import re
+import tokenize
 from .command import Command
 from . import pluginlib
 from six.moves import range
@@ -76,17 +77,26 @@ class GrepCommand(Command):
             return
         pyc = filename[:-2]+'pyc'
         if not os.path.exists(pyc):
-            py_compile.compile(filename)
+            try:
+                py_compile.compile(filename)
+            except OSError:
+                # ignore permission error if the .pyc cannot be written
+                pass
         if not os.path.exists(pyc):
             # Invalid syntax...
             self.search_text(filename, as_module=True)
             return
-        f = open(pyc, 'rb')
-        # .pyc Header:
-        f.read(8)
-        code = marshal.load(f)
-        f.close()
-        self.search_code(code, filename, [])
+        with open(pyc, 'rb') as f:
+            # .pyc Header:
+            f.read(8)
+            try:
+                code = marshal.load(f)
+            except ValueError:
+                # Fail to load the byteload. For example, Python 3.4 cannot
+                # load Python 2.7 bytecode.
+                pass
+            else:
+                self.search_code(code, filename, [])
 
     def search_code(self, code, filename, path):
         if code.co_name != "?":
@@ -106,47 +116,54 @@ class GrepCommand(Command):
                     continue
                 self.search_code(const, filename, path)
 
+    def _open(self, filename):
+        if filename.endswith('.py') and hasattr(tokenize, 'open'):
+            # On Python 3.2 and newer, open Python files with tokenize.open().
+            # This functions uses the encoding cookie to get the encoding.
+            return tokenize.open(filename)
+        else:
+            return open(filename)
+
     def search_text(self, filename, as_module=False):
-        f = open(filename, 'rb')
-        lineno = 0
-        any = False
-        for line in f:
-            lineno += 1
-            if line.find(self.symbol) != -1:
-                if not any:
-                    any = True
-                    if as_module:
-                        print('%s (unloadable)' % self.module_name(filename))
-                    else:
-                        print(self.relative_name(filename))
-                print('  %3i  %s' % (lineno, line))
-                if not self.verbose:
-                    break
-        f.close()
+        with self._open(filename) as f:
+            lineno = 0
+            any = False
+            for line in f:
+                lineno += 1
+                if line.find(self.symbol) != -1:
+                    if not any:
+                        any = True
+                        if as_module:
+                            print('%s (unloadable)' % self.module_name(filename))
+                        else:
+                            print(self.relative_name(filename))
+                    print('  %3i  %s' % (lineno, line))
+                    if not self.verbose:
+                        break
 
     def found(self, code, filename, path):
         print(self.display(filename, path))
         self.find_occurance(code)
 
     def find_occurance(self, code):
-        f = open(code.co_filename, 'rb')
-        lineno = 0
-        for index, line in zip(range(code.co_firstlineno), f):
-            lineno += 1
-            pass
-        first_indent = None
-        for line in f:
-            lineno += 1
-            if line.find(self.symbol) != -1:
-                this_indent = len(re.match(r'^[ \t]*', line).group(0))
-                if first_indent is None:
-                    first_indent = this_indent
-                else:
-                    if this_indent < first_indent:
+        with self._open(code.co_filename) as f:
+            lineno = 0
+            for index, line in zip(range(code.co_firstlineno), f):
+                lineno += 1
+                pass
+            first_indent = None
+            for line in f:
+                lineno += 1
+                if line.find(self.symbol) != -1:
+                    this_indent = len(re.match(r'^[ \t]*', line).group(0))
+                    if first_indent is None:
+                        first_indent = this_indent
+                    else:
+                        if this_indent < first_indent:
+                            break
+                    print('  %3i  %s' % (lineno, line[first_indent:].rstrip()))
+                    if not self.verbose:
                         break
-                print('  %3i  %s' % (lineno, line[first_indent:].rstrip()))
-                if not self.verbose:
-                    break
 
     def module_name(self, filename):
         #assert filename, startswith(self.basedir)
