@@ -9,7 +9,10 @@ import six
 import sys
 import tempfile
 import textwrap
-import unittest
+try:
+    import unittest2 as unittest   # for Python 2.6
+except ImportError:
+    import unittest
 
 
 @contextlib.contextmanager
