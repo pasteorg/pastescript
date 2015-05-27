@@ -3,14 +3,17 @@ from paste.script import command
 from paste.script import create_distro
 from paste.script import entrypoints
 import contextlib
+import io
 import os
+import re
 import shutil
 import six
 import sys
 import tempfile
 import textwrap
 try:
-    import unittest2 as unittest   # for Python 2.6
+    # Use unittest2 for Python 2 to get assertRegex() and assertIn() methods
+    import unittest2 as unittest
 except ImportError:
     import unittest
 
@@ -258,6 +261,40 @@ class EntryPointsTest(unittest.TestCase):
 
         self.assertIn(paster, out)
 
+
+class PostTest(unittest.TestCase):
+    maxDiff = 4096
+
+    def test_post(self):
+        config = os.path.join('docs', 'example_app.ini')
+        url = '/'
+        with capture_stdout() as stdout:
+            if six.PY3:
+                stdout.buffer = io.BytesIO()
+            try:
+                command.run(['post', config, url])
+            except SystemExit as exc:
+                self.assertEqual(exc.code, 0)
+            else:
+                self.fail("SystemExit not raised")
+            if six.PY3:
+                out = stdout.buffer.getvalue()
+                out = out.decode('utf-8')
+            else:
+                out = stdout.getvalue()
+        html_regex = textwrap.dedent('''
+            <html>
+            <head>
+              <title>Test Application</title>
+            </head>
+            <body>
+            .*
+            </body>
+            </html>
+        ''').strip()
+        html_regex = '\n%s\n' % html_regex
+        html_regex = re.compile(html_regex, re.DOTALL)
+        self.assertRegex(out, html_regex)
 
 if __name__ == "__main__":
     unittest.main()
