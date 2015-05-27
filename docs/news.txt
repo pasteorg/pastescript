@@ -16,7 +16,7 @@ News: Paste Script
 * Fix "paster create --template=basic_package test" command on Python 3.
   Patch written by Atsushi Odagiri (aodag).
 
-* Fix error when 'paster create —list-template' on Python 3. Patch written by
+* Fix error when 'paster create --list-template' on Python 3. Patch written by
   FGtatsuro.
 
 * Create universal wheel package.
