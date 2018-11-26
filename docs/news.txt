@@ -3,6 +3,14 @@ News: Paste Script
 
 .. contents::
 
+3.0.0 (2018-11-26)
+------------------
+
+* Moved to `GitHub <https://github.com/cdent/pastescript>`_.
+* Put into maintenance mode, meaning: critical bugs will be fixed,
+  and support for new versions of Python will be handled, but new
+  features are not being considered.
+
 2.0.2 (2015-05-27)
 ------------------
 

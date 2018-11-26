@@ -6,19 +6,17 @@
 #   the SCM (Mercurial): update MANIFEST.in if needed
 # - update changelog: docs/news.txt
 #
-# - hg ci
-# - hg tag VERSION
-# - hg push
-# - python setup.py register sdist bdist_wheel upload
-#
 # - increment version in setup.py (version)
-# - hg ci && hg push
+# - git commit
+# - git tag -s VERSION
+# - git push
+# - python setup.py sdist bdist_wheel upload --sign
 
 from setuptools import setup, find_packages
 import os
 import re
 
-version = '2.0.3'
+version = '3.0.0'
 
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
 found_news = ''
@@ -47,14 +45,15 @@ setup(
     description="A pluggable command-line frontend, including commands to setup package file layouts",
     long_description=long_description,
     classifiers=[
-      "Development Status :: 5 - Production/Stable",
+      "Development Status :: 6 - Mature",
       "Intended Audience :: Developers",
       "License :: OSI Approved :: MIT License",
-      "Programming Language :: Python :: 2.6",
       "Programming Language :: Python :: 2.7",
       "Programming Language :: Python :: 3",
-      "Programming Language :: Python :: 3.3",
       "Programming Language :: Python :: 3.4",
+      "Programming Language :: Python :: 3.5",
+      "Programming Language :: Python :: 3.6",
+      "Programming Language :: Python :: 3.7",
       "Topic :: Internet :: WWW/HTTP",
       "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
       "Topic :: Software Development :: Libraries :: Python Modules",
@@ -146,7 +145,7 @@ setup(
     paster_plugins.txt = setuptools.command.egg_info:write_arg
     """,
     install_requires=[
-      'Paste>=1.3',
+      'Paste>=3.0',
       'PasteDeploy',
       'six',
       ],
