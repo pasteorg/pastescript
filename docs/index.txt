@@ -14,6 +14,15 @@ Contents:
    developer
    license
 
+Warning
+-------
+
+Paste Script is being maintained on life support. That means that
+critical bugs will be fixed, and support for new versions of Python
+will be handled, but other than that new features are not being
+considered. Development has moved to `GitHub
+<https://github.com/cdent/pastescript>`_.
+
 Introduction
 ------------
 
@@ -28,11 +37,8 @@ Paste Script is released under the `MIT license
 Status
 ------
 
-Paste Script has passed version 1.0.  Paste Script is an actively
-maintained project.  As of 1.0, we'll make a strong effort to maintain
-backward compatibility.  This will include deprecation warnings when
-necessary.  Major changes will take place under new functions or with
-new entry points.
+Paste Script has passed version 1.0. Paste Script is in maintenance
+mode. Bugs will be fixed, new features are not being considered.
 
 ``paster create``
 -----------------
