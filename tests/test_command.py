@@ -11,11 +11,7 @@ import six
 import sys
 import tempfile
 import textwrap
-try:
-    # Use unittest2 for Python 2 to get assertRegex() and assertIn() methods
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 
 @contextlib.contextmanager
@@ -294,7 +290,7 @@ class PostTest(unittest.TestCase):
         ''').strip()
         html_regex = '\n%s\n' % html_regex
         html_regex = re.compile(html_regex, re.DOTALL)
-        self.assertRegex(out, html_regex)
+        six.assertRegex(self, out, html_regex)
 
 if __name__ == "__main__":
     unittest.main()
