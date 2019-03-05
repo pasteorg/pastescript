@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 import os
 import re
 
-version = '3.0.0'
+version = '3.1.0'
 
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
 found_news = ''
