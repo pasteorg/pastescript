@@ -11,7 +11,6 @@ def run_server(wsgi_app, global_conf, host='localhost',
     port = int(port)
     # For some reason this is problematic on this server:
     ensure_port_cleanup([(host, port)], maxtries=2, sleeptime=0.5)
-    app_map = {'': logged_app}
     server = wsgiserver.WSGIServer(logged_app, host=host, port=port)
     logged_app.logger.info('Starting HTTP server on http://%s:%s',
                            host, port)
