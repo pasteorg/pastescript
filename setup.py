@@ -79,7 +79,7 @@ setup(
       'Templating': [],
       'Cheetah': ['Cheetah'],
       'Config': ['PasteDeploy'],
-      'WSGIUtils': ['WSGIUtils'],
+      'WSGIUtils': ['WSGIserver'],
       'Flup': ['Flup'],
       # the Paste feature means the complete set of features;
       # (other features are truly optional)
