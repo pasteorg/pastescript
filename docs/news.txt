@@ -3,12 +3,18 @@ News: Paste Script
 
 .. contents::
 
-3.1.1 (2021-04-27)
+3.2.1 (2021-04-27)
 ------------------
 
 * Require ``setuptools`` in ``install_requires``. Thanks to Tomáš Hrnčiar
   (hrnciar)
 * Fix tests to run again.
+
+3.2.0 (2019-09-24)
+------------------
+
+* Use wsgiserver.WSGIServer instead of wsgiutils.wsgiServer.WSGIServer
+  for Python 3 compatibility.
 
 3.1.0 (2019-03-04)
 -----------------

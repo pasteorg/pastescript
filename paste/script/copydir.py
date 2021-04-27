@@ -1,7 +1,6 @@
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
-import sys
 import pkg_resources
 from six.moves import input
 from six.moves.urllib.parse import quote
