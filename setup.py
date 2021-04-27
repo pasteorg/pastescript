@@ -148,5 +148,6 @@ setup(
       'Paste>=3.0',
       'PasteDeploy',
       'six',
+      'setuptools',
       ],
     )
