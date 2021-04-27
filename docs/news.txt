@@ -6,7 +6,8 @@ News: Paste Script
 3.1.1 (2021-04-27)
 ------------------
 
-* Require ``setuptools`` in ``install_requires``.
+* Require ``setuptools`` in ``install_requires``. Thanks to Tomáš Hrnčiar
+  (hrnciar)
 * Fix tests to run again.
 
 3.1.0 (2019-03-04)
