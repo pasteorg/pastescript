@@ -13,6 +13,69 @@ import tempfile
 import textwrap
 import unittest
 
+PY2_ENTRY_POINTS=textwrap.dedent('''
+    14 entry point groups found:
+    [console_scripts]
+      When a package is installed, any entry point listed here will be
+      turned into a command-line script.
+    [distutils.commands]
+      This will add a new command when running ``python setup.py entry-
+      point-name`` if the package uses setuptools.
+    [distutils.setup_keywords]
+      This adds a new keyword to setup.py's setup() function, and a
+      validator to validate the value.
+    [egg_info.writers]
+      This adds a new writer that creates files in the PkgName.egg-info/
+      directory.
+    [paste.app_factory]
+    [paste.composite_factory]
+    [paste.entry_point_description]
+      This is an entry point that describes other entry points.
+    [paste.filter_app_factory]
+    [paste.global_paster_command]
+      Entry point that adds a command to the ``paster`` script globally.
+    [paste.paster_command]
+      Entry point that adds a command to the ``paster`` script to a
+      project that has specifically enabled the command.
+    [paste.paster_create_template]
+      Entry point for creating the file layout for a new project from a
+      template.
+    [paste.server_runner]
+    [setuptools.finalize_distribution_options]
+    [setuptools.installation]
+''')
+
+PY3_ENTRY_POINTS=textwrap.dedent('''
+    13 entry point groups found:
+    [console_scripts]
+      When a package is installed, any entry point listed here will be
+      turned into a command-line script.
+    [distutils.commands]
+      This will add a new command when running ``python setup.py entry-
+      point-name`` if the package uses setuptools.
+    [distutils.setup_keywords]
+      This adds a new keyword to setup.py's setup() function, and a
+      validator to validate the value.
+    [egg_info.writers]
+      This adds a new writer that creates files in the PkgName.egg-info/
+      directory.
+    [paste.app_factory]
+    [paste.composite_factory]
+    [paste.entry_point_description]
+      This is an entry point that describes other entry points.
+    [paste.filter_app_factory]
+    [paste.global_paster_command]
+      Entry point that adds a command to the ``paster`` script globally.
+    [paste.paster_command]
+      Entry point that adds a command to the ``paster`` script to a
+      project that has specifically enabled the command.
+    [paste.paster_create_template]
+      Entry point for creating the file layout for a new project from a
+      template.
+    [paste.server_runner]
+    [setuptools.finalize_distribution_options]
+''')
+
 
 @contextlib.contextmanager
 def capture_stdout():
@@ -178,42 +241,16 @@ class EntryPointsTest(unittest.TestCase):
         self.cmd = entrypoints.EntryPointCommand('entrypoint')
 
     def test_list(self):
-        entrypoints_list = textwrap.dedent('''
-            13 entry point groups found:
-            [console_scripts]
-              When a package is installed, any entry point listed here will be
-              turned into a command-line script.
-            [distutils.commands]
-              This will add a new command when running ``python setup.py entry-
-              point-name`` if the package uses setuptools.
-            [distutils.setup_keywords]
-              This adds a new keyword to setup.py's setup() function, and a
-              validator to validate the value.
-            [egg_info.writers]
-              This adds a new writer that creates files in the PkgName.egg-info/
-              directory.
-            [paste.app_factory]
-            [paste.composite_factory]
-            [paste.entry_point_description]
-              This is an entry point that describes other entry points.
-            [paste.filter_app_factory]
-            [paste.global_paster_command]
-              Entry point that adds a command to the ``paster`` script globally.
-            [paste.paster_command]
-              Entry point that adds a command to the ``paster`` script to a
-              project that has specifically enabled the command.
-            [paste.paster_create_template]
-              Entry point for creating the file layout for a new project from a
-              template.
-            [paste.server_runner]
-            [setuptools.installation]
-        ''').strip() + '\n'
+        entrypoints_list = PY3_ENTRY_POINTS
+        if six.PY2:
+            entrypoints_list = PY2_ENTRY_POINTS
+        entrypoints_list = entrypoints_list.strip() + '\n'
         with capture_stdout() as stdout:
             res = self.cmd.run(['--list'])
             self.assertEqual(res, 0)
 
             self.assertEqual(entrypoints_list,
-                             stdout.getvalue())
+                             stdout.getvalue(), stdout.getvalue())
 
     def test_show(self):
         entrypoint = textwrap.dedent('''

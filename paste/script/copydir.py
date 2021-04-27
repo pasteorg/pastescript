@@ -1,11 +1,15 @@
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
+import sys
 import pkg_resources
 from six.moves import input
 from six.moves.urllib.parse import quote
 import string
-import cgi
+try:
+    import html
+except ImportError:
+    import cgi as html
 
 Cheetah = None
 try:
@@ -340,7 +344,7 @@ def sub_catcher(filename, vars, func, *args, **kw):
 def html_quote(s):
     if s is None:
         return ''
-    return cgi.escape(str(s), 1)
+    return html.escape(str(s), 1)
 
 def url_quote(s):
     if s is None:
