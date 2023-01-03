@@ -62,7 +62,7 @@ setup(
     keywords='web wsgi setuptools framework command-line setup',
     author="Ian Bicking",
     author_email="ianb@colorstudy.com",
-    url="http://pythonpaste.org/script/",
+    url="https://pastescript.readthedocs.io/",
     namespace_packages=['paste'],
     license='MIT',
     packages=find_packages(exclude=['tests','tests.*']),
