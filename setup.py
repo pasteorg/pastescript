@@ -48,7 +48,6 @@ setup(
       "Development Status :: 6 - Mature",
       "Intended Audience :: Developers",
       "License :: OSI Approved :: MIT License",
-      "Programming Language :: Python :: 2.7",
       "Programming Language :: Python :: 3",
       "Programming Language :: Python :: 3.4",
       "Programming Language :: Python :: 3.5",
@@ -73,8 +72,6 @@ setup(
                        'paster-templates/basic_package/+package+/*.py'],
       },
     zip_safe=False,
-    test_suite='nose.collector',
-    tests_require=['nose>=0.11'],
     extras_require={
       'Templating': [],
       'Cheetah': ['Cheetah'],
