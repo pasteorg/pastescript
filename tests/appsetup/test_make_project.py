@@ -1,6 +1,6 @@
 
 import os
-from nose import SkipTest
+from unittest import SkipTest
 from paste.fixture import *
 import pkg_resources
 for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'PasteWebKit',
