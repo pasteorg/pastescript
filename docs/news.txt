@@ -3,6 +3,14 @@ News: Paste Script
 
 .. contents::
 
+3.3.0 (2023-01-03)
+------------------
+
+* Remove support for Python 2 in tests. It may still work outside tests.
+* Fix homepage link. Thanks to Guillaume Gauvrit (mardiros).
+* Stop using nose to run tests.
+* Run tests in GitHub actions instead of travis CI.
+
 3.2.1 (2021-04-27)
 ------------------
 
