@@ -19,10 +19,6 @@ jobs:
                   toxenv: py39
                 - python: "3.10"
                   toxenv: py310
-                - python: pypy
-                  toxenv: pypy
-                - python: pypy3
-                  toxenv: pypy3
         name: ${{ matrix.toxenv }} on Python ${{ matrix.python }}
         steps:
         - uses: actions/checkout@v2
