@@ -1,4 +1,4 @@
-from nose import SkipTest
+from unittest import SkipTest
 import os
 from paste.script import templates
 
