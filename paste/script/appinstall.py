@@ -228,8 +228,15 @@ class AbstractInstallCommand(Command):
             return pkg_resources.get_distribution(req)
 
     def get_installer(self, distro, ep_group, ep_name):
-        installer_class = distro.load_entry_point(
-            'paste.app_install', ep_name)
+        if hasattr(distro, 'load_entry_point'):
+            # pkg_resources.EggInfoDistribution
+            installer_class = distro.load_entry_point(
+                'paste.app_install', ep_name)
+        else:
+            # importlib.metadata.PathDistribution
+            eps = [ep for ep in distro.entry_points
+                   if ep.group == 'paste.app_install' and ep.name == ep_name]
+            installer_class = eps[0].load()
         installer = installer_class(
             distro, ep_group, ep_name)
         return installer
@@ -576,9 +583,15 @@ class Installer(object):
         the extra attributes ``global_conf``, ``local_conf`` and
         ``filename``
         """
+        if hasattr(self.dist, 'get_metadata_lines'):
+            # pkg_resources.EggInfoDistribution
+            lines = self.dist.get_metadata_lines('top_level.txt')
+        else:
+            # importlib.metadata.PathDistribution
+            lines = self.dist.read_text('top_level.txt').splitlines()
         modules = [
             line.strip()
-            for line in self.dist.get_metadata_lines('top_level.txt')
+            for line in lines
             if line.strip() and not line.strip().startswith('#')]
         if not modules:
             print('No modules are listed in top_level.txt')
