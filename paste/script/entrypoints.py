@@ -233,8 +233,7 @@ class SuperGeneric(object):
             if hasattr(func, '__paste_sig__'):
                 sig = func.__paste_sig__
             else:
-                sig = inspect.getargspec(func)
-                sig = inspect.formatargspec(*sig)
+                sig = str(inspect.signature(func))
         except TypeError:
             sig = None
         if sig:
