@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+3.4.0 (2024-01-22)
+------------------
+
+* Correct working with PasteDeploy >=3. Thanks brondsem.
+
 3.3.0 (2023-01-03)
 ------------------
 
