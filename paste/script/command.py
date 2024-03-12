@@ -8,9 +8,8 @@ import os
 import re
 import textwrap
 from . import pluginlib
-from six.moves import configparser
+import configparser
 import getpass
-from six.moves import input
 try:
     import subprocess
 except ImportError:
@@ -18,12 +17,7 @@ except ImportError:
 
 difflib = None
 
-if sys.version_info >= (2, 6):
-    from logging.config import fileConfig
-else:
-    # Use our custom fileConfig -- 2.5.1's with a custom Formatter class
-    # and less strict whitespace (which were incorporated into 2.6's)
-    from paste.script.util.logging_config import fileConfig
+from logging.config import fileConfig
 
 class BadCommand(Exception):
 

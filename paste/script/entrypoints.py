@@ -1,4 +1,3 @@
-from __future__ import print_function
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import textwrap
@@ -8,8 +7,7 @@ from .command import Command, BadCommand
 import fnmatch
 import re
 import traceback
-import six
-from six.moves import cStringIO as StringIO
+from io import StringIO
 import inspect
 import types
 
@@ -224,7 +222,7 @@ class SuperGeneric(object):
         self.description = dedent(self.doc_object.__doc__)
         try:
             if isinstance(self.doc_object, type):
-                func = six.get_unbound_function(self.doc_object.__init__)
+                func = self.doc_object.__init__
             elif (hasattr(self.doc_object, '__call__')
                   and not isinstance(self.doc_object, types.FunctionType)):
                 func = self.doc_object.__call__

@@ -7,8 +7,6 @@ Create random secrets.
 import base64
 import os
 import random
-import six
-from six.moves import range
 
 def random_bytes(length):
     """
@@ -19,7 +17,7 @@ def random_bytes(length):
         return os.urandom(length)
     except AttributeError:
         return b''.join([
-            six.int2byte(random.randrange(256)) for i in range(length)])
+            bytes((random.randrange(256),)) for i in range(length)])
 
 def secret_string(length=25):
     """
@@ -29,8 +27,7 @@ def secret_string(length=25):
     """
     s = random_bytes(length)
     s = base64.b64encode(s)
-    if six.PY3:
-        s = s.decode('ascii')
+    s = s.decode('ascii')
     for badchar in '\n\r=':
         s = s.replace(badchar, '')
     # We're wasting some characters here.  But random characters are

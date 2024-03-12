@@ -1,4 +1,4 @@
-from paste.fixture import *
+from paste.fixture import TestApp
 
 def test_forbidden():
     # Unfortunately, auth isn't enabled in the standard app

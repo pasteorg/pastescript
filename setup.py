@@ -146,7 +146,6 @@ setup(
     install_requires=[
       'Paste>=3.0',
       'PasteDeploy',
-      'six',
       'setuptools',
       ],
     )

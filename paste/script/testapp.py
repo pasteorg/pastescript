@@ -4,7 +4,6 @@ try:
     import html
 except ImportError:
     import cgi as html
-import six
 
 html_page_template = '''
 <html>
@@ -83,7 +82,7 @@ class TestApplication(object):
             rows.append(row)
         rows = ''.join(rows)
         page = page_template % {'environ': rows}
-        if isinstance(page, six.text_type):
+        if isinstance(page, str):
             page = page.encode('utf8')
         headers = [('Content-type', content_type)]
         start_response('200 OK', headers)

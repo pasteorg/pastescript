@@ -8,7 +8,6 @@ import re
 import tokenize
 from .command import Command
 from . import pluginlib
-from six.moves import range
 
 class GrepCommand(Command):
 
