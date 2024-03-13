@@ -288,7 +288,7 @@ class PostTest(unittest.TestCase):
         ''').strip()
         html_regex = '\n%s\n' % html_regex
         html_regex = re.compile(html_regex, re.DOTALL)
-        self.assertRegex(self, out, html_regex)
+        self.assertRegex(out, html_regex)
 
 if __name__ == "__main__":
     unittest.main()
