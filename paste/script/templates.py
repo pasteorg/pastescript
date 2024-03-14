@@ -1,4 +1,3 @@
-from __future__ import print_function
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import sys
@@ -8,9 +7,8 @@ from . import copydir
 from . import command
 
 from paste.util.template import paste_script_template_renderer
-import six
 
-class Template(object):
+class Template:
 
     # Subclasses must define:
     # _template_dir (or template_dir())
@@ -207,7 +205,7 @@ _skip_variables = ['VFN', 'currentTime', 'self', 'VFFSL', 'dummyTrans',
                    'getmtime', 'trans']
 
 def find_args_in_template(template):
-    if isinstance(template, six.string_types):
+    if isinstance(template, str):
         # Treat as filename:
         import Cheetah.Template
         template = Cheetah.Template.Template(file=template)

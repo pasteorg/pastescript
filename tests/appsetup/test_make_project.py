@@ -1,7 +1,7 @@
 
 import os
 from unittest import SkipTest
-from paste.fixture import *
+from paste.fixture import TestFileEnvironment
 import pkg_resources
 for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'PasteWebKit',
              'ZPTKit']:

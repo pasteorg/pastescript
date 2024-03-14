@@ -4,7 +4,6 @@ import os
 import pkg_resources
 from paste.script import pluginlib, copydir
 from paste.script.command import BadCommand
-from six.moves import input
 difflib = None
 import subprocess
 

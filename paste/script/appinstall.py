@@ -4,11 +4,8 @@
 Provides the two commands for preparing an application:
 ``prepare-app`` and ``setup-app``
 """
-from __future__ import print_function
-
 import types
 import os
-import six
 import string
 import uuid
 from paste.deploy import appconfig
@@ -16,7 +13,6 @@ from paste.script import copydir
 from paste.script.command import Command, BadCommand, run as run_command
 from paste.script.util import secret
 from paste.util import import_string
-from six.moves import filter
 import paste.script.templates
 import pkg_resources
 
@@ -120,7 +116,7 @@ class AbstractInstallCommand(Command):
                     else:
                         continue
                 globs = {}
-                six.exec_(compile(open(name).read(), name, 'exec'), globs)
+                exec(compile(open(name).read(), name, 'exec'), globs)
                 mod = types.ModuleType('__sysconfig_%i__' % index)
                 for name, value in globs.items():
                     setattr(mod, name, value)
@@ -346,7 +342,7 @@ class MakeConfigCommand(AbstractInstallCommand):
                 self.run_setup(setup_config)
         else:
             filenames = self.installer.editable_config_files(self.config_file)
-            assert not isinstance(filenames, six.string_types), (
+            assert not isinstance(filenames, str), (
                 "editable_config_files returned a string, not a list")
             if not filenames and filenames is not None:
                 print('No config files need editing')

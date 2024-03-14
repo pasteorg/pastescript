@@ -1,4 +1,4 @@
-from projectname.sitepage import *
+from projectname.sitepage import SitePage
 
 class index(SitePage):
 

@@ -2,8 +2,7 @@
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 import os
 import pkg_resources
-from six.moves import input
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 import string
 try:
     import html

@@ -7,43 +7,10 @@ import io
 import os
 import re
 import shutil
-import six
 import sys
 import tempfile
 import textwrap
 import unittest
-
-PY2_ENTRY_POINTS=textwrap.dedent('''
-    14 entry point groups found:
-    [console_scripts]
-      When a package is installed, any entry point listed here will be
-      turned into a command-line script.
-    [distutils.commands]
-      This will add a new command when running ``python setup.py entry-
-      point-name`` if the package uses setuptools.
-    [distutils.setup_keywords]
-      This adds a new keyword to setup.py's setup() function, and a
-      validator to validate the value.
-    [egg_info.writers]
-      This adds a new writer that creates files in the PkgName.egg-info/
-      directory.
-    [paste.app_factory]
-    [paste.composite_factory]
-    [paste.entry_point_description]
-      This is an entry point that describes other entry points.
-    [paste.filter_app_factory]
-    [paste.global_paster_command]
-      Entry point that adds a command to the ``paster`` script globally.
-    [paste.paster_command]
-      Entry point that adds a command to the ``paster`` script to a
-      project that has specifically enabled the command.
-    [paste.paster_create_template]
-      Entry point for creating the file layout for a new project from a
-      template.
-    [paste.server_runner]
-    [setuptools.finalize_distribution_options]
-    [setuptools.installation]
-''')
 
 PY3_ENTRY_POINTS=textwrap.dedent('''
     13 entry point groups found:
@@ -81,7 +48,7 @@ PY3_ENTRY_POINTS=textwrap.dedent('''
 def capture_stdout():
     stdout = sys.stdout
     try:
-        sys.stdout = six.StringIO()
+        sys.stdout = io.StringIO()
         yield sys.stdout
     finally:
         sys.stdout = stdout
@@ -216,7 +183,7 @@ class CreateDistroCommandTest(unittest.TestCase):
         with temporary_dir():
             stdin = sys.stdin
             try:
-                sys.stdin = six.StringIO('\n'.join(inputs))
+                sys.stdin = io.StringIO('\n'.join(inputs))
                 with capture_stdout():
                     self.cmd.run(['--template=basic_package', name])
             finally:
@@ -242,8 +209,6 @@ class EntryPointsTest(unittest.TestCase):
 
     def test_list(self):
         entrypoints_list = PY3_ENTRY_POINTS
-        if six.PY2:
-            entrypoints_list = PY2_ENTRY_POINTS
         entrypoints_list = entrypoints_list.strip() + '\n'
         with capture_stdout() as stdout:
             res = self.cmd.run(['--list'])
@@ -302,19 +267,15 @@ class PostTest(unittest.TestCase):
         config = os.path.join('docs', 'example_app.ini')
         url = '/'
         with capture_stdout() as stdout:
-            if six.PY3:
-                stdout.buffer = io.BytesIO()
+            stdout.buffer = io.BytesIO()
             try:
                 command.run(['post', config, url])
             except SystemExit as exc:
                 self.assertEqual(exc.code, 0)
             else:
                 self.fail("SystemExit not raised")
-            if six.PY3:
-                out = stdout.buffer.getvalue()
-                out = out.decode('utf-8')
-            else:
-                out = stdout.getvalue()
+            out = stdout.buffer.getvalue()
+            out = out.decode('utf-8')
         html_regex = textwrap.dedent('''
             <html>
             <head>
@@ -327,7 +288,7 @@ class PostTest(unittest.TestCase):
         ''').strip()
         html_regex = '\n%s\n' % html_regex
         html_regex = re.compile(html_regex, re.DOTALL)
-        six.assertRegex(self, out, html_regex)
+        self.assertRegex(out, html_regex)
 
 if __name__ == "__main__":
     unittest.main()
