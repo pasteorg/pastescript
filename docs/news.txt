@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+3.5.0 (2024-03-14)
+------------------
+
+* Remove remains of Python 2 in code. Thanks to Alexandre Detiste (a-detiste)
+
 3.4.0 (2024-01-22)
 ------------------
 
