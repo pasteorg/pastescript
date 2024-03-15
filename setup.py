@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 import os
 import re
 
-version = '3.5.0'
+version = '3.5.1'
 
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
 found_news = ''
@@ -66,6 +66,7 @@ setup(
     url="https://pastescript.readthedocs.io/",
     namespace_packages=['paste'],
     license='MIT',
+    python_requires='>=3.7',
     packages=find_packages(exclude=['tests','tests.*']),
     package_data={
       'paste.script': ['paster-templates/basic_package/setup.*',

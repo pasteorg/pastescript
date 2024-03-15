@@ -3,6 +3,11 @@ News: Paste Script
 
 .. contents::
 
+3.5.1 (2024-03-15)
+------------------
+
+* Be explicit about Python 3 being required.
+
 3.5.0 (2024-03-14)
 ------------------
 
