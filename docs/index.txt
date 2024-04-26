@@ -21,7 +21,7 @@ Paste Script is being maintained on life support. That means that
 critical bugs will be fixed, and support for new versions of Python
 will be handled, but other than that new features are not being
 considered. Development has moved to `GitHub
-<https://github.com/cdent/pastescript>`_.
+<https://github.com/pasteorg/pastescript>`_.
 
 Introduction
 ------------
