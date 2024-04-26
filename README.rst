@@ -16,7 +16,7 @@ It includes some built-in features;
   `paste.deploy <https://docs.pylonsproject.org/projects/pastedeploy>`_.
 
 The latest version is available in a `GitHub repository
-<https://github.com/cdent/pastescript/>`_.
+<https://github.com/pasteorg/pastescript/>`_.
 
 For the latest changes see the `news file
 <https://pastescript.readthedocs.io/en/latest/news.html>`_.
