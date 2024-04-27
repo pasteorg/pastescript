@@ -5,6 +5,14 @@ means that critical bugs will be fixed, and support for new versions
 of Python will be handled, but other than that new features are not
 being considered.
 
+**With version 3.6.0 pastescript development moves to the pasteorg GitHub
+organization and will be going deeper into maintenance mode unless
+more active maintainers step forward to take over. "Deeper" in this
+case means that releases will be much less frequent and patches
+will only be accepted for security issues or major problems. Current
+consumers of pastescript should prepare to migrate away to more modern
+solutions.**
+
 It includes some built-in features;
 
 * Create file layouts for packages.  For instance, ``paster create

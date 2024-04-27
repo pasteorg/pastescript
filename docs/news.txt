@@ -3,6 +3,19 @@ News: Paste Script
 
 .. contents::
 
+3.6.0 (2024-04-27)
+------------------
+
+* Pastescript is moved to https://github.com/pasteorg/pastescript
+
+With version 3.6.0 pastescript development moves to the pasteorg GitHub
+organization and will be going deeper into maintenance mode unless
+more active maintainers step forward to take over. "Deeper" in this
+case means that releases will be much less frequent and patches
+will only be accepted for security issues or major problems. Current
+consumers of pastescript should prepare to migrate away to more modern
+solutions.
+
 3.5.1 (2024-03-15)
 ------------------
 
