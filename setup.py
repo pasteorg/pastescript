@@ -15,6 +15,7 @@
 from setuptools import setup, find_packages
 import os
 import re
+import sys
 
 version = '3.6.0'
 
@@ -29,7 +30,7 @@ if os.path.exists(news):
             found_news = parts[i+i]
             break
 if not found_news:
-    print('Warning: no news for this version found')
+    print('Warning: no news for this version found', file=sys.stderr)
 
 with open("README.rst") as fp:
     long_description = fp.read().strip()
