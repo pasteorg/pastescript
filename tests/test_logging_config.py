@@ -120,14 +120,11 @@ def test4():
         conf = globals()['config%d' % i]
         sys.stdout.write('config%d: ' % i)
         loggerDict = logging.getLogger().manager.loggerDict
-        logging._acquireLock()
-        try:
+        with logging._lock:
             saved_handlers = logging._handlers.copy()
             if hasattr(logging, '_handlerList'):
                 saved_handler_list = logging._handlerList[:]
             saved_loggers = loggerDict.copy()
-        finally:
-            logging._releaseLock()
         try:
             fn = tempfile.mktemp(".ini")
             f = open(fn, "w")
@@ -146,8 +143,7 @@ def test4():
                 message('ok.')
             os.remove(fn)
         finally:
-            logging._acquireLock()
-            try:
+            with logging._lock:
                 logging._handlers.clear()
                 logging._handlers.update(saved_handlers)
                 if hasattr(logging, '_handlerList'):
@@ -155,8 +151,6 @@ def test4():
                 loggerDict = logging.getLogger().manager.loggerDict
                 loggerDict.clear()
                 loggerDict.update(saved_loggers)
-            finally:
-                logging._releaseLock()
 
 #----------------------------------------------------------------------------
 # Test 5
@@ -196,14 +190,11 @@ class FriendlyFormatter (logging.Formatter):
 
 def test5():
     loggerDict = logging.getLogger().manager.loggerDict
-    logging._acquireLock()
-    try:
+    with logging._lock:
         saved_handlers = logging._handlers.copy()
         if hasattr(logging, '_handlerList'):
             saved_handler_list = logging._handlerList[:]
         saved_loggers = loggerDict.copy()
-    finally:
-        logging._releaseLock()
     try:
         fn = tempfile.mktemp(".ini")
         f = open(fn, "w")
@@ -218,8 +209,7 @@ def test5():
         hdlr = logging.getLogger().handlers[0]
         logging.getLogger().handlers.remove(hdlr)
     finally:
-        logging._acquireLock()
-        try:
+        with logging._lock:
             logging._handlers.clear()
             logging._handlers.update(saved_handlers)
             if hasattr(logging, '_handlerList'):
@@ -227,5 +217,3 @@ def test5():
             loggerDict = logging.getLogger().manager.loggerDict
             loggerDict.clear()
             loggerDict.update(saved_loggers)
-        finally:
-            logging._releaseLock()
