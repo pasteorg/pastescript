@@ -110,40 +110,43 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             continue
         elif use_pkg_resources:
             content = pkg_resources.resource_string(source[0], full)
+            content = content.encode()
         else:
-            with open(full, 'r') as f:
+            print(full)
+            with open(full, 'rb') as f:
                 content = f.read()
         if sub_file:
             try:
+                content = content.decode()
                 content = substitute_content(content, vars, filename=full,
                                              use_cheetah=use_cheetah,
                                              template_renderer=template_renderer)
+                content = content.encode()
             except SkipTemplate:
                 continue
             if content is None:
                 continue
         already_exists = os.path.exists(dest_full)
         if already_exists:
-            f = open(dest_full, 'rb')
-            old_content = f.read()
-            f.close()
-            if old_content == content:
-                if verbosity:
-                    print('%s%s already exists (same content)' % (pad, dest_full))
-                continue
-            if interactive:
-                if not query_interactive(
-                    full, dest_full, content, old_content,
-                    simulate=simulate):
+            with open(dest_full, 'rb') as f:
+                old_content = f.read()
+                if old_content == content:
+                    if verbosity:
+                        print('%s%s already exists (same content)' % (pad, dest_full))
                     continue
-            elif not overwrite:
-                continue
+                if interactive:
+                    if not query_interactive(
+                        full, dest_full, content.decode(), old_content.decode(),
+                        simulate=simulate):
+                        continue
+                elif not overwrite:
+                    continue
         if verbosity and use_pkg_resources:
             print('%sCopying %s to %s' % (pad, full, dest_full))
         elif verbosity:
             print('%sCopying %s to %s' % (pad, os.path.basename(full), dest_full))
         if not simulate:
-            with open(dest_full, 'w') as f:
+            with open(dest_full, 'wb') as f:
                 f.write(content)
         if svn_add and not already_exists:
             if os.system('svn info %r >/dev/null 2>&1' % os.path.dirname(os.path.abspath(dest_full))) > 0:
