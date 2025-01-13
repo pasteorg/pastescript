@@ -112,7 +112,6 @@ def copy_dir(source, dest, vars, verbosity, simulate, indent=0,
             content = pkg_resources.resource_string(source[0], full)
             content = content.encode()
         else:
-            print(full)
             with open(full, 'rb') as f:
                 content = f.read()
         if sub_file:
