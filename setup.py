@@ -17,7 +17,7 @@ import os
 import re
 import sys
 
-version = '3.6.0'
+version = '3.7.0'
 
 news = os.path.join(os.path.dirname(__file__), 'docs', 'news.txt')
 found_news = ''

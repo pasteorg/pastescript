@@ -3,6 +3,12 @@ News: Paste Script
 
 .. contents::
 
+3.7.0 (2025-01-22)
+------------------
+
+* Open, read and write files in binary mode in copydir.py.
+* Fix locking for modern Python.
+
 3.6.0 (2024-04-27)
 ------------------
 
