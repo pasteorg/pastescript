@@ -91,16 +91,13 @@ def fileConfig(fname, defaults=None):
     formatters = _create_formatters(cp)
 
     # critical section
-    logging._acquireLock()
-    try:
+    with logging._lock:
         logging._handlers.clear()
         if hasattr(logging, '_handlerList'):
             del logging._handlerList[:]
         # Handlers add themselves to logging._handlers
         handlers = _install_handlers(cp, formatters)
         _install_loggers(cp, handlers)
-    finally:
-        logging._releaseLock()
 
 
 def _resolve(name):
@@ -327,9 +324,8 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
         def __init__(self, host='localhost', port=DEFAULT_LOGGING_CONFIG_PORT,
                      handler=None):
             ThreadingTCPServer.__init__(self, (host, port), handler)
-            logging._acquireLock()
-            self.abort = 0
-            logging._releaseLock()
+            with logging._lock:
+                self.abort = 0
             self.timeout = 1
 
         def serve_until_stopped(self):
@@ -341,16 +337,14 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
                                            self.timeout)
                 if rd:
                     self.handle_request()
-                logging._acquireLock()
-                abort = self.abort
-                logging._releaseLock()
+                with logging._lock:
+                    abort = self.abort
 
     def serve(rcvr, hdlr, port):
         server = rcvr(port=port, handler=hdlr)
         global _listener
-        logging._acquireLock()
-        _listener = server
-        logging._releaseLock()
+        with logging._lock:
+            _listener = server
         server.serve_until_stopped()
 
     return threading.Thread(target=serve,
@@ -363,7 +357,6 @@ def stopListening():
     """
     global _listener
     if _listener:
-        logging._acquireLock()
-        _listener.abort = 1
-        _listener = None
-        logging._releaseLock()
+        with logging._lock:
+            _listener.abort = 1
+            _listener = None
